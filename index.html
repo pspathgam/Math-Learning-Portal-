@@ -96,7 +96,7 @@
     <h1 class="portal-title">Math Mastery</h1>
 
     <div class="progress-container"><div id="progress-fill"></div></div>
-    <div class="timer-box">⏳ Time Left: <span id="timer-sec">15</span>s</div>
+    <div class="timer-box">⏳ Time Left: <span id="timer-sec">60</span>s</div>
 
     <div class="container">
         <div class="header-box">
@@ -125,11 +125,11 @@
 
 <script>
     let currentStep = 0, coins = 0, currentCorrectAns = 0;
-    let timer, timeLeft = 15;
+    let timer, timeLeft = 60; // CHANGED FROM 15 TO 60
 
     function startTimer() {
         clearInterval(timer);
-        timeLeft = 15;
+        timeLeft = 60; // RESET TO 60 SECONDS
         document.getElementById('timer-sec').innerText = timeLeft;
         timer = setInterval(() => {
             timeLeft--;
@@ -209,4 +209,4 @@
 </body>
 </html>
 
-    
+                    
