@@ -6,17 +6,20 @@
     <title>Math Mastery Dashboard</title>
     <style>
         :root {
-            --primary: #00d2ff;
-            --secondary: #92fe9d;
-            --accent: #ffd700;
-            --error: #ff416c;
+            --primary: #ffffff;
+            --secondary: #00ff88;
+            --accent: #ffeb3b;
+            --error: #ff5252;
         }
 
         body { 
             font-family: 'Segoe UI', sans-serif; 
-            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e);
+            /* COLOURFUL TEMPLATE: Vibrant Mesh Gradient */
+            background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 20%, #ffecd2 40%, #a1c4fd 60%, #c2e9fb 80%, #d4fc79 100%);
+            background-size: 400% 400%;
+            animation: gradientMove 10s ease infinite;
             margin: 0; 
-            color: white;
+            color: #2c3e50; /* Darker text for light background */
             display: flex; 
             flex-direction: column; 
             align-items: center; 
@@ -24,18 +27,22 @@
             padding: 10px;
         }
 
-        /* 3D TITLE */
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         .portal-title {
-            font-size: clamp(1.2rem, 6vw, 2.5rem);
+            font-size: clamp(1.5rem, 7vw, 2.8rem);
             font-weight: 900;
             text-transform: uppercase;
             text-align: center;
             margin: 10px 0;
-            color: #fff;
-            text-shadow: 0 0 10px var(--primary);
+            color: #ffffff;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
         }
 
-        /* GAUGE DASHBOARD SECTION */
         .dashboard {
             display: flex;
             justify-content: center;
@@ -49,106 +56,79 @@
             position: relative;
             width: 140px;
             height: 80px;
-            overflow: hidden; /* Clips the bottom half of the circle */
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 80px 80px 0 0;
+            border: 2px solid white;
         }
 
-        .gauge-svg {
-            width: 140px;
-            height: 140px;
-            transform: rotate(-180deg);
-        }
+        .gauge-svg { width: 140px; height: 140px; transform: rotate(-180deg); }
+        .gauge-bg { fill: none; stroke: rgba(0, 0, 0, 0.1); stroke-width: 12; }
+        .gauge-fill { fill: none; stroke-width: 12; stroke-dasharray: 220; stroke-dashoffset: 220; transition: stroke-dashoffset 0.5s ease-out; stroke-linecap: round; }
 
-        .gauge-bg {
-            fill: none;
-            stroke: rgba(255, 255, 255, 0.1);
-            stroke-width: 12;
-        }
+        .gauge-label { position: absolute; bottom: 5px; width: 100%; text-align: center; font-size: 0.7rem; font-weight: bold; }
+        .gauge-value { position: absolute; bottom: 22px; width: 100%; text-align: center; font-weight: bold; font-size: 1.2rem; }
 
-        .gauge-fill {
-            fill: none;
-            stroke-width: 12;
-            stroke-dasharray: 220; /* Half of the circumference */
-            stroke-dashoffset: 220;
-            transition: stroke-dashoffset 0.5s ease-out, stroke 0.5s;
-            stroke-linecap: round;
-        }
-
-        .gauge-label {
-            position: absolute;
-            bottom: 5px;
-            width: 100%;
-            text-align: center;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.8;
-        }
-
-        .gauge-value {
-            position: absolute;
-            bottom: 22px;
-            width: 100%;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        /* MAIN CONTAINER (70% VISIBILITY) */
         .container { 
             width: 100%; 
             max-width: 500px; 
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.7); /* 70% Visibility */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             padding: 20px; 
             border-radius: 30px; 
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
+            border: 2px solid white;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
             text-align: center;
             box-sizing: border-box;
         }
 
         .header-box { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .coin-display { font-size: 1.1rem; color: var(--accent); font-weight: bold; }
+        .coin-display { font-size: 1.1rem; color: #f39c12; font-weight: bold; }
 
-        /* MATH AREA */
+        /* INCREASED FONT SIZE FOR QUESTIONS */
         .math-area { 
             font-family: 'Courier New', monospace; 
-            font-size: clamp(1.8rem, 8vw, 2.8rem); 
-            font-weight: bold; 
+            font-size: clamp(2.5rem, 12vw, 4.5rem); /* Much larger text */
+            font-weight: 900; 
             text-align: right; 
             margin: 10px 0; 
+            color: #2c3e50;
         }
 
         .digit-row { display: flex; justify-content: flex-end; }
         
         .carry-box { 
-            width: 22px; height: 22px; border: 1px dashed var(--primary); 
-            margin-left: 3px; color: var(--primary); border-radius: 4px; 
-            font-size: 13px; text-align: center;
+            width: 25px; height: 25px; border: 1.5px dashed #3498db; 
+            margin-left: 5px; color: #3498db; border-radius: 4px; 
+            font-size: 16px; text-align: center; font-weight: bold;
         }
 
         .digit-input { 
-            width: clamp(32px, 10vw, 48px); 
-            height: clamp(45px, 12vw, 60px); 
-            font-size: 1.8rem; 
+            width: clamp(35px, 11vw, 55px); 
+            height: clamp(50px, 14vw, 70px); 
+            font-size: 2.2rem; 
             text-align: center; 
-            border: 2px solid rgba(255,255,255,0.2); 
-            border-radius: 10px; 
-            background: rgba(0,0,0,0.5); 
-            color: white; 
-            margin: 0 2px;
+            border: 3px solid #bdc3c7; 
+            border-radius: 12px; 
+            background: white; 
+            color: #2c3e50; 
+            margin: 0 3px;
+            font-weight: bold;
         }
 
+        .digit-input:focus { border-color: #3498db; outline: none; background: #ebf5fb; }
+
         .btn-submit { 
-            width: 100%; padding: 16px; font-size: 1.2rem; font-weight: bold; color: white; 
-            background: linear-gradient(45deg, var(--primary), #3a7bd5); 
+            width: 100%; padding: 18px; font-size: 1.3rem; font-weight: bold; color: white; 
+            background: linear-gradient(45deg, #3498db, #2ecc71); 
             border: none; border-radius: 15px; cursor: pointer; margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .developer-credit { 
-            margin-top: auto; padding: 15px; font-size: 0.85rem; 
-            color: rgba(255,255,255,0.5); text-align: center; 
+            margin-top: auto; padding: 15px; font-size: 0.9rem; 
+            color: #34495e; text-align: center; font-weight: 600;
         }
         
         .hidden { display: none; }
@@ -156,32 +136,32 @@
 </head>
 <body>
 
-    <h1 class="portal-title">Math Mastery Dashboard</h1>
+    <h1 class="portal-title">Math Magic Portal</h1>
 
     <div class="dashboard">
         <div class="gauge-container">
             <svg class="gauge-svg">
                 <circle class="gauge-bg" cx="70" cy="70" r="60"></circle>
-                <circle id="timer-fill" class="gauge-fill" cx="70" cy="70" r="60" style="stroke: var(--primary);"></circle>
+                <circle id="timer-fill" class="gauge-fill" cx="70" cy="70" r="60" style="stroke: #3498db;"></circle>
             </svg>
             <div class="gauge-value" id="timer-text">60</div>
-            <div class="gauge-label">Seconds</div>
+            <div class="gauge-label">Timer</div>
         </div>
 
         <div class="gauge-container">
             <svg class="gauge-svg">
                 <circle class="gauge-bg" cx="70" cy="70" r="60"></circle>
-                <circle id="score-fill" class="gauge-fill" cx="70" cy="70" r="60" style="stroke: var(--secondary);"></circle>
+                <circle id="score-fill" class="gauge-fill" cx="70" cy="70" r="60" style="stroke: #2ecc71;"></circle>
             </svg>
             <div class="gauge-value" id="score-text">0</div>
-            <div class="gauge-label">Correct</div>
+            <div class="gauge-label">Solved</div>
         </div>
     </div>
 
     <div class="container">
         <div class="header-box">
-            <div id="q-label" style="font-size: 0.9rem; opacity: 0.8;">Quest: 1/100</div>
-            <div class="coin-display">💰 <span id="coin-count">0</span> Coins</div>
+            <div id="q-label" style="font-size: 0.9rem; font-weight: bold;">Quest: 1/100</div>
+            <div class="coin-display">💰 <span id="coin-count">0</span></div>
         </div>
 
         <div id="game-area">
@@ -189,12 +169,12 @@
             <div class="math-area">
                 <div id="num1">000000</div>
                 <div id="op-num2">- 000000</div>
-                <div style="border-top: 4px solid #fff; margin: 8px 0; box-shadow: 0 0 10px var(--primary);"></div>
+                <div style="border-top: 5px solid #2c3e50; margin: 10px 0; border-radius: 5px;"></div>
                 <div id="answer-container" class="digit-row"></div>
             </div>
         </div>
 
-        <div id="feedback" style="height: 1.5rem; margin: 15px 0; font-weight: bold; font-size: 1.1rem;"></div>
+        <div id="feedback" style="height: 1.5rem; margin: 15px 0; font-weight: bold; color: #e67e22;"></div>
         <button class="btn-submit" id="submit-btn" onclick="checkAnswer()">SUBMIT ANSWER</button>
         <button class="btn-submit hidden" id="next-btn" onclick="nextQuestion()">NEXT CHALLENGE ➔</button>
     </div>
@@ -206,19 +186,15 @@
 <script>
     let currentStep = 0, coins = 0, correctCount = 0, currentCorrectAns = 0;
     let timer, timeLeft = 60;
-    const maxDash = 188; // Adjust based on SVG stroke-dasharray for semi-circle
+    const maxDash = 188;
 
     function updateGauges() {
-        // Timer Gauge Logic
         const timerFill = document.getElementById('timer-fill');
-        const timerOffset = maxDash - (timeLeft / 60) * maxDash;
-        timerFill.style.strokeDashoffset = timerOffset;
+        timerFill.style.strokeDashoffset = maxDash - (timeLeft / 60) * maxDash;
         document.getElementById('timer-text').innerText = timeLeft;
 
-        // Score Gauge Logic (Based on 100 questions)
         const scoreFill = document.getElementById('score-fill');
-        const scoreOffset = maxDash - (correctCount / 100) * maxDash;
-        scoreFill.style.strokeDashoffset = scoreOffset;
+        scoreFill.style.strokeDashoffset = maxDash - (correctCount / 100) * maxDash;
         document.getElementById('score-text').innerText = correctCount;
     }
 
@@ -229,11 +205,7 @@
         timer = setInterval(() => {
             timeLeft--;
             updateGauges();
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                feedback.innerHTML = '<span style="color:var(--error);">⏰ TIME OUT!</span>';
-                setTimeout(nextQuestion, 1500);
-            }
+            if (timeLeft <= 0) { clearInterval(timer); nextQuestion(); }
         }, 1000);
     }
 
@@ -261,30 +233,47 @@
         document.getElementById('num1').innerText = n1.toLocaleString();
         document.getElementById('op-num2').innerText = `${op} ${n2.toLocaleString()}`;
 
+        // Create digit boxes with Auto-Tab logic
         for (let i = 0; i < digits; i++) {
             carryRow.innerHTML += `<div class="carry-box" contenteditable="true"></div>`;
-            answerRow.innerHTML += `<input type="number" class="digit-input" oninput="if(this.value.length>1) this.value=this.value.slice(-1)">`;
+            const input = document.createElement('input');
+            input.type = "number";
+            input.className = "digit-input";
+            input.dataset.index = i;
+            // AUTO-TAB LOGIC (Jumps to previous box because we write right-to-left)
+            input.oninput = function() {
+                if (this.value.length > 0) {
+                    this.value = this.value.slice(-1);
+                    const prev = this.previousElementSibling;
+                    if (prev) prev.focus();
+                }
+            };
+            answerRow.appendChild(input);
         }
-        setTimeout(() => document.querySelector('.digit-input')?.focus(), 300);
+        // Focus the Ones-place box (last one) first
+        setTimeout(() => {
+            const inputs = document.querySelectorAll('.digit-input');
+            inputs[inputs.length - 1].focus();
+        }, 300);
     }
 
     function checkAnswer() {
         let userAns = "";
+        // We collect digits from left to right for comparison
         document.querySelectorAll('.digit-input').forEach(inp => userAns += inp.value);
         if (userAns === "") return;
 
         clearInterval(timer);
         if (parseInt(userAns) === currentCorrectAns) {
-            coins += 5;
-            correctCount++;
+            coins += 5; correctCount++;
             document.getElementById('coin-count').innerText = coins;
-            document.getElementById('feedback').innerHTML = '<span style="color:var(--secondary);">🌟 FANTASTIC! +5 COINS</span>';
+            document.getElementById('feedback').innerHTML = "🌟 YOU ARE DOING WONDERS!";
             document.getElementById('submit-btn').classList.add('hidden');
             document.getElementById('next-btn').classList.remove('hidden');
             updateGauges();
         } else {
-            document.getElementById('feedback').innerHTML = '<span style="color:var(--error);">❌ WRONG! TRY NEXT</span>';
-            setTimeout(nextQuestion, 1500);
+            document.getElementById('feedback').innerHTML = "❌ TRY AGAIN!";
+            setTimeout(generateQuestion, 1500);
         }
     }
 
@@ -295,7 +284,7 @@
             generateQuestion();
         } else {
             clearInterval(timer);
-            document.getElementById('game-area').innerHTML = "<h2>🏁 GRAND FINALE REACHED!</h2>";
+            document.getElementById('game-area').innerHTML = "<h2>🏆 MISSION COMPLETE!</h2>";
         }
     }
 
@@ -303,4 +292,5 @@
 </script>
 </body>
 </html>
-   
+                                        updateGauges();
+            
