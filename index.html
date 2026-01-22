@@ -3,147 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Mastery Challenge</title>
+    <title>3D Math Mastery Challenge</title>
     <style>
         :root {
-            --primary: #4a90e2;
-            --success: #2ecc71;
-            --error: #e74c3c;
-            --bg: #f0f4f8;
+            --primary: #00d2ff;
+            --secondary: #92fe9d;
+            --error: #ff416c;
+            --dark-bg: #1a1a2e;
         }
 
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        
-        /* 3D CONCRETE TITLE DESIGN */
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: radial-gradient(circle, #1a1a2e 0%, #16213e 100%); 
+            margin: 0; 
+            color: white;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* DEEP 3D TITLE WITH ANIMATION */
         .portal-title {
             font-size: 3.5em;
             font-weight: 900;
-            color: #e0e0e0;
             text-transform: uppercase;
             text-align: center;
             margin: 20px 0;
-            letter-spacing: 5px;
-            /* 3D Concrete Effect */
+            letter-spacing: 8px;
+            color: #fff;
             text-shadow: 
-                1px 1px 0px #bdbdbd,
-                2px 2px 0px #adadad,
-                3px 3px 0px #9e9e9e,
-                4px 4px 0px #8e8e8e,
-                5px 5px 10px rgba(0,0,0,0.4);
-            background: linear-gradient(to bottom, #ffffff 0%, #a1a1a1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+                0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9,
+                0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1),
+                0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25),
+                0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15),
+                0 0 20px var(--primary);
+            animation: float 3s ease-in-out infinite;
         }
 
-        /* DEVELOPER CREDIT */
-        .developer-credit {
-            margin-top: 30px;
-            font-size: 1.1em;
-            font-weight: 600;
-            color: #555;
-            text-align: center;
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border: 1px solid #ddd;
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateX(10deg); }
+            50% { transform: translateY(-10px) rotateX(15deg); }
         }
 
-        .container { width: 100%; max-width: 500px; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; }
+        /* PROGRESS BAR */
+        .progress-container { width: 100%; max-width: 600px; background: rgba(255,255,255,0.1); border-radius: 20px; height: 12px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.2); overflow: hidden; }
+        #progress-fill { width: 1%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); transition: width 0.4s ease; }
 
-        .header-box { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 2px solid #eee; }
-        .progress-text { font-weight: bold; color: #666; }
-        .coin-display { font-size: 1.2em; font-weight: bold; color: #d4af37; background: #fff9e6; padding: 5px 15px; border-radius: 20px; border: 1px solid #f1c40f; }
+        /* TIMER CIRCLE */
+        .timer-box { font-size: 1.5em; font-weight: bold; margin-bottom: 15px; color: var(--primary); text-shadow: 0 0 10px var(--primary); }
 
-        /* Math Display */
-        .math-area { font-family: 'Courier New', monospace; font-size: 2.5em; font-weight: bold; text-align: right; display: inline-block; margin: 20px 0; letter-spacing: 5px; line-height: 1.2; }
-        .carry-row { display: flex; justify-content: flex-end; margin-bottom: 5px; height: 30px; }
-        .carry-box { width: 25px; height: 25px; border: 1px dashed #bbb; margin-left: 5px; font-size: 16px; text-align: center; line-height: 25px; color: var(--primary); border-radius: 4px; outline: none; }
-        .line { border-top: 4px solid #333; margin: 10px 0; width: 100%; }
+        .container { 
+            width: 90%; max-width: 550px; background: rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(15px); padding: 30px; border-radius: 30px; 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5); text-align: center;
+            transform: perspective(1000px) rotateX(5deg);
+        }
 
-        /* Answer Boxes */
-        .answer-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 15px; }
-        .digit-input { width: 45px; height: 55px; font-size: 28px; text-align: center; border: 2px solid #ddd; border-radius: 8px; font-family: inherit; font-weight: bold; background: #fafafa; }
-        .digit-input:focus { border-color: var(--primary); background: #fff; outline: none; box-shadow: 0 0 10px rgba(74,144,226,0.2); }
+        .header-box { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .coin-display { font-size: 1.4em; font-weight: bold; color: #ffd700; text-shadow: 0 0 15px #ffd700; }
 
-        #feedback { margin-top: 20px; font-weight: bold; font-size: 1.2em; min-height: 1.5em; }
-        .msg-success { color: var(--success); }
-        .msg-error { color: var(--error); }
+        /* MATH AREA */
+        .math-area { font-family: 'Courier New', monospace; font-size: 2.5em; font-weight: bold; color: #fff; text-align: right; margin: 20px 0; letter-spacing: 5px; }
+        .carry-box { width: 25px; height: 25px; border: 1px dashed var(--primary); margin-left: 5px; color: var(--primary); border-radius: 4px; font-size: 16px; outline: none; display: inline-block; }
+        .line { border-top: 4px solid #fff; margin: 10px 0; box-shadow: 0 0 10px var(--primary); }
 
-        .btn-submit { width: 100%; padding: 15px; font-size: 1.2em; font-weight: bold; color: white; background: var(--primary); border: none; border-radius: 12px; cursor: pointer; margin-top: 25px; transition: 0.3s; }
-        .btn-submit:hover { background: #357abd; transform: translateY(-2px); }
+        .digit-input { 
+            width: 45px; height: 55px; font-size: 28px; text-align: center; 
+            border: 2px solid rgba(255,255,255,0.2); border-radius: 10px; 
+            background: rgba(0,0,0,0.3); color: white; margin: 0 4px;
+        }
+        .digit-input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary); outline: none; }
+
+        #feedback { margin-top: 20px; font-weight: bold; font-size: 1.3em; height: 1.5em; }
+
+        .btn-submit { 
+            width: 100%; padding: 15px; font-size: 1.2em; font-weight: bold; color: white; 
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5); border: none; 
+            border-radius: 15px; cursor: pointer; margin-top: 15px; 
+            box-shadow: 0 5px 15px rgba(0,210,255,0.4); transition: 0.3s;
+        }
+        .btn-submit:hover { transform: scale(1.02); box-shadow: 0 8px 25px rgba(0,210,255,0.6); }
+
+        .developer-credit { margin-top: 40px; color: rgba(255,255,255,0.6); letter-spacing: 1px; padding: 20px; }
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <h1 class="portal-title">Math Mastery Portal</h1>
+    <h1 class="portal-title">Math Mastery</h1>
+
+    <div class="progress-container"><div id="progress-fill"></div></div>
+    <div class="timer-box">⏳ Time Left: <span id="timer-sec">15</span>s</div>
 
     <div class="container">
         <div class="header-box">
-            <div class="progress-text">Question <span id="q-num">1</span> / 100</div>
+            <div style="color: #aaa;">Quest <span id="q-num">1</span>/100</div>
             <div class="coin-display">💰 <span id="coin-count">0</span></div>
         </div>
 
         <div id="game-area">
-            <div id="carry-container" class="carry-row"></div>
+            <div id="carry-container" style="display:flex; justify-content:flex-end; margin-bottom:5px;"></div>
             <div class="math-area">
                 <div id="num1">000000</div>
                 <div id="op-num2">- 000000</div>
                 <div class="line"></div>
-                <div id="answer-container" class="answer-row"></div>
+                <div id="answer-container" style="display:flex; justify-content:flex-end;"></div>
             </div>
         </div>
 
         <div id="feedback"></div>
         <button class="btn-submit" id="submit-btn" onclick="checkAnswer()">SUBMIT ANSWER</button>
-        <button class="btn-submit hidden" id="next-btn" onclick="nextQuestion()">NEXT QUESTION ➔</button>
+        <button class="btn-submit hidden" id="next-btn" onclick="nextQuestion()">CONTINUE ➔</button>
     </div>
 
     <div class="developer-credit">
-        Designed and Developed by <strong>Mohammad Ashraf Rather</strong>
+        Designed and Developed by <b>Mohammad Ashraf Rather</b>
     </div>
 
 <script>
-    let currentStep = 0; 
-    let coins = 0;
-    let currentCorrectAns = 0;
+    let currentStep = 0, coins = 0, currentCorrectAns = 0;
+    let timer, timeLeft = 15;
 
-    const qNumDisplay = document.getElementById('q-num');
-    const coinDisplay = document.getElementById('coin-count');
-    const feedback = document.getElementById('feedback');
-    const submitBtn = document.getElementById('submit-btn');
-    const nextBtn = document.getElementById('next-btn');
+    function startTimer() {
+        clearInterval(timer);
+        timeLeft = 15;
+        document.getElementById('timer-sec').innerText = timeLeft;
+        timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer-sec').innerText = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                feedback.innerHTML = '<span style="color:#ff416c;">⏰ Time\'s Up! Moving to next...</span>';
+                setTimeout(nextQuestion, 2000);
+            }
+        }, 1000);
+    }
 
     function generateQuestion() {
+        startTimer();
         feedback.innerHTML = "";
-        submitBtn.classList.remove('hidden');
-        nextBtn.classList.add('hidden');
+        document.getElementById('submit-btn').classList.remove('hidden');
+        document.getElementById('next-btn').classList.add('hidden');
+        document.getElementById('progress-fill').style.width = (currentStep + 1) + "%";
         
         const carryRow = document.getElementById('carry-container');
         const answerRow = document.getElementById('answer-container');
-        carryRow.innerHTML = "";
-        answerRow.innerHTML = "";
+        carryRow.innerHTML = ""; answerRow.innerHTML = "";
 
         let n1, n2, op, digits;
-
         if (currentStep < 50) {
             n1 = Math.floor(Math.random() * 800000) + 200000;
             n2 = Math.floor(Math.random() * 100000) + 100000;
-            op = "-";
-            currentCorrectAns = n1 - n2;
-            digits = 6;
+            op = "-"; currentCorrectAns = n1 - n2; digits = 6;
         } else {
-            if (currentStep < 75) { 
-                n1 = Math.floor(Math.random() * 90) + 10;
-                n2 = Math.floor(Math.random() * 8) + 2;
-            } else { 
-                n1 = Math.floor(Math.random() * 90) + 10;
-                n2 = Math.floor(Math.random() * 90) + 10;
-            }
-            op = "×";
-            currentCorrectAns = n1 * n2;
-            digits = currentCorrectAns.toString().length;
+            n1 = Math.floor(Math.random() * 90) + 10;
+            n2 = (currentStep < 75) ? Math.floor(Math.random() * 8) + 2 : Math.floor(Math.random() * 90) + 10;
+            op = "×"; currentCorrectAns = n1 * n2; digits = currentCorrectAns.toString().length;
         }
 
         document.getElementById('num1').innerText = n1;
@@ -153,46 +171,42 @@
             carryRow.innerHTML += `<div class="carry-box" contenteditable="true"></div>`;
             answerRow.innerHTML += `<input type="text" maxlength="1" class="digit-input">`;
         }
-        
-        setTimeout(() => {
-            const firstInput = document.querySelector('.digit-input');
-            if(firstInput) firstInput.focus();
-        }, 100);
+        setTimeout(() => document.querySelector('.digit-input')?.focus(), 100);
     }
 
     function checkAnswer() {
-        const inputs = document.querySelectorAll('.digit-input');
         let userAns = "";
-        inputs.forEach(inp => userAns += inp.value);
+        document.querySelectorAll('.digit-input').forEach(inp => userAns += inp.value);
+        if (userAns === "") return;
 
-        if (userAns === "") return alert("Please enter an answer!");
-
+        clearInterval(timer);
         if (parseInt(userAns) === currentCorrectAns) {
             coins += 5;
-            coinDisplay.innerText = coins;
-            feedback.innerHTML = '<span class="msg-success">🌟 You are doing wonders! +5 Coins</span>';
-            submitBtn.classList.add('hidden');
-            nextBtn.classList.remove('hidden');
+            document.getElementById('coin-count').innerText = coins;
+            feedback.innerHTML = '<span style="color:#92fe9d;">🌟 WONDERS! +5 Coins</span>';
+            document.getElementById('submit-btn').classList.add('hidden');
+            document.getElementById('next-btn').classList.remove('hidden');
         } else {
-            feedback.innerHTML = '<span class="msg-error">❌ Better luck next time! Try again.</span>';
+            feedback.innerHTML = '<span style="color:#ff416c;">❌ Better luck next time!</span>';
+            setTimeout(generateQuestion, 1500);
         }
     }
 
     function nextQuestion() {
         currentStep++;
         if (currentStep < 100) {
-            qNumDisplay.innerText = currentStep + 1;
+            document.getElementById('q-num').innerText = currentStep + 1;
             generateQuestion();
         } else {
-            document.getElementById('game-area').innerHTML = "<h1>🏆 Challenge Complete!</h1>";
-            feedback.innerHTML = `You earned a total of ${coins} coins!`;
-            nextBtn.classList.add('hidden');
+            clearInterval(timer);
+            document.getElementById('game-area').innerHTML = "<h2>🏆 MISSION COMPLETE!</h2>";
+            feedback.innerText = `Final Score: ${coins} Coins`;
         }
     }
 
     generateQuestion();
 </script>
-
 </body>
 </html>
-            
+
+    
