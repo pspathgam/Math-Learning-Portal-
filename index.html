@@ -12,7 +12,43 @@
             --bg: #f0f4f8;
         }
 
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        /* 3D CONCRETE TITLE DESIGN */
+        .portal-title {
+            font-size: 3.5em;
+            font-weight: 900;
+            color: #e0e0e0;
+            text-transform: uppercase;
+            text-align: center;
+            margin: 20px 0;
+            letter-spacing: 5px;
+            /* 3D Concrete Effect */
+            text-shadow: 
+                1px 1px 0px #bdbdbd,
+                2px 2px 0px #adadad,
+                3px 3px 0px #9e9e9e,
+                4px 4px 0px #8e8e8e,
+                5px 5px 10px rgba(0,0,0,0.4);
+            background: linear-gradient(to bottom, #ffffff 0%, #a1a1a1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* DEVELOPER CREDIT */
+        .developer-credit {
+            margin-top: 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #555;
+            text-align: center;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #ddd;
+        }
+
         .container { width: 100%; max-width: 500px; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; }
 
         .header-box { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 2px solid #eee; }
@@ -30,7 +66,6 @@
         .digit-input { width: 45px; height: 55px; font-size: 28px; text-align: center; border: 2px solid #ddd; border-radius: 8px; font-family: inherit; font-weight: bold; background: #fafafa; }
         .digit-input:focus { border-color: var(--primary); background: #fff; outline: none; box-shadow: 0 0 10px rgba(74,144,226,0.2); }
 
-        /* Feedback Popup */
         #feedback { margin-top: 20px; font-weight: bold; font-size: 1.2em; min-height: 1.5em; }
         .msg-success { color: var(--success); }
         .msg-error { color: var(--error); }
@@ -42,29 +77,35 @@
 </head>
 <body>
 
-<div class="container">
-    <div class="header-box">
-        <div class="progress-text">Question <span id="q-num">1</span> / 100</div>
-        <div class="coin-display">💰 <span id="coin-count">0</span></div>
-    </div>
+    <h1 class="portal-title">Math Mastery Portal</h1>
 
-    <div id="game-area">
-        <div id="carry-container" class="carry-row"></div>
-        <div class="math-area">
-            <div id="num1">000000</div>
-            <div id="op-num2">- 000000</div>
-            <div class="line"></div>
-            <div id="answer-container" class="answer-row"></div>
+    <div class="container">
+        <div class="header-box">
+            <div class="progress-text">Question <span id="q-num">1</span> / 100</div>
+            <div class="coin-display">💰 <span id="coin-count">0</span></div>
         </div>
+
+        <div id="game-area">
+            <div id="carry-container" class="carry-row"></div>
+            <div class="math-area">
+                <div id="num1">000000</div>
+                <div id="op-num2">- 000000</div>
+                <div class="line"></div>
+                <div id="answer-container" class="answer-row"></div>
+            </div>
+        </div>
+
+        <div id="feedback"></div>
+        <button class="btn-submit" id="submit-btn" onclick="checkAnswer()">SUBMIT ANSWER</button>
+        <button class="btn-submit hidden" id="next-btn" onclick="nextQuestion()">NEXT QUESTION ➔</button>
     </div>
 
-    <div id="feedback"></div>
-    <button class="btn-submit" id="submit-btn" onclick="checkAnswer()">SUBMIT ANSWER</button>
-    <button class="btn-submit hidden" id="next-btn" onclick="nextQuestion()">NEXT QUESTION ➔</button>
-</div>
+    <div class="developer-credit">
+        Designed and Developed by <strong>Mohammad Ashraf Rather</strong>
+    </div>
 
 <script>
-    let currentStep = 0; // 0 to 99
+    let currentStep = 0; 
     let coins = 0;
     let currentCorrectAns = 0;
 
@@ -87,18 +128,16 @@
         let n1, n2, op, digits;
 
         if (currentStep < 50) {
-            // 6-Digit Subtraction
             n1 = Math.floor(Math.random() * 800000) + 200000;
             n2 = Math.floor(Math.random() * 100000) + 100000;
             op = "-";
             currentCorrectAns = n1 - n2;
             digits = 6;
         } else {
-            // Multiplication
-            if (currentStep < 75) { // Level 1
+            if (currentStep < 75) { 
                 n1 = Math.floor(Math.random() * 90) + 10;
                 n2 = Math.floor(Math.random() * 8) + 2;
-            } else { // Level 2
+            } else { 
                 n1 = Math.floor(Math.random() * 90) + 10;
                 n2 = Math.floor(Math.random() * 90) + 10;
             }
@@ -110,14 +149,15 @@
         document.getElementById('num1').innerText = n1;
         document.getElementById('op-num2').innerText = `${op} ${n2}`;
 
-        // Create Carry Boxes
         for (let i = 0; i < digits; i++) {
             carryRow.innerHTML += `<div class="carry-box" contenteditable="true"></div>`;
             answerRow.innerHTML += `<input type="text" maxlength="1" class="digit-input">`;
         }
         
-        // Focus first input
-        setTimeout(() => document.querySelector('.digit-input').focus(), 100);
+        setTimeout(() => {
+            const firstInput = document.querySelector('.digit-input');
+            if(firstInput) firstInput.focus();
+        }, 100);
     }
 
     function checkAnswer() {
@@ -150,10 +190,9 @@
         }
     }
 
-    // Initialize
     generateQuestion();
 </script>
 
 </body>
 </html>
-                        
+            
