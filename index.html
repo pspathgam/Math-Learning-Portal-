@@ -3,274 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Mastery Portal</title>
+    <title>Math Mastery Challenge</title>
     <style>
         :root {
-            --primary: #007bff;
-            --success: #28a745;
-            --error: #dc3545;
-            --bg: #f8f9fa;
+            --primary: #4a90e2;
+            --success: #2ecc71;
+            --error: #e74c3c;
+            --bg: #f0f4f8;
         }
 
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background-color: var(--bg); 
-            margin: 0; 
-            padding: 20px; 
-            color: #333;
-        }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 500px; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; }
 
-        .container { 
-            max-width: 1100px; 
-            margin: auto; 
-            background: white; 
-            padding: 30px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-        }
+        .header-box { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 2px solid #eee; }
+        .progress-text { font-weight: bold; color: #666; }
+        .coin-display { font-size: 1.2em; font-weight: bold; color: #d4af37; background: #fff9e6; padding: 5px 15px; border-radius: 20px; border: 1px solid #f1c40f; }
 
-        .header-box { 
-            position: sticky; 
-            top: 10px; 
-            background: white; 
-            padding: 20px; 
-            border-bottom: 4px solid var(--primary); 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            z-index: 1000; 
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
+        /* Math Display */
+        .math-area { font-family: 'Courier New', monospace; font-size: 2.5em; font-weight: bold; text-align: right; display: inline-block; margin: 20px 0; letter-spacing: 5px; line-height: 1.2; }
+        .carry-row { display: flex; justify-content: flex-end; margin-bottom: 5px; height: 30px; }
+        .carry-box { width: 25px; height: 25px; border: 1px dashed #bbb; margin-left: 5px; font-size: 16px; text-align: center; line-height: 25px; color: var(--primary); border-radius: 4px; outline: none; }
+        .line { border-top: 4px solid #333; margin: 10px 0; width: 100%; }
 
-        .coin-display { 
-            font-size: 1.8em; 
-            font-weight: bold; 
-            color: #d4af37; 
-            background: #fff9e6;
-            padding: 10px 20px;
-            border-radius: 50px;
-            border: 2px solid #f1c40f;
-        }
+        /* Answer Boxes */
+        .answer-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 15px; }
+        .digit-input { width: 45px; height: 55px; font-size: 28px; text-align: center; border: 2px solid #ddd; border-radius: 8px; font-family: inherit; font-weight: bold; background: #fafafa; }
+        .digit-input:focus { border-color: var(--primary); background: #fff; outline: none; box-shadow: 0 0 10px rgba(74,144,226,0.2); }
 
-        h2 { 
-            color: var(--primary); 
-            margin-top: 50px; 
-            font-size: 1.8em;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        /* Feedback Popup */
+        #feedback { margin-top: 20px; font-weight: bold; font-size: 1.2em; min-height: 1.5em; }
+        .msg-success { color: var(--success); }
+        .msg-error { color: var(--error); }
 
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
-            gap: 25px; 
-            margin-top: 30px; 
-        }
-
-        /* Question Card Design */
-        .question-card { 
-            background: #ffffff; 
-            border: 2px solid #e0e0e0; 
-            padding: 25px; 
-            border-radius: 15px; 
-            position: relative;
-            transition: transform 0.2s;
-        }
-
-        .question-card:hover { transform: translateY(-5px); border-color: var(--primary); }
-
-        .math-block {
-            font-family: 'Courier New', monospace;
-            font-size: 2.2em; /* Large Readable Digits */
-            font-weight: bold;
-            text-align: right;
-            line-height: 1.2;
-            letter-spacing: 4px;
-        }
-
-        /* Carry Boxes */
-        .carry-row {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 5px;
-            height: 25px;
-        }
-
-        .carry-box {
-            width: 20px;
-            height: 20px;
-            border: 1px dashed #bbb;
-            margin-left: 4px;
-            font-size: 14px;
-            text-align: center;
-            line-height: 20px;
-            color: var(--primary);
-            border-radius: 3px;
-        }
-
-        .line { border-top: 4px solid #333; margin: 10px 0; }
-
-        /* Digit Boxes for Answers */
-        .answer-row {
-            display: flex;
-            justify-content: flex-end;
-            gap: 4px;
-            margin-top: 10px;
-        }
-
-        .digit-input {
-            width: 35px;
-            height: 45px;
-            font-size: 24px;
-            text-align: center;
-            border: 2px solid #ccc;
-            border-radius: 5px;
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-        }
-
-        .digit-input:focus {
-            border-color: var(--primary);
-            outline: none;
-            background-color: #f0f7ff;
-        }
-
-        .correct .digit-input { background-color: #d4edda; border-color: var(--success); }
-        .wrong .digit-input { background-color: #f8d7da; border-color: var(--error); }
-
-        .btn-submit { 
-            display: block; 
-            width: 280px; 
-            height: 70px; 
-            margin: 60px auto; 
-            font-size: 1.4em; 
-            font-weight: bold; 
-            color: white; 
-            background: var(--success); 
-            border: none; 
-            border-radius: 50px; 
-            cursor: pointer; 
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-            transition: 0.3s;
-        }
-
-        .btn-submit:hover { background: #218838; transform: scale(1.05); }
-
-        @media (max-width: 600px) {
-            .grid { grid-template-columns: 1fr; }
-            .math-block { font-size: 1.8em; }
-        }
+        .btn-submit { width: 100%; padding: 15px; font-size: 1.2em; font-weight: bold; color: white; background: var(--primary); border: none; border-radius: 12px; cursor: pointer; margin-top: 25px; transition: 0.3s; }
+        .btn-submit:hover { background: #357abd; transform: translateY(-2px); }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header-box">
-        <h1>🚀 Math Portal</h1>
-        <div class="coin-display">💰 <span id="coin-count">0</span> Coins</div>
+        <div class="progress-text">Question <span id="q-num">1</span> / 100</div>
+        <div class="coin-display">💰 <span id="coin-count">0</span></div>
     </div>
 
-    <h2>1. 6-Digit Subtraction Challenge</h2>
-    <div id="sub-grid" class="grid"></div>
+    <div id="game-area">
+        <div id="carry-container" class="carry-row"></div>
+        <div class="math-area">
+            <div id="num1">000000</div>
+            <div id="op-num2">- 000000</div>
+            <div class="line"></div>
+            <div id="answer-container" class="answer-row"></div>
+        </div>
+    </div>
 
-    <h2>2. Multiplication Mastery (Level 1 & 2)</h2>
-    <div id="mult-grid" class="grid"></div>
-
-    <button class="btn-submit" onclick="checkAnswers()">SUBMIT & COLLECT COINS</button>
+    <div id="feedback"></div>
+    <button class="btn-submit" id="submit-btn" onclick="checkAnswer()">SUBMIT ANSWER</button>
+    <button class="btn-submit hidden" id="next-btn" onclick="nextQuestion()">NEXT QUESTION ➔</button>
 </div>
 
 <script>
-    const subGrid = document.getElementById('sub-grid');
-    const multGrid = document.getElementById('mult-grid');
+    let currentStep = 0; // 0 to 99
+    let coins = 0;
+    let currentCorrectAns = 0;
+
+    const qNumDisplay = document.getElementById('q-num');
     const coinDisplay = document.getElementById('coin-count');
-    
-    let subAnswers = [];
-    let multAnswers = [];
+    const feedback = document.getElementById('feedback');
+    const submitBtn = document.getElementById('submit-btn');
+    const nextBtn = document.getElementById('next-btn');
 
-    function createDigitInputs(count, type, index) {
-        let html = '<div class="answer-row">';
-        for (let i = 0; i < count; i++) {
-            html += `<input type="text" maxlength="1" class="digit-input ${type}-input-${index}">`;
-        }
-        html += '</div>';
-        return html;
-    }
+    function generateQuestion() {
+        feedback.innerHTML = "";
+        submitBtn.classList.remove('hidden');
+        nextBtn.classList.add('hidden');
+        
+        const carryRow = document.getElementById('carry-container');
+        const answerRow = document.getElementById('answer-container');
+        carryRow.innerHTML = "";
+        answerRow.innerHTML = "";
 
-    function generate() {
-        // Subtraction (6-digit)
-        for (let i = 0; i < 50; i++) {
-            let n1 = Math.floor(Math.random() * 800000) + 200000;
-            let n2 = Math.floor(Math.random() * 100000) + 100000;
-            subAnswers.push(n1 - n2);
-            
-            subGrid.innerHTML += `
-                <div class="question-card" id="sub-card-${i}">
-                    <div class="carry-row">${'<div class="carry-box" contenteditable="true"></div>'.repeat(6)}</div>
-                    <div class="math-block">
-                        ${n1}<br>
-                        - ${n2}
-                    </div>
-                    <div class="line"></div>
-                    ${createDigitInputs(6, 'sub', i)}
-                </div>`;
-        }
+        let n1, n2, op, digits;
 
-        // Multiplication
-        for (let i = 0; i < 50; i++) {
-            let n1, n2, digits;
-            if (i < 25) { n1 = Math.floor(Math.random()*90)+10; n2 = Math.floor(Math.random()*8)+2; digits = 3; }
-            else { n1 = Math.floor(Math.random()*90)+10; n2 = Math.floor(Math.random()*90)+10; digits = 4; }
-            multAnswers.push(n1 * n2);
-
-            multGrid.innerHTML += `
-                <div class="question-card" id="mult-card-${i}">
-                    <div class="carry-row">${'<div class="carry-box" contenteditable="true"></div>'.repeat(digits)}</div>
-                    <div class="math-block">
-                        ${n1}<br>
-                        &times; ${n2}
-                    </div>
-                    <div class="line"></div>
-                    ${createDigitInputs(digits, 'mult', i)}
-                </div>`;
-        }
-    }
-
-    function checkAnswers() {
-        let totalCorrect = 0;
-
-        // Validation logic
-        const checkSection = (answersArray, type, count) => {
-            for (let i = 0; i < count; i++) {
-                const inputs = document.querySelectorAll(`.${type}-input-${i}`);
-                let userAns = "";
-                inputs.forEach(inp => userAns += inp.value);
-                
-                const card = document.getElementById(`${type}-card-${i}`);
-                if (parseInt(userAns) === answersArray[i]) {
-                    totalCorrect++;
-                    card.classList.add('correct');
-                    card.classList.remove('wrong');
-                } else if (userAns !== "") {
-                    card.classList.add('wrong');
-                    card.classList.remove('correct');
-                }
+        if (currentStep < 50) {
+            // 6-Digit Subtraction
+            n1 = Math.floor(Math.random() * 800000) + 200000;
+            n2 = Math.floor(Math.random() * 100000) + 100000;
+            op = "-";
+            currentCorrectAns = n1 - n2;
+            digits = 6;
+        } else {
+            // Multiplication
+            if (currentStep < 75) { // Level 1
+                n1 = Math.floor(Math.random() * 90) + 10;
+                n2 = Math.floor(Math.random() * 8) + 2;
+            } else { // Level 2
+                n1 = Math.floor(Math.random() * 90) + 10;
+                n2 = Math.floor(Math.random() * 90) + 10;
             }
-        };
+            op = "×";
+            currentCorrectAns = n1 * n2;
+            digits = currentCorrectAns.toString().length;
+        }
 
-        checkSection(subAnswers, 'sub', 50);
-        checkSection(multAnswers, 'mult', 50);
+        document.getElementById('num1').innerText = n1;
+        document.getElementById('op-num2').innerText = `${op} ${n2}`;
 
-        let coins = totalCorrect * 5;
-        coinDisplay.innerText = coins;
-        window.scrollTo({top: 0, behavior: 'smooth'});
-        alert(`Finished! Correct: ${totalCorrect} | Coins Earned: ${coins}`);
+        // Create Carry Boxes
+        for (let i = 0; i < digits; i++) {
+            carryRow.innerHTML += `<div class="carry-box" contenteditable="true"></div>`;
+            answerRow.innerHTML += `<input type="text" maxlength="1" class="digit-input">`;
+        }
+        
+        // Focus first input
+        setTimeout(() => document.querySelector('.digit-input').focus(), 100);
     }
 
-    generate();
+    function checkAnswer() {
+        const inputs = document.querySelectorAll('.digit-input');
+        let userAns = "";
+        inputs.forEach(inp => userAns += inp.value);
+
+        if (userAns === "") return alert("Please enter an answer!");
+
+        if (parseInt(userAns) === currentCorrectAns) {
+            coins += 5;
+            coinDisplay.innerText = coins;
+            feedback.innerHTML = '<span class="msg-success">🌟 You are doing wonders! +5 Coins</span>';
+            submitBtn.classList.add('hidden');
+            nextBtn.classList.remove('hidden');
+        } else {
+            feedback.innerHTML = '<span class="msg-error">❌ Better luck next time! Try again.</span>';
+        }
+    }
+
+    function nextQuestion() {
+        currentStep++;
+        if (currentStep < 100) {
+            qNumDisplay.innerText = currentStep + 1;
+            generateQuestion();
+        } else {
+            document.getElementById('game-area').innerHTML = "<h1>🏆 Challenge Complete!</h1>";
+            feedback.innerHTML = `You earned a total of ${coins} coins!`;
+            nextBtn.classList.add('hidden');
+        }
+    }
+
+    // Initialize
+    generateQuestion();
 </script>
+
 </body>
 </html>
-            
-            
+                        
