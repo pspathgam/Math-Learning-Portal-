@@ -2,92 +2,152 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>3D Math Mastery Challenge</title>
     <style>
         :root {
             --primary: #00d2ff;
             --secondary: #92fe9d;
+            --accent: #ff00de;
             --error: #ff416c;
-            --dark-bg: #1a1a2e;
         }
 
         body { 
             font-family: 'Segoe UI', sans-serif; 
-            background: radial-gradient(circle, #1a1a2e 0%, #16213e 100%); 
+            /* Multi-color Animated Background */
+            background: linear-gradient(-45deg, #1a1a2e, #16213e, #0f3460, #533483);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             margin: 0; 
             color: white;
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             min-height: 100vh;
-            overflow-x: hidden;
+            padding: 10px;
+            box-sizing: border-box;
         }
 
-        /* DEEP 3D TITLE WITH ANIMATION */
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 3D TITLE - Scaled for Mobile */
         .portal-title {
-            font-size: 3.5em;
+            font-size: clamp(1.5rem, 8vw, 3rem);
             font-weight: 900;
             text-transform: uppercase;
             text-align: center;
-            margin: 20px 0;
-            letter-spacing: 8px;
+            margin: 10px 0;
+            letter-spacing: 2px;
             color: #fff;
-            text-shadow: 
-                0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9,
-                0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1),
-                0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25),
-                0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15),
-                0 0 20px var(--primary);
-            animation: float 3s ease-in-out infinite;
+            text-shadow: 0 5px 15px rgba(0,210,255,0.6);
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotateX(10deg); }
-            50% { transform: translateY(-10px) rotateX(15deg); }
+        /* LEVEL NAVIGATOR */
+        .level-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .nav-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .nav-btn.active { background: var(--primary); border-color: var(--primary); }
+
+        /* PROGRESS CLOCK (SVG) */
+        .timer-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin-bottom: 10px;
+        }
+        .timer-svg { transform: rotate(-90deg); width: 80px; height: 80px; }
+        .timer-svg circle {
+            fill: none;
+            stroke-width: 6;
+            stroke-linecap: round;
+        }
+        .timer-bg { stroke: rgba(255,255,255,0.1); }
+        .timer-bar {
+            stroke: var(--primary);
+            stroke-dasharray: 226;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear;
+        }
+        .timer-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            font-size: 1.2rem;
         }
 
-        /* PROGRESS BAR */
-        .progress-container { width: 100%; max-width: 600px; background: rgba(255,255,255,0.1); border-radius: 20px; height: 12px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.2); overflow: hidden; }
-        #progress-fill { width: 1%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); transition: width 0.4s ease; }
-
-        /* TIMER CIRCLE */
-        .timer-box { font-size: 1.5em; font-weight: bold; margin-bottom: 15px; color: var(--primary); text-shadow: 0 0 10px var(--primary); }
-
+        /* MAIN CONTAINER - 70% Visibility (Glassmorphism) */
         .container { 
-            width: 90%; max-width: 550px; background: rgba(255, 255, 255, 0.05); 
-            backdrop-filter: blur(15px); padding: 30px; border-radius: 30px; 
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5); text-align: center;
-            transform: perspective(1000px) rotateX(5deg);
+            width: 100%; 
+            max-width: 500px; 
+            background: rgba(255, 255, 255, 0.15); /* ~70% transparency effect */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 20px; 
+            border-radius: 25px; 
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+            text-align: center;
+            box-sizing: border-box;
         }
 
-        .header-box { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .coin-display { font-size: 1.4em; font-weight: bold; color: #ffd700; text-shadow: 0 0 15px #ffd700; }
+        .header-box { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .coin-display { font-size: 1.2rem; color: #ffd700; font-weight: bold; }
 
-        /* MATH AREA */
-        .math-area { font-family: 'Courier New', monospace; font-size: 2.5em; font-weight: bold; color: #fff; text-align: right; margin: 20px 0; letter-spacing: 5px; }
-        .carry-box { width: 25px; height: 25px; border: 1px dashed var(--primary); margin-left: 5px; color: var(--primary); border-radius: 4px; font-size: 16px; outline: none; display: inline-block; }
-        .line { border-top: 4px solid #fff; margin: 10px 0; box-shadow: 0 0 10px var(--primary); }
+        /* RESPONSIVE MATH AREA */
+        .math-area { 
+            font-family: 'Courier New', monospace; 
+            font-size: clamp(1.5rem, 7vw, 2.5rem); 
+            font-weight: bold; 
+            text-align: right; 
+            margin: 15px 0; 
+        }
+        .digit-row { display: flex; justify-content: flex-end; flex-wrap: nowrap; }
+
+        .carry-box { 
+            width: 20px; height: 20px; border: 1px dashed var(--primary); 
+            margin-left: 2px; color: var(--primary); border-radius: 4px; 
+            font-size: 12px; display: inline-block; 
+        }
 
         .digit-input { 
-            width: 45px; height: 55px; font-size: 28px; text-align: center; 
-            border: 2px solid rgba(255,255,255,0.2); border-radius: 10px; 
-            background: rgba(0,0,0,0.3); color: white; margin: 0 4px;
+            width: clamp(30px, 10vw, 45px); 
+            height: clamp(40px, 12vw, 55px); 
+            font-size: 1.5rem; 
+            text-align: center; 
+            border: 2px solid rgba(255,255,255,0.2); 
+            border-radius: 8px; 
+            background: rgba(0,0,0,0.4); 
+            color: white; 
+            margin: 0 2px;
         }
-        .digit-input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary); outline: none; }
-
-        #feedback { margin-top: 20px; font-weight: bold; font-size: 1.3em; height: 1.5em; }
 
         .btn-submit { 
-            width: 100%; padding: 15px; font-size: 1.2em; font-weight: bold; color: white; 
-            background: linear-gradient(45deg, #00d2ff, #3a7bd5); border: none; 
-            border-radius: 15px; cursor: pointer; margin-top: 15px; 
-            box-shadow: 0 5px 15px rgba(0,210,255,0.4); transition: 0.3s;
+            width: 100%; padding: 15px; font-size: 1.1rem; font-weight: bold; color: white; 
+            background: linear-gradient(45deg, var(--primary), #3a7bd5); 
+            border: none; border-radius: 12px; cursor: pointer; margin-top: 15px;
         }
-        .btn-submit:hover { transform: scale(1.02); box-shadow: 0 8px 25px rgba(0,210,255,0.6); }
 
-        .developer-credit { margin-top: 40px; color: rgba(255,255,255,0.6); letter-spacing: 1px; padding: 20px; }
+        .developer-credit { 
+            margin-top: auto; padding: 20px 10px; font-size: 0.8rem; 
+            color: rgba(255,255,255,0.6); text-align: center; 
+        }
+        
         .hidden { display: none; }
     </style>
 </head>
@@ -95,60 +155,86 @@
 
     <h1 class="portal-title">Math Mastery</h1>
 
-    <div class="progress-container"><div id="progress-fill"></div></div>
-    <div class="timer-box">⏳ Time Left: <span id="timer-sec">60</span>s</div>
+    <div class="level-nav">
+        <button class="nav-btn active" id="btn-sub">Subtraction</button>
+        <button class="nav-btn" id="btn-mult">Multiplication</button>
+    </div>
+
+    <div class="timer-container">
+        <svg class="timer-svg">
+            <circle class="timer-bg" cx="40" cy="40" r="36"></circle>
+            <circle id="timer-bar" class="timer-bar" cx="40" cy="40" r="36"></circle>
+        </svg>
+        <div class="timer-text" id="timer-sec">60</div>
+    </div>
 
     <div class="container">
         <div class="header-box">
-            <div style="color: #aaa;">Quest <span id="q-num">1</span>/100</div>
+            <div id="q-label" style="font-size: 0.9rem; opacity: 0.8;">Q 1/100</div>
             <div class="coin-display">💰 <span id="coin-count">0</span></div>
         </div>
 
         <div id="game-area">
-            <div id="carry-container" style="display:flex; justify-content:flex-end; margin-bottom:5px;"></div>
+            <div id="carry-container" class="digit-row"></div>
             <div class="math-area">
                 <div id="num1">000000</div>
                 <div id="op-num2">- 000000</div>
-                <div class="line"></div>
-                <div id="answer-container" style="display:flex; justify-content:flex-end;"></div>
+                <div style="border-top: 3px solid #fff; margin: 5px 0;"></div>
+                <div id="answer-container" class="digit-row"></div>
             </div>
         </div>
 
-        <div id="feedback"></div>
+        <div id="feedback" style="height: 1.5rem; margin: 10px 0; font-weight: bold;"></div>
         <button class="btn-submit" id="submit-btn" onclick="checkAnswer()">SUBMIT ANSWER</button>
         <button class="btn-submit hidden" id="next-btn" onclick="nextQuestion()">CONTINUE ➔</button>
     </div>
 
     <div class="developer-credit">
-        Designed and Developed by <b>Mohammad Ashraf Rather</b>
+        Designed and Developed by <br><b>Mohammad Ashraf Rather</b>
     </div>
 
 <script>
     let currentStep = 0, coins = 0, currentCorrectAns = 0;
-    let timer, timeLeft = 60; // CHANGED FROM 15 TO 60
+    let timer, timeLeft = 60;
+    const totalTime = 60;
+    const circleRadius = 36;
+    const circumference = 2 * Math.PI * circleRadius;
+
+    function updateClock(seconds) {
+        const offset = circumference - (seconds / totalTime) * circumference;
+        document.getElementById('timer-bar').style.strokeDashoffset = offset;
+        document.getElementById('timer-sec').innerText = seconds;
+    }
 
     function startTimer() {
         clearInterval(timer);
-        timeLeft = 60; // RESET TO 60 SECONDS
-        document.getElementById('timer-sec').innerText = timeLeft;
+        timeLeft = 60;
+        updateClock(timeLeft);
         timer = setInterval(() => {
             timeLeft--;
-            document.getElementById('timer-sec').innerText = timeLeft;
+            updateClock(timeLeft);
             if (timeLeft <= 0) {
                 clearInterval(timer);
-                feedback.innerHTML = '<span style="color:#ff416c;">⏰ Time\'s Up! Moving to next...</span>';
-                setTimeout(nextQuestion, 2000);
+                nextQuestion();
             }
         }, 1000);
     }
 
     function generateQuestion() {
         startTimer();
-        feedback.innerHTML = "";
+        document.getElementById('feedback').innerHTML = "";
         document.getElementById('submit-btn').classList.remove('hidden');
         document.getElementById('next-btn').classList.add('hidden');
-        document.getElementById('progress-fill').style.width = (currentStep + 1) + "%";
         
+        // Update Nav UI
+        if(currentStep < 50) {
+            document.getElementById('btn-sub').classList.add('active');
+            document.getElementById('btn-mult').classList.remove('active');
+        } else {
+            document.getElementById('btn-sub').classList.remove('active');
+            document.getElementById('btn-mult').classList.add('active');
+        }
+
         const carryRow = document.getElementById('carry-container');
         const answerRow = document.getElementById('answer-container');
         carryRow.innerHTML = ""; answerRow.innerHTML = "";
@@ -164,14 +250,15 @@
             op = "×"; currentCorrectAns = n1 * n2; digits = currentCorrectAns.toString().length;
         }
 
-        document.getElementById('num1').innerText = n1;
-        document.getElementById('op-num2').innerText = `${op} ${n2}`;
+        document.getElementById('num1').innerText = n1.toLocaleString();
+        document.getElementById('op-num2').innerText = `${op} ${n2.toLocaleString()}`;
 
         for (let i = 0; i < digits; i++) {
             carryRow.innerHTML += `<div class="carry-box" contenteditable="true"></div>`;
-            answerRow.innerHTML += `<input type="text" maxlength="1" class="digit-input">`;
+            answerRow.innerHTML += `<input type="number" pattern="[0-9]*" class="digit-input">`;
         }
-        setTimeout(() => document.querySelector('.digit-input')?.focus(), 100);
+        // Mobile optimization: Focus and show numeric keyboard
+        setTimeout(() => document.querySelector('.digit-input')?.focus(), 300);
     }
 
     function checkAnswer() {
@@ -183,24 +270,23 @@
         if (parseInt(userAns) === currentCorrectAns) {
             coins += 5;
             document.getElementById('coin-count').innerText = coins;
-            feedback.innerHTML = '<span style="color:#92fe9d;">🌟 WONDERS! +5 Coins</span>';
+            document.getElementById('feedback').innerHTML = '<span style="color:var(--secondary);">🌟 AMAZING! +5 Coins</span>';
             document.getElementById('submit-btn').classList.add('hidden');
             document.getElementById('next-btn').classList.remove('hidden');
         } else {
-            feedback.innerHTML = '<span style="color:#ff416c;">❌ Better luck next time!</span>';
-            setTimeout(generateQuestion, 1500);
+            document.getElementById('feedback').innerHTML = '<span style="color:var(--error);">❌ Try Again!</span>';
+            setTimeout(generateQuestion, 1200);
         }
     }
 
     function nextQuestion() {
         currentStep++;
         if (currentStep < 100) {
-            document.getElementById('q-num').innerText = currentStep + 1;
+            document.getElementById('q-label').innerText = `Q ${currentStep + 1}/100`;
             generateQuestion();
         } else {
             clearInterval(timer);
             document.getElementById('game-area').innerHTML = "<h2>🏆 MISSION COMPLETE!</h2>";
-            feedback.innerText = `Final Score: ${coins} Coins`;
         }
     }
 
@@ -208,5 +294,3 @@
 </script>
 </body>
 </html>
-
-                    
