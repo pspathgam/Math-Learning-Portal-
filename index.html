@@ -34,15 +34,40 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* INCREASED TITLE FONT */
         .portal-title {
             font-size: clamp(2rem, 10vw, 4rem);
             font-weight: 900;
             text-transform: uppercase;
             text-align: center;
-            margin: 15px 0;
+            margin: 10px 0;
             letter-spacing: 4px;
             text-shadow: 0 0 20px rgba(0, 210, 255, 0.8);
+        }
+
+        /* LEVEL MOVER / NAVIGATOR */
+        .level-mover {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            width: 100%;
+            max-width: 500px;
+        }
+        .level-dot {
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: rgba(255,255,255,0.6);
+            cursor: default;
+        }
+        .level-dot.active {
+            background: var(--secondary);
+            color: #1a1a2e;
+            border-color: var(--secondary);
+            box-shadow: 0 0 10px var(--secondary);
         }
 
         .dashboard {
@@ -67,7 +92,6 @@
         .gauge-svg { width: 140px; height: 140px; transform: rotate(-180deg); }
         .gauge-bg { fill: none; stroke: rgba(255, 255, 255, 0.1); stroke-width: 10; }
         .gauge-fill { fill: none; stroke-width: 10; stroke-dasharray: 220; stroke-dashoffset: 220; transition: stroke-dashoffset 0.5s ease; stroke-linecap: round; }
-
         .gauge-label { position: absolute; bottom: 5px; width: 100%; text-align: center; font-size: 0.7rem; opacity: 0.8; font-weight: bold; }
         .gauge-value { position: absolute; bottom: 20px; width: 100%; text-align: center; font-weight: bold; font-size: 1.3rem; color: var(--accent); }
 
@@ -77,7 +101,7 @@
             background: rgba(255, 255, 255, 0.12);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            padding: 25px; 
+            padding: 20px; 
             border-radius: 35px; 
             border: 1px solid rgba(255, 255, 255, 0.25);
             box-shadow: 0 25px 50px rgba(0,0,0,0.3); 
@@ -85,41 +109,25 @@
             box-sizing: border-box;
         }
 
-        .header-box { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .header-box { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .coin-display { font-size: 1.2rem; color: var(--accent); font-weight: bold; }
 
-        /* MATH AREA LAYOUT */
         .math-area { 
             font-family: 'Courier New', monospace; 
             font-size: clamp(3rem, 14vw, 5.2rem); 
             font-weight: 900; 
             text-align: right; 
-            margin: 15px 0; 
+            margin: 10px 0; 
             color: #fff;
             letter-spacing: 2px;
             line-height: 1.1;
             display: inline-block;
         }
 
-        /* Styling for the Operator to be in front of Number 2 */
-        .op-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .operator {
-            padding-right: 20px;
-            color: var(--secondary);
-        }
-
+        .op-row { display: flex; justify-content: space-between; align-items: center; }
+        .operator { padding-right: 20px; color: var(--secondary); }
         .digit-row { display: flex; justify-content: flex-end; }
-        
-        .carry-box { 
-            width: 25px; height: 25px; border: 1.5px dashed var(--primary); 
-            margin-left: 5px; color: var(--primary); border-radius: 4px; 
-            font-size: 16px; text-align: center; font-weight: bold;
-        }
+        .carry-box { width: 25px; height: 25px; border: 1.5px dashed var(--primary); margin-left: 5px; color: var(--primary); border-radius: 4px; font-size: 16px; text-align: center; font-weight: bold; }
 
         .digit-input { 
             width: clamp(35px, 11vw, 55px); 
@@ -134,25 +142,30 @@
             font-weight: bold;
         }
 
-        .digit-input:focus { border-color: var(--secondary); outline: none; background: rgba(0,0,0,0.6); box-shadow: 0 0 15px var(--secondary); }
+        .digit-input:focus { border-color: var(--secondary); outline: none; background: rgba(0,0,0,0.6); }
+
+        /* REDUCED SPACE HERE */
+        #feedback { height: 1.2rem; margin: 8px 0; font-weight: bold; font-size: 1.1rem; }
 
         .btn-submit { 
-            width: 100%; padding: 18px; font-size: 1.3rem; font-weight: bold; color: white; 
+            width: 100%; padding: 15px; font-size: 1.2rem; font-weight: bold; color: white; 
             background: linear-gradient(45deg, var(--primary), #3a7bd5); 
-            border: none; border-radius: 20px; cursor: pointer; margin-top: 25px;
+            border: none; border-radius: 20px; cursor: pointer; margin-top: 5px; /* Reduced margin */
         }
 
-        .developer-credit { 
-            margin-top: auto; padding: 20px; font-size: 0.9rem; 
-            color: rgba(255,255,255,0.6); text-align: center; 
-        }
-        
+        .developer-credit { margin-top: auto; padding: 15px; font-size: 0.85rem; color: rgba(255,255,255,0.6); text-align: center; }
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
     <h1 class="portal-title">Math Mastery</h1>
+
+    <div class="level-mover">
+        <div id="lvl-1" class="level-dot active">Lvl 1: Sub</div>
+        <div id="lvl-2" class="level-dot">Lvl 2: Mix</div>
+        <div id="lvl-3" class="level-dot">Lvl 3: Mult</div>
+    </div>
 
     <div class="dashboard">
         <div class="gauge-container">
@@ -176,7 +189,7 @@
 
     <div class="container">
         <div class="header-box">
-            <div id="q-label" style="font-size: 1rem; font-weight: bold; opacity: 0.9;">Quest: 1/100</div>
+            <div id="q-label" style="font-size: 0.9rem; font-weight: bold;">Quest: 1/100</div>
             <div class="coin-display">💰 <span id="coin-count">0</span></div>
         </div>
 
@@ -188,12 +201,12 @@
                     <span id="operator-sym" class="operator">-</span>
                     <span id="num2">000000</span>
                 </div>
-                <div style="border-top: 5px solid rgba(255,255,255,0.8); margin: 12px 0; border-radius: 10px;"></div>
+                <div style="border-top: 5px solid rgba(255,255,255,0.8); margin: 8px 0; border-radius: 10px;"></div>
                 <div id="answer-container" class="digit-row"></div>
             </div>
         </div>
 
-        <div id="feedback" style="height: 1.5rem; margin: 15px 0; font-weight: bold; font-size: 1.2rem;"></div>
+        <div id="feedback"></div>
         <button class="btn-submit" id="submit-btn" onclick="checkAnswer()">SUBMIT ANSWER</button>
         <button class="btn-submit hidden" id="next-btn" onclick="nextQuestion()">NEXT CHALLENGE ➔</button>
     </div>
@@ -225,8 +238,16 @@
         }, 1000);
     }
 
+    function updateLevelNav() {
+        document.querySelectorAll('.level-dot').forEach(dot => dot.classList.remove('active'));
+        if (currentStep < 50) document.getElementById('lvl-1').classList.add('active');
+        else if (currentStep < 75) document.getElementById('lvl-2').classList.add('active');
+        else document.getElementById('lvl-3').classList.add('active');
+    }
+
     function generateQuestion() {
         startTimer();
+        updateLevelNav();
         document.getElementById('feedback').innerHTML = "";
         document.getElementById('submit-btn').classList.remove('hidden');
         document.getElementById('next-btn').classList.add('hidden');
@@ -279,12 +300,12 @@
         if (parseInt(userAns) === currentCorrectAns) {
             coins += 5; correctCount++;
             document.getElementById('coin-count').innerText = coins;
-            document.getElementById('feedback').innerHTML = '<span style="color:var(--secondary);">🌟 YOU ARE DOING WONDERS!</span>';
+            document.getElementById('feedback').innerHTML = '<span style="color:var(--secondary);">🌟 WONDERS!</span>';
             document.getElementById('submit-btn').classList.add('hidden');
             document.getElementById('next-btn').classList.remove('hidden');
             updateGauges();
         } else {
-            document.getElementById('feedback').innerHTML = '<span style="color:var(--error);">❌ TRY AGAIN!</span>';
+            document.getElementById('feedback').innerHTML = '<span style="color:var(--error);">❌ WRONG</span>';
             setTimeout(generateQuestion, 1500);
         }
     }
@@ -296,7 +317,7 @@
             generateQuestion();
         } else {
             clearInterval(timer);
-            document.getElementById('game-area').innerHTML = "<h2>🏆 MISSION COMPLETE!</h2>";
+            document.getElementById('game-area').innerHTML = "<h2>🏆 FINISHED!</h2>";
         }
     }
 
