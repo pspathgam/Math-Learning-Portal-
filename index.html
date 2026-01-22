@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Challenge: Earn Coins!</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        
+        /* Header & Stats */
+        .header-box { position: sticky; top: 10px; background: #fff; padding: 15px; border-bottom: 3px solid #007bff; display: flex; justify-content: space-between; align-items: center; z-index: 100; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .coin-display { font-size: 1.5em; font-weight: bold; color: #d4af37; }
+        
+        h2 { color: #007bff; border-left: 5px solid #007bff; padding-left: 10px; margin-top: 40px; }
+        
+        /* Grid Layout */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; margin-top: 20px; }
+        
+        /* Question Card */
+        .question-card { background: #fff; border: 2px solid #eef0f2; padding: 15px; border-radius: 8px; text-align: right; font-family: 'Courier New', monospace; font-size: 1.2em; transition: 0.3s; }
+        .line { border-top: 2px solid #333; margin: 5px 0; }
+        
+        /* Inputs & Feedback */
+        input { width: 100%; padding: 5px; font-size: 1em; text-align: right; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .correct { background-color: #d4edda !important; border-color: #28a745 !important; }
+        .wrong { background-color: #f8d7da !important; border-color: #dc3545 !important; }
+        
+        .btn-submit { display: block; width: 250px; height: 60px; margin: 40px auto; font-size: 1.2em; font-weight: bold; color: white; background: #28a745; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3); }
+        .btn-submit:hover { background: #218838; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-box">
+        <h1>Math Exercise</h1>
+        <div class="coin-display">💰 Coins: <span id="coin-count">0</span></div>
+    </div>
+
+    <h2>1. Subtraction (6 Digits)</h2>
+    <div id="sub-grid" class="grid"></div>
+
+    <h2>2. Multiplication (2 Levels)</h2>
+    <div id="mult-grid" class="grid"></div>
+
+    <button class="btn-submit" onclick="checkAnswers()">Submit Answers</button>
+</div>
+
+<script>
+    const subGrid = document.getElementById('sub-grid');
+    const multGrid = document.getElementById('mult-grid');
+    const coinDisplay = document.getElementById('coin-count');
+    
+    let answers = { sub: [], mult: [] };
+    let coins = 0;
+
+    function generate() {
+        // Subtraction: 50 Questions
+        for (let i = 0; i < 50; i++) {
+            let n1 = Math.floor(Math.random() * 800000) + 200000;
+            let n2 = Math.floor(Math.random() * 100000) + 100000;
+            answers.sub.push(n1 - n2);
+            
+            subGrid.innerHTML += `
+                <div class="question-card" id="sub-card-${i}">
+                    <small style="color:#888">#${i+1}</small><br>
+                    ${n1.toLocaleString()}<br>
+                    - ${n2.toLocaleString()}
+                    <div class="line"></div>
+                    <input type="number" class="sub-input" data-index="${i}">
+                </div>`;
+        }
+
+        // Multiplication: 50 Questions
+        for (let i = 0; i < 50; i++) {
+            let n1, n2;
+            if (i < 25) { // Level 1: 2x1
+                n1 = Math.floor(Math.random() * 90) + 10;
+                n2 = Math.floor(Math.random() * 8) + 2;
+            } else { // Level 2: 2x2
+                n1 = Math.floor(Math.random() * 90) + 10;
+                n2 = Math.floor(Math.random() * 90) + 10;
+            }
+            answers.mult.push(n1 * n2);
+
+            multGrid.innerHTML += `
+                <div class="question-card" id="mult-card-${i}">
+                    <small style="color:#888">#${i+1}</small><br>
+                    ${n1}<br>
+                    &times; ${n2}
+                    <div class="line"></div>
+                    <input type="number" class="mult-input" data-index="${i}">
+                </div>`;
+        }
+    }
+
+    function checkAnswers() {
+        let totalCorrect = 0;
+        
+        // Check Subtraction
+        const subInputs = document.querySelectorAll('.sub-input');
+        subInputs.forEach((input, idx) => {
+            const card = document.getElementById(`sub-card-${idx}`);
+            if (parseInt(input.value) === answers.sub[idx]) {
+                totalCorrect++;
+                card.classList.add('correct');
+                card.classList.remove('wrong');
+            } else if (input.value !== "") {
+                card.classList.add('wrong');
+                card.classList.remove('correct');
+            }
+        });
+
+        // Check Multiplication
+        const multInputs = document.querySelectorAll('.mult-input');
+        multInputs.forEach((input, idx) => {
+            const card = document.getElementById(`mult-card-${idx}`);
+            if (parseInt(input.value) === answers.mult[idx]) {
+                totalCorrect++;
+                card.classList.add('correct');
+                card.classList.remove('wrong');
+            } else if (input.value !== "") {
+                card.classList.add('wrong');
+                card.classList.remove('correct');
+            }
+        });
+
+        coins = totalCorrect * 5;
+        coinDisplay.innerText = coins;
+        
+        window.scrollTo({top: 0, behavior: 'smooth'});
+        alert(`You got ${totalCorrect} correct! You earned ${coins} coins.`);
+    }
+
+    generate();
+</script>
+
+</body>
+</html>
