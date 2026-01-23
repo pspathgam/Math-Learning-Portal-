@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>3D Math Adventure</title>
+    <title>3D Math Adventure Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
             --primary: #00d2ff;
@@ -26,7 +27,7 @@
             align-items: center; 
             min-height: 100vh;
             padding: 10px;
-            perspective: 1000px; /* Essential for 3D */
+            perspective: 1200px;
             overflow-x: hidden;
         }
 
@@ -36,7 +37,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* 3D FLOATING TITLE */
         .portal-title {
             font-size: clamp(1.8rem, 8vw, 3.5rem);
             font-weight: 900;
@@ -52,33 +52,31 @@
             50% { transform: translateY(-10px) rotateX(-5deg); }
         }
 
-        /* LEVEL MOVER */
         .level-mover {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 5px;
+            gap: 6px;
             margin-bottom: 15px;
             width: 100%;
             max-width: 500px;
         }
         .level-dot {
-            padding: 4px 8px;
+            padding: 5px 10px;
             background: rgba(255,255,255,0.1);
             border: 1px solid rgba(255,255,255,0.2);
             border-radius: 12px;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: bold;
             transition: 0.3s;
         }
         .level-dot.active {
             background: var(--secondary);
             color: #000;
-            transform: scale(1.1);
+            transform: scale(1.1) translateZ(10px);
             box-shadow: 0 0 15px var(--secondary);
         }
 
-        /* 3D DASHBOARD GAUGES */
         .dashboard {
             display: flex;
             justify-content: center;
@@ -86,93 +84,87 @@
             width: 100%;
             max-width: 550px;
             margin-bottom: 15px;
-            transform: rotateX(10deg); /* 3D Tilt */
+            transform: rotateX(15deg);
         }
 
         .gauge-container {
             position: relative;
-            width: 100px;
-            height: 60px;
+            width: 105px;
+            height: 62px;
             overflow: hidden;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 60px 60px 0 0;
+            border-radius: 65px 65px 0 0;
             border: 2px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            transition: transform 0.3s;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.4);
         }
-        .gauge-container:hover { transform: translateZ(20px); }
 
-        .gauge-svg { width: 100px; height: 100px; transform: rotate(-180deg); }
+        .gauge-svg { width: 105px; height: 105px; transform: rotate(-180deg); }
         .gauge-bg { fill: none; stroke: rgba(255, 255, 255, 0.1); stroke-width: 10; }
-        .gauge-fill { fill: none; stroke-width: 10; stroke-dasharray: 157; stroke-dashoffset: 157; transition: 1s ease; stroke-linecap: round; }
+        .gauge-fill { fill: none; stroke-width: 10; stroke-dasharray: 142; stroke-dashoffset: 142; transition: 1s cubic-bezier(0.4, 0, 0.2, 1); stroke-linecap: round; }
 
-        .gauge-label { position: absolute; bottom: 2px; width: 100%; text-align: center; font-size: 0.55rem; font-weight: bold; }
-        .gauge-value { position: absolute; bottom: 14px; width: 100%; text-align: center; font-weight: bold; font-size: 0.9rem; }
+        .gauge-label { position: absolute; bottom: 2px; width: 100%; text-align: center; font-size: 0.6rem; font-weight: bold; color: rgba(255,255,255,0.7); }
+        .gauge-value { position: absolute; bottom: 16px; width: 100%; text-align: center; font-weight: bold; font-size: 0.95rem; }
 
-        /* 3D MAIN CONTAINER */
         .container { 
             width: 100%; 
             max-width: 500px; 
             background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            padding: 20px; 
-            border-radius: 30px; 
+            backdrop-filter: blur(25px);
+            padding: 22px; 
+            border-radius: 35px; 
             border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.4); 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5); 
             text-align: center;
             transform-style: preserve-3d;
-            animation: slideUp 0.8s ease-out;
+            animation: slideIn 0.8s ease-out;
         }
 
-        @keyframes slideUp {
-            from { transform: translateY(50px) rotateX(20deg); opacity: 0; }
+        @keyframes slideIn {
+            from { transform: translateY(100px) rotateX(30deg); opacity: 0; }
             to { transform: translateY(0) rotateX(0deg); opacity: 1; }
         }
 
         .math-area { 
             font-family: 'Courier New', monospace; 
-            font-size: clamp(3.2rem, 15vw, 5.8rem); 
+            font-size: clamp(3rem, 14vw, 5.5rem); 
             font-weight: 900; 
             text-align: right; 
             margin: 5px 0; 
-            text-shadow: 2px 2px 0px #000;
+            text-shadow: 3px 3px 0px rgba(0,0,0,0.4);
         }
 
         .op-row { display: flex; justify-content: space-between; align-items: center; }
-        .operator { padding-right: 15px; color: var(--secondary); animation: pulse 2s infinite; }
+        .operator { padding-right: 15px; color: var(--secondary); font-size: 1.2em; }
         
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
         .digit-row { display: flex; justify-content: flex-end; }
-        .carry-box { width: 22px; height: 22px; border: 1.5px dashed var(--primary); margin-left: 5px; color: var(--primary); border-radius: 4px; font-size: 14px; }
+        .carry-box { width: 24px; height: 24px; border: 1.5px dashed var(--primary); margin-left: 5px; color: var(--primary); border-radius: 5px; font-size: 15px; font-weight: bold; }
 
         .digit-input { 
-            width: clamp(32px, 10vw, 50px); 
+            width: clamp(35px, 11vw, 55px); 
             height: clamp(55px, 15vw, 75px); 
             font-size: 2.5rem; 
             text-align: center; 
             border: 3px solid rgba(255,255,255,0.4); 
-            border-radius: 12px; 
+            border-radius: 15px; 
             background: rgba(0,0,0,0.5); 
             color: white; 
-            margin: 0 2px;
-            transition: 0.2s;
+            margin: 0 3px;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .digit-input:focus { border-color: var(--secondary); transform: scale(1.05) translateZ(10px); }
+        .digit-input:focus { border-color: var(--secondary); transform: scale(1.1) translateZ(15px); outline: none; background: rgba(0,0,0,0.7); }
+
+        #feedback { min-height: 1.8rem; font-weight: bold; margin: 10px 0; font-size: 1.2rem; }
 
         .btn-submit { 
-            width: 100%; padding: 15px; font-size: 1.3rem; font-weight: bold; color: white; 
+            width: 100%; padding: 16px; font-size: 1.4rem; font-weight: bold; color: white; 
             background: linear-gradient(45deg, var(--primary), #3a7bd5); 
-            border: none; border-radius: 20px; cursor: pointer; margin-top: 10px;
-            box-shadow: 0 10px 0 #1e5f9a; /* 3D Button Effect */
+            border: none; border-radius: 20px; cursor: pointer;
+            box-shadow: 0 8px 0 #1e5f9a;
             transition: 0.1s;
         }
-        .btn-submit:active { transform: translateY(5px); box-shadow: 0 5px 0 #1e5f9a; }
+        .btn-submit:active { transform: translateY(4px); box-shadow: 0 4px 0 #1e5f9a; }
 
-        .developer-credit { margin-top: auto; padding: 15px; font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+        .developer-credit { margin-top: auto; padding: 20px; font-size: 0.85rem; color: rgba(255,255,255,0.5); }
         .hidden { display: none; }
     </style>
 </head>
@@ -190,17 +182,17 @@
 
     <div class="dashboard">
         <div class="gauge-container">
-            <svg class="gauge-svg"><circle class="gauge-bg" cx="50" cy="50" r="45"></circle><circle id="timer-fill" class="gauge-fill" cx="50" cy="50" r="45" style="stroke: var(--primary);"></circle></svg>
+            <svg class="gauge-svg"><circle class="gauge-bg" cx="52" cy="52" r="45"></circle><circle id="timer-fill" class="gauge-fill" cx="52" cy="52" r="45" style="stroke: var(--primary);"></circle></svg>
             <div class="gauge-value" id="timer-text">60</div>
             <div class="gauge-label">TIMER</div>
         </div>
         <div class="gauge-container">
-            <svg class="gauge-svg"><circle class="gauge-bg" cx="50" cy="50" r="45"></circle><circle id="score-fill" class="gauge-fill" cx="50" cy="50" r="45" style="stroke: var(--secondary);"></circle></svg>
+            <svg class="gauge-svg"><circle class="gauge-bg" cx="52" cy="52" r="45"></circle><circle id="score-fill" class="gauge-fill" cx="52" cy="52" r="45" style="stroke: var(--secondary);"></circle></svg>
             <div class="gauge-value" id="score-text">0</div>
             <div class="gauge-label">SOLVED</div>
         </div>
         <div class="gauge-container">
-            <svg class="gauge-svg"><circle class="gauge-bg" cx="50" cy="50" r="45"></circle><circle id="total-time-fill" class="gauge-fill" cx="50" cy="50" r="45" style="stroke: var(--info);"></circle></svg>
+            <svg class="gauge-svg"><circle class="gauge-bg" cx="52" cy="52" r="45"></circle><circle id="total-time-fill" class="gauge-fill" cx="52" cy="52" r="45" style="stroke: var(--info);"></circle></svg>
             <div class="gauge-value" id="total-time-text">0s</div>
             <div class="gauge-label">TOTAL</div>
         </div>
@@ -209,7 +201,7 @@
     <div class="container">
         <div class="header-box">
             <div id="q-label" style="font-weight: bold;">Quest: 1/150</div>
-            <div style="color: var(--accent); font-weight: bold;">💰 <span id="coin-count">0</span></div>
+            <div style="color: var(--accent); font-weight: bold; font-size: 1.2rem;">💰 <span id="coin-count">0</span></div>
         </div>
 
         <div id="game-area">
@@ -220,15 +212,15 @@
                     <span id="operator-sym" class="operator">+</span>
                     <span id="num2">00</span>
                 </div>
-                <div style="border-top: 5px solid white; margin: 8px 0; border-radius: 10px;"></div>
+                <div style="border-top: 5px solid white; margin: 8px 0; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);"></div>
                 <div id="answer-container" class="digit-row"></div>
             </div>
         </div>
 
-        <div id="feedback" style="min-height: 1.5rem; font-weight: bold; margin-bottom: 5px;"></div>
+        <div id="feedback"></div>
         <button class="btn-submit" id="submit-btn" onclick="checkAnswer()">SUBMIT ANSWER</button>
-        <button class="btn-submit hidden" id="next-btn" onclick="nextQuestion()">NEXT LEVEL ➔</button>
-        <button style="background:none; border:none; color:rgba(255,255,255,0.3); font-size:0.7rem; margin-top:10px; cursor:pointer;" onclick="resetProgress()">Reset Progress</button>
+        <button class="btn-submit hidden" id="next-btn" onclick="nextQuestion()">NEXT CHALLENGE ➔</button>
+        <button style="background:none; border:none; color:rgba(255,255,255,0.2); font-size:0.75rem; margin-top:15px; cursor:pointer;" onclick="resetProgress()">Reset Progress</button>
     </div>
 
     <div class="developer-credit">Designed & Developed by <b>Mohammad Ashraf Rather</b></div>
@@ -236,10 +228,17 @@
 <script>
     let currentStep = 0, coins = 0, correctCount = 0, totalTimeSpent = 0;
     let timer, timeLeft = 60, currentCorrectAns = 0;
-    const maxDash = 141; // Radius 45 half circle
+    const maxDash = 142;
+
+    // AUDIO SYSTEM
+    const sounds = {
+        correct: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_0625c153b0.mp3'), // Level Up
+        wrong: new Audio('https://cdn.pixabay.com/audio/2022/03/10/audio_c976696d5e.mp3'), // Error
+        fanfare: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_1459207869.mp3') // Victory
+    };
 
     function loadProgress() {
-        const saved = localStorage.getItem('math3DProgress');
+        const saved = localStorage.getItem('math3DProProgress');
         if (saved) {
             const data = JSON.parse(saved);
             currentStep = data.currentStep || 0;
@@ -251,10 +250,10 @@
     }
 
     function saveProgress() {
-        localStorage.setItem('math3DProgress', JSON.stringify({ currentStep, coins, correctCount, totalTimeSpent }));
+        localStorage.setItem('math3DProProgress', JSON.stringify({ currentStep, coins, correctCount, totalTimeSpent }));
     }
 
-    function resetProgress() { if(confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }
+    function resetProgress() { if(confirm("Start your journey from zero?")) { localStorage.clear(); location.reload(); } }
 
     function updateGauges() {
         document.getElementById('timer-fill').style.strokeDashoffset = maxDash - (timeLeft / 60) * maxDash;
@@ -269,7 +268,7 @@
         clearInterval(timer); timeLeft = 60; updateGauges();
         timer = setInterval(() => {
             timeLeft--; totalTimeSpent++; updateGauges();
-            if (timeLeft <= 0) { clearInterval(timer); nextQuestion(); }
+            if (timeLeft <= 0) { clearInterval(timer); sounds.wrong.play(); nextQuestion(); }
             saveProgress();
         }, 1000);
     }
@@ -281,31 +280,19 @@
         document.getElementById('next-btn').classList.add('hidden');
         document.querySelectorAll('.level-dot').forEach((d, i) => d.classList.toggle('active', Math.floor(currentStep/30) === i));
 
-        let n1, n2, op, digits;
-        // LEVEL LOGIC: 5 Levels of 30 Qs each (Total 150)
-        if (currentStep < 30) { // L1: Addition
-            n1 = Math.floor(Math.random() * 500) + 100; n2 = Math.floor(Math.random() * 400) + 100;
-            op = "+"; currentCorrectAns = n1 + n2;
-        } else if (currentStep < 60) { // L2: Subtraction
-            n1 = Math.floor(Math.random() * 900) + 100; n2 = Math.floor(Math.random() * n1);
-            op = "-"; currentCorrectAns = n1 - n2;
-        } else if (currentStep < 90) { // L3: Hard Subtraction (Borrowing)
-            n1 = Math.floor(Math.random() * 800000) + 100000; n2 = Math.floor(Math.random() * 90000) + 10000;
-            op = "-"; currentCorrectAns = n1 - n2;
-        } else if (currentStep < 120) { // L4: Basic Mult
-            n1 = Math.floor(Math.random() * 50) + 10; n2 = Math.floor(Math.random() * 9) + 2;
-            op = "×"; currentCorrectAns = n1 * n2;
-        } else { // L5: Hard Mult
-            n1 = Math.floor(Math.random() * 99) + 11; n2 = Math.floor(Math.random() * 89) + 11;
-            op = "×"; currentCorrectAns = n1 * n2;
-        }
+        let n1, n2, op;
+        if (currentStep < 30) { n1 = Math.floor(Math.random() * 500) + 100; n2 = Math.floor(Math.random() * 400) + 100; op = "+"; currentCorrectAns = n1 + n2; }
+        else if (currentStep < 60) { n1 = Math.floor(Math.random() * 900) + 100; n2 = Math.floor(Math.random() * n1); op = "-"; currentCorrectAns = n1 - n2; }
+        else if (currentStep < 90) { n1 = Math.floor(Math.random() * 800000) + 100000; n2 = Math.floor(Math.random() * 90000) + 10000; op = "-"; currentCorrectAns = n1 - n2; }
+        else if (currentStep < 120) { n1 = Math.floor(Math.random() * 50) + 10; n2 = Math.floor(Math.random() * 9) + 2; op = "×"; currentCorrectAns = n1 * n2; }
+        else { n1 = Math.floor(Math.random() * 99) + 11; n2 = Math.floor(Math.random() * 89) + 11; op = "×"; currentCorrectAns = n1 * n2; }
 
-        digits = currentCorrectAns.toString().length;
         document.getElementById('num1').innerText = n1.toLocaleString();
         document.getElementById('num2').innerText = n2.toLocaleString();
         document.getElementById('operator-sym').innerText = op;
         document.getElementById('q-label').innerText = `Quest: ${currentStep + 1}/150`;
 
+        const digits = currentCorrectAns.toString().length;
         const ansRow = document.getElementById('answer-container');
         const cryRow = document.getElementById('carry-container');
         ansRow.innerHTML = ""; cryRow.innerHTML = "";
@@ -329,25 +316,34 @@
 
         if (parseInt(userAns) === currentCorrectAns) {
             clearInterval(timer); coins += 10; correctCount++;
+            sounds.correct.play();
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#00d2ff', '#00ff88', '#ffd700'] });
+            
             document.getElementById('coin-count').innerText = coins;
-            document.getElementById('feedback').innerHTML = "🌈 SUPERB! +10 Coins";
+            document.getElementById('feedback').innerHTML = "<span style='color:var(--secondary)'>✨ BRILLIANT! +10 Coins</span>";
             document.getElementById('submit-btn').classList.add('hidden');
             document.getElementById('next-btn').classList.remove('hidden');
             saveProgress();
         } else {
-            document.getElementById('feedback').innerHTML = "🌪️ TRY AGAIN!";
-            setTimeout(generateQuestion, 1000);
+            sounds.wrong.play();
+            document.getElementById('feedback').innerHTML = "<span style='color:var(--error)'>🌪️ TRY AGAIN</span>";
+            setTimeout(generateQuestion, 1200);
         }
     }
 
     function nextQuestion() {
         currentStep++;
+        if (currentStep % 30 === 0) sounds.fanfare.play(); // Play fanfare every level up
         if (currentStep < 150) generateQuestion();
-        else document.getElementById('game-area').innerHTML = "<h1>🎓 GRADUATED!</h1>";
+        else {
+            confetti({ particleCount: 500, spread: 160 });
+            document.getElementById('game-area').innerHTML = "<h1 style='color:var(--accent)'>🎓 MATH LEGEND!</h1><p>You completed all 150 Quests!</p>";
+        }
     }
 
     loadProgress();
     generateQuestion();
 </script>
 </body>
-</html>                        
+</html>
+                                loadProgres
