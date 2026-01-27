@@ -59,7 +59,7 @@
             gap: 6px;
             margin-bottom: 15px;
             width: 100%;
-            max-width: 500px;
+            max-width: 600px;
         }
         .level-dot {
             padding: 5px 10px;
@@ -136,7 +136,7 @@
         .op-row { display: flex; justify-content: space-between; align-items: center; }
         .operator { padding-right: 15px; color: var(--secondary); font-size: 1.2em; }
         
-        .digit-row { display: flex; justify-content: flex-end; }
+        .digit-row { display: flex; justify-content: flex-end; align-items: center; flex-direction: row-reverse;}
         .carry-box { width: 24px; height: 24px; border: 1.5px dashed var(--primary); margin-left: 5px; color: var(--primary); border-radius: 5px; font-size: 15px; font-weight: bold; }
 
         .digit-input { 
@@ -152,6 +152,18 @@
             transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .digit-input:focus { border-color: var(--secondary); transform: scale(1.1) translateZ(15px); outline: none; background: rgba(0,0,0,0.7); }
+
+        /* Special input for fractions */
+        .fraction-input {
+            width: 120px;
+            height: 60px;
+            font-size: 2rem;
+            text-align: center;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: 3px solid var(--primary);
+            border-radius: 15px;
+        }
 
         #feedback { min-height: 1.8rem; font-weight: bold; margin: 10px 0; font-size: 1.2rem; }
 
@@ -175,9 +187,11 @@
     <div class="level-mover">
         <div id="lvl-1" class="level-dot">L1: Add</div>
         <div id="lvl-2" class="level-dot">L2: Sub</div>
-        <div id="lvl-3" class="level-dot">L3: Mix</div>
+        <div id="lvl-3" class="level-dot">L3: 4D-Sub</div>
         <div id="lvl-4" class="level-dot">L4: Easy ×</div>
         <div id="lvl-5" class="level-dot">L5: Pro ×</div>
+        <div id="lvl-6" class="level-dot">L6: Tables</div>
+        <div id="lvl-7" class="level-dot">L7: Fractions</div>
     </div>
 
     <div class="dashboard">
@@ -200,7 +214,7 @@
 
     <div class="container">
         <div class="header-box">
-            <div id="q-label" style="font-weight: bold;">Quest: 1/150</div>
+            <div id="q-label" style="font-weight: bold;">Quest: 1/210</div>
             <div style="color: var(--accent); font-weight: bold; font-size: 1.2rem;">💰 <span id="coin-count">0</span></div>
         </div>
 
@@ -229,12 +243,12 @@
     let currentStep = 0, coins = 0, correctCount = 0, totalTimeSpent = 0;
     let timer, timeLeft = 60, currentCorrectAns = 0;
     const maxDash = 142;
+    const TOTAL_QUESTS = 210;
 
-    // AUDIO SYSTEM
     const sounds = {
-        correct: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_0625c153b0.mp3'), // Level Up
-        wrong: new Audio('https://cdn.pixabay.com/audio/2022/03/10/audio_c976696d5e.mp3'), // Error
-        fanfare: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_1459207869.mp3') // Victory
+        correct: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_0625c153b0.mp3'),
+        wrong: new Audio('https://cdn.pixabay.com/audio/2022/03/10/audio_c976696d5e.mp3'),
+        fanfare: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_1459207869.mp3')
     };
 
     function loadProgress() {
@@ -258,7 +272,7 @@
     function updateGauges() {
         document.getElementById('timer-fill').style.strokeDashoffset = maxDash - (timeLeft / 60) * maxDash;
         document.getElementById('timer-text').innerText = timeLeft;
-        document.getElementById('score-fill').style.strokeDashoffset = maxDash - (correctCount / 150) * maxDash;
+        document.getElementById('score-fill').style.strokeDashoffset = maxDash - (correctCount / TOTAL_QUESTS) * maxDash;
         document.getElementById('score-text').innerText = correctCount;
         document.getElementById('total-time-fill').style.strokeDashoffset = maxDash - (Math.min(totalTimeSpent, 5000) / 5000) * maxDash;
         document.getElementById('total-time-text').innerText = totalTimeSpent + "s";
@@ -281,40 +295,78 @@
         document.querySelectorAll('.level-dot').forEach((d, i) => d.classList.toggle('active', Math.floor(currentStep/30) === i));
 
         let n1, n2, op;
-        if (currentStep < 30) { n1 = Math.floor(Math.random() * 500) + 100; n2 = Math.floor(Math.random() * 400) + 100; op = "+"; currentCorrectAns = n1 + n2; }
-        else if (currentStep < 60) { n1 = Math.floor(Math.random() * 900) + 100; n2 = Math.floor(Math.random() * n1); op = "-"; currentCorrectAns = n1 - n2; }
-        else if (currentStep < 90) { n1 = Math.floor(Math.random() * 800000) + 100000; n2 = Math.floor(Math.random() * 90000) + 10000; op = "-"; currentCorrectAns = n1 - n2; }
-        else if (currentStep < 120) { n1 = Math.floor(Math.random() * 50) + 10; n2 = Math.floor(Math.random() * 9) + 2; op = "×"; currentCorrectAns = n1 * n2; }
-        else { n1 = Math.floor(Math.random() * 99) + 11; n2 = Math.floor(Math.random() * 89) + 11; op = "×"; currentCorrectAns = n1 * n2; }
+        let isFraction = false;
 
-        document.getElementById('num1').innerText = n1.toLocaleString();
-        document.getElementById('num2').innerText = n2.toLocaleString();
+        // Level Logic
+        if (currentStep < 30) { // L1: Add
+            n1 = Math.floor(Math.random() * 500) + 100; n2 = Math.floor(Math.random() * 400) + 100; op = "+"; currentCorrectAns = n1 + n2; 
+        } else if (currentStep < 60) { // L2: Sub
+            n1 = Math.floor(Math.random() * 900) + 100; n2 = Math.floor(Math.random() * n1); op = "-"; currentCorrectAns = n1 - n2; 
+        } else if (currentStep < 90) { // L3: Updated to 4-Digit Sub
+            n1 = Math.floor(Math.random() * 8000) + 1000; n2 = Math.floor(Math.random() * n1); op = "-"; currentCorrectAns = n1 - n2; 
+        } else if (currentStep < 120) { // L4: Easy X
+            n1 = Math.floor(Math.random() * 50) + 10; n2 = Math.floor(Math.random() * 9) + 2; op = "×"; currentCorrectAns = n1 * n2; 
+        } else if (currentStep < 150) { // L5: Pro X
+            n1 = Math.floor(Math.random() * 99) + 11; n2 = Math.floor(Math.random() * 89) + 11; op = "×"; currentCorrectAns = n1 * n2; 
+        } else if (currentStep < 180) { // L6: Tables
+            n1 = Math.floor(Math.random() * 12) + 1; n2 = Math.floor(Math.random() * 12) + 1; op = "×"; currentCorrectAns = n1 * n2;
+        } else { // L7: Fractions
+            isFraction = true;
+            let den = Math.floor(Math.random() * 8) + 2;
+            let num1 = Math.floor(Math.random() * (den - 1)) + 1;
+            let num2 = Math.floor(Math.random() * (den - 1)) + 1;
+            n1 = `${num1}/${den}`; n2 = `${num2}/${den}`; op = "+";
+            currentCorrectAns = `${num1 + num2}/${den}`;
+        }
+
+        document.getElementById('num1').innerText = isFraction ? n1 : n1.toLocaleString();
+        document.getElementById('num2').innerText = isFraction ? n2 : n2.toLocaleString();
         document.getElementById('operator-sym').innerText = op;
-        document.getElementById('q-label').innerText = `Quest: ${currentStep + 1}/150`;
+        document.getElementById('q-label').innerText = `Quest: ${currentStep + 1}/${TOTAL_QUESTS}`;
 
-        const digits = currentCorrectAns.toString().length;
         const ansRow = document.getElementById('answer-container');
         const cryRow = document.getElementById('carry-container');
         ansRow.innerHTML = ""; cryRow.innerHTML = "";
 
-        for (let i = 0; i < digits; i++) {
-            cryRow.innerHTML += `<div class="carry-box" contenteditable="true"></div>`;
+        if (isFraction) {
             const input = document.createElement('input');
-            input.type = "number"; input.className = "digit-input";
-            input.oninput = function() { 
-                if (this.value.length > 0) { this.value = this.value.slice(-1); if(this.previousElementSibling) this.previousElementSibling.focus(); }
-            };
+            input.type = "text"; input.className = "fraction-input";
+            input.placeholder = "n/d";
             ansRow.appendChild(input);
+            setTimeout(() => input.focus(), 300);
+        } else {
+            const digits = currentCorrectAns.toString().length;
+            for (let i = 0; i < digits; i++) {
+                cryRow.innerHTML += `<div class="carry-box" contenteditable="true"></div>`;
+                const input = document.createElement('input');
+                input.type = "number"; input.className = "digit-input";
+                input.oninput = function() { 
+                    if (this.value.length > 0) { 
+                        this.value = this.value.slice(-1); 
+                        if(this.previousElementSibling) this.previousElementSibling.focus(); 
+                    }
+                };
+                ansRow.appendChild(input);
+            }
+            setTimeout(() => ansRow.lastElementChild.focus(), 300);
         }
-        setTimeout(() => ansRow.lastElementChild.focus(), 300);
     }
 
     function checkAnswer() {
         let userAns = "";
-        document.querySelectorAll('.digit-input').forEach(inp => userAns += inp.value);
-        if (userAns === "" || isNaN(userAns)) return;
+        const inputs = document.querySelectorAll('.digit-input, .fraction-input');
+        
+        if (inputs[0].classList.contains('fraction-input')) {
+            userAns = inputs[0].value.replace(/\s/g, '');
+        } else {
+            // Collect digits from left-to-right (the row is reversed in CSS for math alignment)
+            const digitInputs = Array.from(document.querySelectorAll('.digit-input'));
+            digitInputs.reverse().forEach(inp => userAns += inp.value);
+        }
 
-        if (parseInt(userAns) === currentCorrectAns) {
+        if (userAns === "") return;
+
+        if (userAns.toString() === currentCorrectAns.toString()) {
             clearInterval(timer); coins += 10; correctCount++;
             sounds.correct.play();
             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#00d2ff', '#00ff88', '#ffd700'] });
@@ -333,11 +385,11 @@
 
     function nextQuestion() {
         currentStep++;
-        if (currentStep % 30 === 0) sounds.fanfare.play(); // Play fanfare every level up
-        if (currentStep < 150) generateQuestion();
+        if (currentStep % 30 === 0) sounds.fanfare.play();
+        if (currentStep < TOTAL_QUESTS) generateQuestion();
         else {
             confetti({ particleCount: 500, spread: 160 });
-            document.getElementById('game-area').innerHTML = "<h1 style='color:var(--accent)'>🎓 MATH LEGEND!</h1><p>You completed all 150 Quests!</p>";
+            document.getElementById('game-area').innerHTML = "<h1 style='color:var(--accent)'>🎓 MATH LEGEND!</h1><p>You completed all quests!</p>";
         }
     }
 
@@ -346,4 +398,3 @@
 </script>
 </body>
 </html>
-            
