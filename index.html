@@ -3,52 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Math World 3D: Quest Edition</title>
+    <title>Math World 3D: Ultimate Quest</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root { --primary: #00d2ff; --secondary: #00ff88; --accent: #ffd700; --text: #ffffff; }
-        body { 
-            font-family: 'Segoe UI', sans-serif; background: #1a1a2e; margin: 0; color: var(--text);
-            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-        }
-
-        /* Auth UI */
-        #auth-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); display: flex; justify-content: center;
-            align-items: center; z-index: 1000; backdrop-filter: blur(10px);
-        }
-        .auth-card {
-            background: #16213e; padding: 30px; border-radius: 25px;
-            border: 2px solid var(--primary); width: 90%; max-width: 380px; text-align: center;
-        }
-        input {
-            width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px;
-            border: 1px solid var(--primary); background: #0f3460; color: white; box-sizing: border-box; text-align: center;
-        }
-
-        /* Game UI */
-        .container { 
-            width: 95%; max-width: 500px; background: rgba(255,255,255,0.1);
-            padding: 20px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.2); margin-top: 20px;
-        }
-        .math-area { font-size: clamp(2.5rem, 10vw, 4rem); font-weight: 900; text-align: right; margin: 15px 0; }
-        .digit-input { 
-            width: 45px; height: 65px; font-size: 2rem; text-align: center;
-            margin: 0 4px; border-radius: 12px; border: 2px solid var(--primary);
-            background: rgba(0,0,0,0.4); color: white;
-        }
-        .fraction-input { width: 120px; height: 60px; font-size: 1.8rem; text-align: center; border: 2px solid var(--accent); border-radius: 10px; background: rgba(0,0,0,0.5); color: white; }
-
-        .leaderboard { margin-top: 20px; background: rgba(0,0,0,0.3); border-radius: 15px; padding: 15px; }
-        .leader-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #333; font-size: 0.9rem; }
+        body { font-family: 'Segoe UI', sans-serif; background: #1a1a2e; margin: 0; color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
-        .btn {
-            width: 100%; padding: 15px; border-radius: 12px; border: none;
-            font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 5px;
-        }
+        /* Auth UI */
+        #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(10px); }
+        .auth-card { background: #16213e; padding: 30px; border-radius: 25px; border: 2px solid var(--primary); width: 90%; max-width: 380px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--primary); background: #0f3460; color: white; box-sizing: border-box; text-align: center; font-size: 16px; }
+        
+        /* Game UI */
+        .container { width: 95%; max-width: 500px; background: rgba(255,255,255,0.1); padding: 20px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.2); margin-top: 20px; }
+        .math-area { font-size: clamp(2.5rem, 10vw, 4rem); font-weight: 900; text-align: right; margin: 15px 0; }
+        .digit-input { width: 45px; height: 65px; font-size: 2rem; text-align: center; margin: 0 4px; border-radius: 12px; border: 2px solid var(--primary); background: rgba(0,0,0,0.4); color: white; }
+        .fraction-input { width: 140px; height: 60px; font-size: 1.8rem; text-align: center; border: 2px solid var(--accent); border-radius: 10px; background: rgba(0,0,0,0.5); color: white; }
+        
+        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 5px; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-small { width: auto; padding: 8px 15px; font-size: 0.7rem; background: #333; margin-bottom: 10px; }
+        .btn-logout { width: auto; padding: 8px 15px; font-size: 0.8rem; background: #ff4757; border-radius: 8px; border: none; color: white; cursor: pointer; }
         .hidden { display: none !important; }
         #recaptcha-container { margin: 10px 0; display: flex; justify-content: center; }
     </style>
@@ -58,45 +32,41 @@
     <div id="auth-overlay">
         <div class="auth-card">
             <h2 style="color:var(--primary)">MATH WORLD 3D</h2>
-            <p id="auth-status">Enter phone number to begin</p>
-            <input type="tel" id="phone-number" placeholder="+91 0000000000">
-            <div id="recaptcha-container"></div>
-            <input type="text" id="otp-code" class="hidden" placeholder="6-digit OTP">
-            <button class="btn btn-primary" id="btn-send-otp">Send SMS OTP</button>
-            <button class="btn btn-primary hidden" id="btn-verify-otp">Verify & Play</button>
+            <p id="auth-status">Enter Phone to Progress</p>
+            <div id="phone-box">
+                <input type="tel" id="phone-number" placeholder="Mobile Number (e.g. 98765...)">
+                <div id="recaptcha-container"></div>
+                <button class="btn btn-primary" id="btn-send-otp">Send SMS OTP</button>
+            </div>
+            <div id="otp-box" class="hidden">
+                <input type="text" id="otp-code" placeholder="6-digit OTP">
+                <button class="btn btn-primary" id="btn-verify-otp">Verify & Start</button>
+            </div>
         </div>
     </div>
 
     <div style="width: 95%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
         <h1 style="margin: 0;">QUEST <span id="q-num">1</span></h1>
-        <button class="btn btn-small" onclick="location.reload()">LOGOUT</button>
+        <button class="btn-logout" id="btn-logout">LOGOUT</button>
     </div>
 
     <div class="container">
+        <div id="level-title" style="color: var(--secondary); font-weight: bold; text-align: center; text-transform: uppercase;">Addition Level 1</div>
         <div class="math-area">
             <div id="n1">0</div>
-            <div style="display:flex; justify-content: space-between;">
-                <span style="color:var(--secondary)" id="op">+</span>
-                <span id="n2">0</span>
-            </div>
+            <div style="display:flex; justify-content: space-between;"><span style="color:var(--secondary)" id="op">+</span><span id="n2">0</span></div>
             <hr>
             <div id="ans-box" style="display:flex; justify-content: flex-end; flex-direction: row-reverse;"></div>
         </div>
-        
         <div id="feedback" style="text-align:center; height: 25px; font-weight:bold; color:var(--accent)"></div>
-        <button class="btn btn-primary" id="submit-btn">CHECK ANSWER</button>
+        <button class="btn btn-primary" id="submit-btn">SUBMIT ANSWER</button>
         <button class="btn btn-primary hidden" id="next-btn">NEXT QUEST ➔</button>
-
-        <div class="leaderboard">
-            <h4 style="margin:0 0 10px 0;">🏆 GLOBAL TOP PLAYERS</h4>
-            <div id="leader-list">Rankings loading...</div>
-        </div>
     </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyC6FbPb36F69k7cw_tLbGQoVQxs6shzfAo",
@@ -110,35 +80,31 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-
     let currentStep = 0, currentCorrectAns = 0, confirmationResult;
 
-    // Recaptcha setup
     window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 'size': 'normal' });
 
+    // Handle Phone Login with Auto-Prefix
     document.getElementById('btn-send-otp').onclick = async () => {
-        const phone = document.getElementById('phone-number').value;
-        if(!phone) return alert("Please enter a number!");
-        
-        document.getElementById('auth-status').innerText = "Sending SMS...";
+        let phone = document.getElementById('phone-number').value.trim();
+        if (!phone.startsWith('+')) phone = "+91" + phone;
         try {
             confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
-            document.getElementById('otp-code').classList.remove('hidden');
-            document.getElementById('btn-verify-otp').classList.remove('hidden');
-            document.getElementById('btn-send-otp').classList.add('hidden');
-            document.getElementById('recaptcha-container').classList.add('hidden');
-            document.getElementById('auth-status').innerText = "Enter the 6-digit code";
-        } catch (e) { 
-            alert("Error: " + e.message); 
-            document.getElementById('auth-status').innerText = "Error. Try again.";
-        }
+            document.getElementById('phone-box').classList.add('hidden');
+            document.getElementById('otp-box').classList.remove('hidden');
+            document.getElementById('auth-status').innerText = "OTP Sent to " + phone;
+        } catch (e) { alert("Format Error: Ensure number is correct. " + e.message); }
     };
 
     document.getElementById('btn-verify-otp').onclick = async () => {
         const code = document.getElementById('otp-code').value;
-        try {
-            await confirmationResult.confirm(code);
-        } catch (e) { alert("Invalid OTP code."); }
+        try { await confirmationResult.confirm(code); } catch (e) { alert("Invalid OTP code."); }
+    };
+
+    // Logout Logic
+    document.getElementById('btn-logout').onclick = async () => {
+        await signOut(auth);
+        location.reload();
     };
 
     onAuthStateChanged(auth, async (user) => {
@@ -146,7 +112,6 @@
             document.getElementById('auth-overlay').classList.add('hidden');
             const snap = await getDoc(doc(db, "users", user.uid));
             if (snap.exists()) currentStep = snap.data().currentStep || 0;
-            initLeaderboard();
             generateQuestion();
         }
     });
@@ -155,75 +120,62 @@
         document.getElementById('feedback').innerText = "";
         document.getElementById('submit-btn').classList.remove('hidden');
         document.getElementById('next-btn').classList.add('hidden');
+        let n1, n2, op = "+", title = "", isFrac = false;
 
-        let n1, n2, op, isFrac = false;
-        if (currentStep < 30) { n1 = Math.floor(Math.random()*500); n2 = Math.floor(Math.random()*400); op="+"; currentCorrectAns = n1+n2; }
-        else if (currentStep < 60) { n1 = Math.floor(Math.random()*900); n2 = Math.floor(Math.random()*n1); op="-"; currentCorrectAns = n1-n2; }
-        else if (currentStep < 90) { n1 = Math.floor(Math.random()*8000)+1000; n2 = Math.floor(Math.random()*n1); op="-"; currentCorrectAns = n1-n2; }
-        else { n1 = Math.floor(Math.random()*12)+1; n2 = Math.floor(Math.random()*12)+1; op="×"; currentCorrectAns = n1*n2; }
+        // 13 Levels (30 Quests each)
+        if (currentStep < 30) { n1 = Math.floor(Math.random()*500); n2 = Math.floor(Math.random()*400); currentCorrectAns = n1+n2; title="Addition Easy"; }
+        else if (currentStep < 60) { n1 = Math.floor(Math.random()*9000)+1000; n2 = Math.floor(Math.random()*9000)+1000; currentCorrectAns = n1+n2; title="Addition Hard"; }
+        else if (currentStep < 90) { n1 = Math.floor(Math.random()*900); n2 = Math.floor(Math.random()*n1); op="-"; currentCorrectAns = n1-n2; title="Subtraction Easy"; }
+        else if (currentStep < 120) { n1 = Math.floor(Math.random()*9000)+1000; n2 = Math.floor(Math.random()*n1); op="-"; currentCorrectAns = n1-n2; title="Subtraction Hard"; }
+        else if (currentStep < 150) { n1 = Math.floor(Math.random()*9)+1; n2 = Math.floor(Math.random()*9)+1; op="×"; currentCorrectAns = n1*n2; title="Multiplication Easy"; }
+        else if (currentStep < 180) { n1 = Math.floor(Math.random()*15)+2; n2 = Math.floor(Math.random()*12)+2; op="×"; currentCorrectAns = n1*n2; title="Multiplication Hard"; }
+        else if (currentStep < 210) { n1 = 2; n2 = Math.floor(Math.random()*10)+1; op="×"; currentCorrectAns = n1*n2; title="Tables: 2 to 5"; }
+        else if (currentStep < 240) { n1 = Math.floor(Math.random()*5)+6; n2 = Math.floor(Math.random()*10)+1; op="×"; currentCorrectAns = n1*n2; title="Tables: 6 to 10"; }
+        else if (currentStep < 270) { n1 = Math.floor(Math.random()*10)+11; n2 = Math.floor(Math.random()*10)+1; op="×"; currentCorrectAns = n1*n2; title="Tables: 11 to 20"; }
+        else if (currentStep < 300) { currentCorrectAns = Math.floor(Math.random()*9)+1; n2 = Math.floor(Math.random()*9)+1; n1 = currentCorrectAns * n2; op="÷"; title="Division Easy"; }
+        else if (currentStep < 330) { currentCorrectAns = Math.floor(Math.random()*15)+5; n2 = Math.floor(Math.random()*12)+2; n1 = currentCorrectAns * n2; op="÷"; title="Division Hard"; }
+        else if (currentStep < 360) { isFrac = true; let den = Math.floor(Math.random()*8)+2; let u1 = Math.floor(Math.random()*(den-1))+1; let u2 = Math.floor(Math.random()*(den-1))+1; n1=`${u1}/${den}`; n2=`${u2}/${den}`; currentCorrectAns=`${u1+u2}/${den}`; title="Fractions Easy"; }
+        else { isFrac = true; let den = Math.floor(Math.random()*12)+2; let u1 = Math.floor(Math.random()*den)+2; let u2 = Math.floor(Math.random()*den)+1; n1=`${u1}/${den}`; n2=`${u2}/${den}`; currentCorrectAns=`${u1+u2}/${den}`; title="Fractions Hard"; }
 
-        document.getElementById('n1').innerText = n1.toLocaleString();
-        document.getElementById('n2').innerText = n2.toLocaleString();
+        document.getElementById('n1').innerText = n1;
+        document.getElementById('n2').innerText = n2;
         document.getElementById('op').innerText = op;
+        document.getElementById('level-title').innerText = title;
         document.getElementById('q-num').innerText = currentStep + 1;
 
-        const box = document.getElementById('ans-box');
-        box.innerHTML = "";
-        const digits = currentCorrectAns.toString().length;
-        for(let i=0; i<digits; i++) {
-            const inp = document.createElement('input');
-            inp.type = "number"; inp.className = "digit-input";
-            inp.oninput = function() { 
-                if(this.value.length > 0) { 
-                    this.value = this.value.slice(-1); 
-                    if(this.previousElementSibling) this.previousElementSibling.focus(); 
-                } 
-            };
-            box.appendChild(inp);
+        const box = document.getElementById('ans-box'); box.innerHTML = "";
+        if (isFrac) { box.innerHTML = `<input type="text" id="frac-ans" class="fraction-input" placeholder="n/d">`; }
+        else {
+            const digits = currentCorrectAns.toString().length;
+            for(let i=0; i<digits; i++) {
+                const inp = document.createElement('input'); inp.type = "number"; inp.className = "digit-input";
+                inp.oninput = function() { if(this.value.length > 0) { this.value = this.value.slice(-1); if(this.previousElementSibling) this.previousElementSibling.focus(); } };
+                box.appendChild(inp);
+            }
+            box.lastElementChild.focus();
         }
-        box.lastElementChild.focus();
     }
 
     document.getElementById('submit-btn').onclick = () => {
         let userAns = "";
-        document.querySelectorAll('.digit-input').forEach(i => userAns += i.value);
-        userAns = userAns.split("").reverse().join("");
+        const fracInp = document.getElementById('frac-ans');
+        if (fracInp) userAns = fracInp.value.replace(/\s/g, '');
+        else { document.querySelectorAll('.digit-input').forEach(i => userAns += i.value); userAns = userAns.split("").reverse().join(""); }
 
-        if (userAns.toString() === currentCorrectAns.toString()) {
-            document.getElementById('feedback').innerText = "✨ EXCELLENT!";
+        if (userAns == currentCorrectAns) {
+            document.getElementById('feedback').innerText = "✅ EXCELLENT!";
             document.getElementById('submit-btn').classList.add('hidden');
             document.getElementById('next-btn').classList.remove('hidden');
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-        } else {
-            document.getElementById('feedback').innerText = "❌ TRY AGAIN";
-        }
+        } else { document.getElementById('feedback').innerText = "❌ TRY AGAIN"; }
     };
 
     document.getElementById('next-btn').onclick = async () => {
         currentStep++;
-        if (auth.currentUser) {
-            await setDoc(doc(db, "users", auth.currentUser.uid), {
-                phone: auth.currentUser.phoneNumber,
-                currentStep: currentStep,
-                lastActive: new Date()
-            }, { merge: true });
-        }
+        if (auth.currentUser) await setDoc(doc(db, "users", auth.currentUser.uid), { currentStep: currentStep }, { merge: true });
         generateQuestion();
     };
-
-    function initLeaderboard() {
-        const q = query(collection(db, "users"), orderBy("currentStep", "desc"), limit(5));
-        onSnapshot(q, (snap) => {
-            const list = document.getElementById('leader-list');
-            list.innerHTML = "";
-            snap.forEach(doc => {
-                const d = doc.data();
-                const masked = d.phone ? d.phone.substring(0, 7) + "***" : "Student";
-                list.innerHTML += `<div class="leader-row"><span>${masked}</span><span>Quest ${d.currentStep}</span></div>`;
-            });
-        });
-    }
 </script>
 </body>
 </html>
-    
+              
