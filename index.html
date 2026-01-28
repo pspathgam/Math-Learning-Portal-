@@ -9,6 +9,7 @@
         :root { --primary: #00d2ff; --secondary: #00ff88; --accent: #ffd700; --text: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; background: #1a1a2e; margin: 0; color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
+        /* Auth UI */
         #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(10px); }
         .auth-card { background: #16213e; padding: 30px; border-radius: 25px; border: 2px solid var(--primary); width: 90%; max-width: 380px; text-align: center; }
         input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--primary); background: #0f3460; color: white; box-sizing: border-box; text-align: center; font-size: 16px; }
@@ -34,7 +35,6 @@
         .math-area { font-size: clamp(2.5rem, 10vw, 4rem); font-weight: 900; text-align: right; margin: 15px 0; }
         .digit-input { width: 45px; height: 65px; font-size: 2rem; text-align: center; margin: 0 4px; border-radius: 12px; border: 2px solid var(--primary); background: rgba(0,0,0,0.4); color: white; }
         
-        /* Leaderboard Styling */
         .leaderboard-container { width: 95%; max-width: 500px; background: rgba(0,0,0,0.4); margin-top: 20px; border-radius: 20px; border: 1px solid var(--primary); padding: 15px; }
         .leaderboard-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         .leaderboard-table th { color: var(--primary); text-align: left; font-size: 0.8rem; padding-bottom: 10px; border-bottom: 1px solid #333; }
@@ -43,6 +43,7 @@
 
         .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; margin-top: 5px; }
         .btn-primary { background: var(--primary); color: white; }
+        .btn-link { background: none; color: var(--primary); border: none; text-decoration: underline; font-size: 0.9rem; margin-top: 10px; cursor: pointer; }
         .btn-logout { background: #ff4757; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; }
         
         .designer-box { 
@@ -56,29 +57,29 @@
         .designer-title { font-size: 0.8rem; color: #888; margin: 2px 0; text-transform: uppercase; letter-spacing: 1px; }
 
         .hidden { display: none !important; }
-        #recaptcha-container { margin: 10px 0; display: flex; justify-content: center; }
     </style>
 </head>
 <body>
 
     <div id="auth-overlay">
         <div class="auth-card">
-            <h2 style="color:var(--primary)">MATH WORLD 3D</h2>
-            <p id="auth-status">Login to Save Progress</p>
-            <div id="phone-box">
-                <input type="tel" id="phone-number" placeholder="Mobile Number" value="+919596449881">
-                <div id="recaptcha-container"></div>
-                <button class="btn btn-primary" id="btn-send-otp">Send SMS OTP</button>
-            </div>
-            <div id="otp-box" class="hidden">
-                <input type="text" id="otp-code" placeholder="6-digit OTP">
-                <button class="btn btn-primary" id="btn-verify-otp">Verify & Start</button>
+            <h2 id="auth-title" style="color:var(--primary)">WELCOME BACK</h2>
+            <p id="auth-status">Sign in to continue your quest</p>
+            
+            <div id="auth-form">
+                <input type="text" id="user-name" class="hidden" placeholder="Full Name">
+                <input type="email" id="user-email" placeholder="Email Address">
+                <input type="password" id="user-pass" placeholder="Password">
+                
+                <button class="btn btn-primary" id="btn-main-auth">SIGN IN</button>
+                <button class="btn-link" id="btn-toggle-auth">Don't have an account? Sign Up</button>
             </div>
         </div>
     </div>
 
     <div style="width: 95%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
-        <h1 style="margin: 0; font-size: 1.5rem;">QUEST <span id="q-num">1</span></h1>
+        <h1 style="margin: 0; font-size: 1.2rem;">QUEST <span id="q-num">1</span></h1>
+        <div id="current-player-name" style="font-size: 0.9rem; color: var(--secondary);"></div>
         <button class="btn-logout" id="btn-logout">LOGOUT</button>
     </div>
 
@@ -100,14 +101,14 @@
     <div class="level-navigator" id="level-nav"></div>
 
     <div class="container">
-        <div id="level-title" style="color: var(--secondary); font-weight: bold; text-align: center; text-transform: uppercase;">LOADING...</div>
+        <div id="level-title" style="color: var(--secondary); font-weight: bold; text-align: center; text-transform: uppercase; font-size: 0.8rem;">LOADING...</div>
         <div class="math-area">
             <div id="n1">0</div>
             <div style="display:flex; justify-content: space-between;"><span style="color:var(--secondary)" id="op">+</span><span id="n2">0</span></div>
             <hr>
             <div id="ans-box" style="display:flex; justify-content: flex-end;"></div>
         </div>
-        <div id="feedback" style="text-align:center; height: 25px; font-weight:bold; color:var(--accent)"></div>
+        <div id="feedback" style="text-align:center; height: 25px; font-weight:bold; color:var(--accent); font-size: 0.9rem;"></div>
         <button class="btn btn-primary" id="submit-btn">SUBMIT ANSWER</button>
         <button class="btn btn-primary hidden" id="next-btn">NEXT QUEST ➔</button>
     </div>
@@ -125,8 +126,7 @@
                     <th style="text-align: right;">POINTS</th>
                 </tr>
             </thead>
-            <tbody id="leaderboard-body">
-                </tbody>
+            <tbody id="leaderboard-body"></tbody>
         </table>
     </div>
 
@@ -140,7 +140,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -156,24 +156,40 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let currentStep = 0, currentCorrectAns = 0, confirmationResult;
+    let currentStep = 0, currentCorrectAns = 0, isSignUp = false;
     let questSeconds = 80, totalSeconds = 0, correctTotal = 0;
     let timerInterval, totalTimeInterval;
 
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 'size': 'invisible' });
-
-    document.getElementById('btn-send-otp').onclick = async () => {
-        let phone = document.getElementById('phone-number').value.trim();
-        if (!phone.startsWith('+')) phone = "+91" + phone;
-        try {
-            confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
-            document.getElementById('phone-box').classList.add('hidden');
-            document.getElementById('otp-box').classList.remove('hidden');
-        } catch (e) { alert("Auth Error: " + e.message); }
+    // Toggle Sign In / Sign Up
+    document.getElementById('btn-toggle-auth').onclick = () => {
+        isSignUp = !isSignUp;
+        document.getElementById('auth-title').innerText = isSignUp ? "CREATE ACCOUNT" : "WELCOME BACK";
+        document.getElementById('auth-status').innerText = isSignUp ? "Join the math quest today!" : "Sign in to continue your quest";
+        document.getElementById('btn-main-auth').innerText = isSignUp ? "SIGN UP" : "SIGN IN";
+        document.getElementById('btn-toggle-auth').innerText = isSignUp ? "Already have an account? Sign In" : "Don't have an account? Sign Up";
+        document.getElementById('user-name').classList.toggle('hidden', !isSignUp);
     };
 
-    document.getElementById('btn-verify-otp').onclick = async () => {
-        try { await confirmationResult.confirm(document.getElementById('otp-code').value); } catch (e) { alert("Invalid OTP"); }
+    // Main Auth Action
+    document.getElementById('btn-main-auth').onclick = async () => {
+        const email = document.getElementById('user-email').value;
+        const pass = document.getElementById('user-pass').value;
+        const name = document.getElementById('user-name').value;
+
+        try {
+            if (isSignUp) {
+                const res = await createUserWithEmailAndPassword(auth, email, pass);
+                await updateProfile(res.user, { displayName: name });
+                await setDoc(doc(db, "users", res.user.uid), { 
+                    displayName: name, 
+                    currentStep: 0, 
+                    correctTotal: 0, 
+                    totalSeconds: 0 
+                });
+            } else {
+                await signInWithEmailAndPassword(auth, email, pass);
+            }
+        } catch (e) { alert(e.message); }
     };
 
     document.getElementById('btn-logout').onclick = async () => { await signOut(auth); location.reload(); };
@@ -181,6 +197,7 @@
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             document.getElementById('auth-overlay').classList.add('hidden');
+            document.getElementById('current-player-name').innerText = user.displayName || "Explorer";
             const snap = await getDoc(doc(db, "users", user.uid));
             if (snap.exists()) {
                 currentStep = snap.data().currentStep || 0;
@@ -205,7 +222,7 @@
             const data = docSnap.data();
             const row = `<tr>
                 <td class="${rank === 1 ? 'rank-gold' : ''}">#${rank}</td>
-                <td>Player ${docSnap.id.substring(0, 5)}</td>
+                <td>${data.displayName || 'Unknown Player'}</td>
                 <td style="text-align: right; font-weight: bold; color: var(--secondary);">${(data.correctTotal || 0) * 10}</td>
             </tr>`;
             list.innerHTML += row;
@@ -284,16 +301,21 @@
             document.getElementById('submit-btn').classList.add('hidden');
             document.getElementById('next-btn').classList.remove('hidden');
             confetti();
-            fetchLeaderboard(); // Update rankings immediately
+            fetchLeaderboard();
         } else { document.getElementById('feedback').innerText = "❌ TRY AGAIN"; }
     };
 
     document.getElementById('next-btn').onclick = async () => {
         currentStep++; updateNavigator();
-        if (auth.currentUser) await setDoc(doc(db, "users", auth.currentUser.uid), { currentStep, correctTotal, totalSeconds }, { merge: true });
+        if (auth.currentUser) await setDoc(doc(db, "users", auth.currentUser.uid), { 
+            currentStep, 
+            correctTotal, 
+            totalSeconds,
+            displayName: auth.currentUser.displayName 
+        }, { merge: true });
         generateQuestion();
     };
 </script>
 </body>
 </html>
-                                            
+                                    
