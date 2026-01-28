@@ -14,7 +14,7 @@
         .auth-card { background: #16213e; padding: 30px; border-radius: 25px; border: 2px solid var(--primary); width: 90%; max-width: 380px; text-align: center; }
         input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--primary); background: #0f3460; color: white; box-sizing: border-box; text-align: center; font-size: 16px; }
         
-        /* Dashboard */
+        /* Dashboard - Speedometer Clocks */
         .dashboard { display: flex; justify-content: space-around; width: 100%; max-width: 500px; margin-top: 15px; }
         .clock-container { text-align: center; width: 30%; }
         .speed-clock { 
@@ -43,7 +43,7 @@
         .btn-primary { background: var(--primary); color: white; }
         .btn-logout { background: #ff4757; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; }
         
-        /* Updated Designer Footer with Photo on Left */
+        /* Designer Footer */
         .designer-box { 
             margin-top: 30px; padding: 20px; 
             display: flex; align-items: center; justify-content: center;
@@ -57,6 +57,14 @@
 
         .hidden { display: none !important; }
         #recaptcha-container { margin: 10px 0; display: flex; justify-content: center; }
+        
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
     </style>
 </head>
 <body>
@@ -64,11 +72,11 @@
     <div id="auth-overlay">
         <div class="auth-card">
             <h2 style="color:var(--primary)">MATH WORLD 3D</h2>
-            <p id="auth-status">Login to Start Quest</p>
+            <p id="auth-status">Login to Save Progress</p>
             <div id="phone-box">
                 <input type="tel" id="phone-number" placeholder="Mobile Number">
                 <div id="recaptcha-container"></div>
-                <button class="btn btn-primary" id="btn-send-otp">Send OTP</button>
+                <button class="btn btn-primary" id="btn-send-otp">Send SMS OTP</button>
             </div>
             <div id="otp-box" class="hidden">
                 <input type="text" id="otp-code" placeholder="6-digit OTP">
@@ -151,7 +159,7 @@
             confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
             document.getElementById('phone-box').classList.add('hidden');
             document.getElementById('otp-box').classList.remove('hidden');
-        } catch (e) { alert("Error: " + e.message); }
+        } catch (e) { alert("Format Error: " + e.message); }
     };
 
     document.getElementById('btn-verify-otp').onclick = async () => {
@@ -183,7 +191,10 @@
         nav.innerHTML = "";
         for(let i=1; i<=13; i++) {
             const dot = document.createElement('div');
-            dot.className = "nav-dot " + (currentStep >= (i*30) ? 'completed' : (currentStep >= (i-1)*30 ? 'active' : ''));
+            const levelStart = (i-1) * 30;
+            dot.className = "nav-dot";
+            if (currentStep >= levelStart && currentStep < levelStart + 30) dot.classList.add('active');
+            else if (currentStep >= levelStart + 30) dot.classList.add('completed');
             dot.innerText = i;
             nav.appendChild(dot);
         }
@@ -217,7 +228,7 @@
         
         let n1, n2, op = "+", title = "", isFrac = false;
 
-        // Level Math (30 quests per level)
+        // Level Logic
         if (currentStep < 30) { n1 = Math.floor(Math.random()*500); n2 = Math.floor(Math.random()*400); currentCorrectAns = n1+n2; title="Addition Easy"; }
         else if (currentStep < 60) { n1 = Math.floor(Math.random()*9000)+1000; n2 = Math.floor(Math.random()*9000)+1000; currentCorrectAns = n1+n2; title="Addition Hard"; }
         else if (currentStep < 90) { n1 = Math.floor(Math.random()*900); n2 = Math.floor(Math.random()*n1); op="-"; currentCorrectAns = n1-n2; title="Subtraction Easy"; }
@@ -225,8 +236,8 @@
         else if (currentStep < 150) { n1 = Math.floor(Math.random()*9)+1; n2 = Math.floor(Math.random()*9)+1; op="×"; currentCorrectAns = n1*n2; title="Multiplication Easy"; }
         else if (currentStep < 180) { n1 = Math.floor(Math.random()*15)+2; n2 = Math.floor(Math.random()*12)+2; op="×"; currentCorrectAns = n1*n2; title="Multiplication Hard"; }
         else if (currentStep < 270) { n1 = Math.floor((currentStep-180)/10)+2; n2 = Math.floor(Math.random()*10)+1; op="×"; currentCorrectAns = n1*n2; title="Tables: Level " + (Math.floor((currentStep-180)/30)+1); }
-        else if (currentStep < 300) { currentCorrectAns = Math.floor(Math.random()*9)+1; n2 = Math.floor(Math.random()*9)+1; n1 = currentCorrectAns * n2; op="÷"; title="Division Level 1"; }
-        else if (currentStep < 330) { currentCorrectAns = Math.floor(Math.random()*15)+5; n2 = Math.floor(Math.random()*12)+2; n1 = currentCorrectAns * n2; op="÷"; title="Division Level 2"; }
+        else if (currentStep < 300) { currentCorrectAns = Math.floor(Math.random()*9)+1; n2 = Math.floor(Math.random()*9)+1; n1 = currentCorrectAns * n2; op="÷"; title="Division Easy"; }
+        else if (currentStep < 330) { currentCorrectAns = Math.floor(Math.random()*15)+5; n2 = Math.floor(Math.random()*12)+2; n1 = currentCorrectAns * n2; op="÷"; title="Division Hard"; }
         else if (currentStep < 360) { isFrac = true; let den = Math.floor(Math.random()*8)+2; let u1 = Math.floor(Math.random()*(den-1))+1; let u2 = Math.floor(Math.random()*(den-1))+1; n1=`${u1}/${den}`; n2=`${u2}/${den}`; currentCorrectAns=`${u1+u2}/${den}`; title="Fractions Easy"; }
         else { isFrac = true; let den = Math.floor(Math.random()*12)+2; let u1 = Math.floor(Math.random()*den)+2; let u2 = Math.floor(Math.random()*den)+1; n1=`${u1}/${den}`; n2=`${u2}/${den}`; currentCorrectAns=`${u1+u2}/${den}`; title="Fractions Hard"; }
 
@@ -243,7 +254,6 @@
             for(let i=0; i<digits; i++) {
                 const inp = document.createElement('input'); 
                 inp.type = "number"; inp.className = "digit-input";
-                // REVERSED FOCUS: Ones -> Tens -> Hundreds
                 inp.oninput = function() { 
                     if(this.value.length > 0) { 
                         this.value = this.value.slice(-1); 
@@ -252,27 +262,33 @@
                 };
                 box.appendChild(inp);
             }
-            box.lastElementChild.focus(); // Start at the right-most box (ones place)
+            box.lastElementChild.focus(); 
         }
     }
 
     document.getElementById('submit-btn').onclick = () => {
         let userAns = "";
         const fracInp = document.getElementById('frac-ans');
-        if (fracInp) userAns = fracInp.value.replace(/\s/g, '');
-        else { 
-            // Correctly combine digits from right-to-left
-            document.querySelectorAll('.digit-input').forEach(i => userAns = i.value + userAns);
+        if (fracInp) {
+            userAns = fracInp.value.replace(/\s/g, '');
+        } else { 
+            // FIXED: Reads digits left-to-right correctly
+            document.querySelectorAll('.digit-input').forEach(i => userAns += i.value);
         }
 
-        if (userAns == currentCorrectAns && questSeconds > 0) {
+        if (userAns == currentCorrectAns.toString() && questSeconds > 0) {
             clearInterval(timerInterval);
             correctTotal++;
+            document.getElementById('correct-count').innerText = correctTotal;
             document.getElementById('feedback').innerText = "✅ EXCELLENT!";
             document.getElementById('submit-btn').classList.add('hidden');
             document.getElementById('next-btn').classList.remove('hidden');
             confetti();
-        } else { document.getElementById('feedback').innerText = "❌ TRY AGAIN"; }
+        } else { 
+            document.getElementById('feedback').innerText = "❌ TRY AGAIN";
+            document.getElementById('ans-box').style.animation = "shake 0.5s";
+            setTimeout(() => document.getElementById('ans-box').style.animation = "", 500);
+        }
     };
 
     document.getElementById('next-btn').onclick = async () => {
@@ -284,4 +300,3 @@
 </script>
 </body>
 </html>
-                    
