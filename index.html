@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Math World 3D: OTP Adventure</title>
+    <title>Math World 3D: Quest Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root { --primary: #00d2ff; --secondary: #00ff88; --accent: #ffd700; --text: #ffffff; }
@@ -12,7 +12,7 @@
             display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
 
-        /* Auth Overlay */
+        /* Auth UI */
         #auth-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.95); display: flex; justify-content: center;
@@ -24,7 +24,7 @@
         }
         input {
             width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px;
-            border: 1px solid var(--primary); background: #0f3460; color: white; box-sizing: border-box;
+            border: 1px solid var(--primary); background: #0f3460; color: white; box-sizing: border-box; text-align: center;
         }
 
         /* Game UI */
@@ -48,6 +48,7 @@
             font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 5px;
         }
         .btn-primary { background: var(--primary); color: white; }
+        .btn-small { width: auto; padding: 8px 15px; font-size: 0.7rem; background: #333; margin-bottom: 10px; }
         .hidden { display: none !important; }
         #recaptcha-container { margin: 10px 0; display: flex; justify-content: center; }
     </style>
@@ -56,17 +57,21 @@
 
     <div id="auth-overlay">
         <div class="auth-card">
-            <h2 style="color:var(--primary)">Math World 3D</h2>
-            <p>Verify phone to save your progress</p>
-            <input type="tel" id="phone-number" placeholder="+91 9876543210">
+            <h2 style="color:var(--primary)">MATH WORLD 3D</h2>
+            <p id="auth-status">Enter phone number to begin</p>
+            <input type="tel" id="phone-number" placeholder="+91 0000000000">
             <div id="recaptcha-container"></div>
             <input type="text" id="otp-code" class="hidden" placeholder="6-digit OTP">
-            <button class="btn btn-primary" id="btn-send-otp">Send OTP</button>
-            <button class="btn btn-primary hidden" id="btn-verify-otp">Verify OTP</button>
+            <button class="btn btn-primary" id="btn-send-otp">Send SMS OTP</button>
+            <button class="btn btn-primary hidden" id="btn-verify-otp">Verify & Play</button>
         </div>
     </div>
 
-    <h1 style="margin: 20px 0 0 0;">QUEST <span id="q-num">1</span></h1>
+    <div style="width: 95%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+        <h1 style="margin: 0;">QUEST <span id="q-num">1</span></h1>
+        <button class="btn btn-small" onclick="location.reload()">LOGOUT</button>
+    </div>
+
     <div class="container">
         <div class="math-area">
             <div id="n1">0</div>
@@ -79,17 +84,16 @@
         </div>
         
         <div id="feedback" style="text-align:center; height: 25px; font-weight:bold; color:var(--accent)"></div>
-        <button class="btn btn-primary" id="submit-btn">SUBMIT ANSWER</button>
+        <button class="btn btn-primary" id="submit-btn">CHECK ANSWER</button>
         <button class="btn btn-primary hidden" id="next-btn">NEXT QUEST ➔</button>
 
         <div class="leaderboard">
-            <h4 style="margin:0 0 10px 0;">🏆 GLOBAL CHAMPIONS</h4>
+            <h4 style="margin:0 0 10px 0;">🏆 GLOBAL TOP PLAYERS</h4>
             <div id="leader-list">Rankings loading...</div>
         </div>
     </div>
 
 <script type="module">
-    //
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -109,29 +113,34 @@
 
     let currentStep = 0, currentCorrectAns = 0, confirmationResult;
 
-    //
+    // Recaptcha setup
     window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 'size': 'normal' });
 
     document.getElementById('btn-send-otp').onclick = async () => {
         const phone = document.getElementById('phone-number').value;
+        if(!phone) return alert("Please enter a number!");
+        
+        document.getElementById('auth-status').innerText = "Sending SMS...";
         try {
             confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
             document.getElementById('otp-code').classList.remove('hidden');
             document.getElementById('btn-verify-otp').classList.remove('hidden');
             document.getElementById('btn-send-otp').classList.add('hidden');
             document.getElementById('recaptcha-container').classList.add('hidden');
-        } catch (e) { alert("Error: " + e.message); }
+            document.getElementById('auth-status').innerText = "Enter the 6-digit code";
+        } catch (e) { 
+            alert("Error: " + e.message); 
+            document.getElementById('auth-status').innerText = "Error. Try again.";
+        }
     };
 
     document.getElementById('btn-verify-otp').onclick = async () => {
         const code = document.getElementById('otp-code').value;
         try {
             await confirmationResult.confirm(code);
-            document.getElementById('auth-overlay').classList.add('hidden');
         } catch (e) { alert("Invalid OTP code."); }
     };
 
-    //
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             document.getElementById('auth-overlay').classList.add('hidden');
@@ -142,7 +151,6 @@
         }
     });
 
-    //
     function generateQuestion() {
         document.getElementById('feedback').innerText = "";
         document.getElementById('submit-btn').classList.remove('hidden');
@@ -152,67 +160,57 @@
         if (currentStep < 30) { n1 = Math.floor(Math.random()*500); n2 = Math.floor(Math.random()*400); op="+"; currentCorrectAns = n1+n2; }
         else if (currentStep < 60) { n1 = Math.floor(Math.random()*900); n2 = Math.floor(Math.random()*n1); op="-"; currentCorrectAns = n1-n2; }
         else if (currentStep < 90) { n1 = Math.floor(Math.random()*8000)+1000; n2 = Math.floor(Math.random()*n1); op="-"; currentCorrectAns = n1-n2; }
-        else if (currentStep < 180) { n1 = Math.floor(Math.random()*12)+1; n2 = Math.floor(Math.random()*12)+1; op="×"; currentCorrectAns = n1*n2; }
-        else { 
-            isFrac = true; let den = Math.floor(Math.random()*8)+2; 
-            let u1 = Math.floor(Math.random()*(den-1))+1; let u2 = Math.floor(Math.random()*(den-1))+1;
-            n1 = `${u1}/${den}`; n2 = `${u2}/${den}`; op="+"; currentCorrectAns = `${u1+u2}/${den}`;
-        }
+        else { n1 = Math.floor(Math.random()*12)+1; n2 = Math.floor(Math.random()*12)+1; op="×"; currentCorrectAns = n1*n2; }
 
-        document.getElementById('n1').innerText = n1;
-        document.getElementById('n2').innerText = n2;
+        document.getElementById('n1').innerText = n1.toLocaleString();
+        document.getElementById('n2').innerText = n2.toLocaleString();
         document.getElementById('op').innerText = op;
         document.getElementById('q-num').innerText = currentStep + 1;
 
         const box = document.getElementById('ans-box');
         box.innerHTML = "";
-        if (isFrac) {
-            box.innerHTML = `<input type="text" id="frac-ans" class="fraction-input" placeholder="n/d">`;
-        } else {
-            const digits = currentCorrectAns.toString().length;
-            for(let i=0; i<digits; i++) {
-                const inp = document.createElement('input');
-                inp.type = "number"; inp.className = "digit-input";
-                inp.oninput = function() { if(this.value.length > 0) { this.value = this.value.slice(-1); if(this.previousElementSibling) this.previousElementSibling.focus(); } };
-                box.appendChild(inp);
-            }
-            box.lastElementChild.focus();
+        const digits = currentCorrectAns.toString().length;
+        for(let i=0; i<digits; i++) {
+            const inp = document.createElement('input');
+            inp.type = "number"; inp.className = "digit-input";
+            inp.oninput = function() { 
+                if(this.value.length > 0) { 
+                    this.value = this.value.slice(-1); 
+                    if(this.previousElementSibling) this.previousElementSibling.focus(); 
+                } 
+            };
+            box.appendChild(inp);
         }
+        box.lastElementChild.focus();
     }
 
     document.getElementById('submit-btn').onclick = () => {
         let userAns = "";
-        const fracInp = document.getElementById('frac-ans');
-        if (fracInp) {
-            userAns = fracInp.value.replace(/\s/g, '');
-        } else {
-            document.querySelectorAll('.digit-input').forEach(i => userAns += i.value);
-            userAns = userAns.split("").reverse().join("");
-        }
+        document.querySelectorAll('.digit-input').forEach(i => userAns += i.value);
+        userAns = userAns.split("").reverse().join("");
 
         if (userAns.toString() === currentCorrectAns.toString()) {
-            document.getElementById('feedback').innerText = "✅ EXCELLENT!";
+            document.getElementById('feedback').innerText = "✨ EXCELLENT!";
             document.getElementById('submit-btn').classList.add('hidden');
             document.getElementById('next-btn').classList.remove('hidden');
-            confetti();
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
         } else {
             document.getElementById('feedback').innerText = "❌ TRY AGAIN";
         }
     };
 
-    //
     document.getElementById('next-btn').onclick = async () => {
         currentStep++;
         if (auth.currentUser) {
             await setDoc(doc(db, "users", auth.currentUser.uid), {
                 phone: auth.currentUser.phoneNumber,
-                currentStep: currentStep
+                currentStep: currentStep,
+                lastActive: new Date()
             }, { merge: true });
         }
         generateQuestion();
     };
 
-    //
     function initLeaderboard() {
         const q = query(collection(db, "users"), orderBy("currentStep", "desc"), limit(5));
         onSnapshot(q, (snap) => {
@@ -220,12 +218,12 @@
             list.innerHTML = "";
             snap.forEach(doc => {
                 const d = doc.data();
-                const masked = d.phone ? d.phone.substring(0, 6) + "****" : "Explorer";
-                list.innerHTML += `<div class="leader-row"><span>${masked}</span><span>Q${d.currentStep}</span></div>`;
+                const masked = d.phone ? d.phone.substring(0, 7) + "***" : "Student";
+                list.innerHTML += `<div class="leader-row"><span>${masked}</span><span>Quest ${d.currentStep}</span></div>`;
             });
         });
     }
 </script>
 </body>
 </html>
-                                    
+    
