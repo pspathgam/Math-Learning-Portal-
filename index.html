@@ -3,184 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>3D Math Adventure Pro</title>
+    <title>3D Math Adventure Pro - Cloud Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --primary: #00d2ff;
-            --secondary: #00ff88;
-            --accent: #ffd700;
-            --info: #ff00de;
-            --error: #ff4d4d;
-            --text: #ffffff;
+            --primary: #00d2ff; --secondary: #00ff88; --accent: #ffd700;
+            --info: #ff00de; --error: #ff4d4d; --text: #ffffff;
         }
 
         body { 
             font-family: 'Segoe UI', sans-serif; 
             background: linear-gradient(-45deg, #1a1a2e, #16213e, #0f3460, #1b1b4b);
-            background-size: 400% 400%;
-            animation: gradientMove 12s ease infinite;
-            margin: 0; 
-            color: var(--text);
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            min-height: 100vh;
-            padding: 10px;
-            perspective: 1200px;
+            background-size: 400% 400%; animation: gradientMove 12s ease infinite;
+            margin: 0; color: var(--text); display: flex; flex-direction: column; 
+            align-items: center; min-height: 100vh; padding: 10px; perspective: 1200px;
             overflow-x: hidden;
         }
 
-        @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        .portal-title {
-            font-size: clamp(1.8rem, 8vw, 3.5rem);
-            font-weight: 900;
-            text-transform: uppercase;
-            margin: 10px 0;
-            text-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            animation: float 3s ease-in-out infinite;
-            transform-style: preserve-3d;
-        }
+        .portal-title { font-size: clamp(1.8rem, 8vw, 3.5rem); font-weight: 900; text-transform: uppercase; margin: 10px 0; text-shadow: 0 10px 20px rgba(0,0,0,0.5); animation: float 3s ease-in-out infinite; transform-style: preserve-3d; }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotateX(5deg); } 50% { transform: translateY(-10px) rotateX(-5deg); } }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotateX(5deg); }
-            50% { transform: translateY(-10px) rotateX(-5deg); }
-        }
+        .level-mover { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; margin-bottom: 15px; width: 100%; max-width: 600px; }
+        .level-dot { padding: 5px 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; font-size: 0.7rem; font-weight: bold; transition: 0.3s; }
+        .level-dot.active { background: var(--secondary); color: #000; box-shadow: 0 0 15px var(--secondary); }
 
-        .level-mover {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 15px;
-            width: 100%;
-            max-width: 600px;
-        }
-        .level-dot {
-            padding: 5px 10px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        .level-dot.active {
-            background: var(--secondary);
-            color: #000;
-            transform: scale(1.1) translateZ(10px);
-            box-shadow: 0 0 15px var(--secondary);
-        }
-
-        .dashboard {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            max-width: 550px;
-            margin-bottom: 15px;
-            transform: rotateX(15deg);
-        }
-
-        .gauge-container {
-            position: relative;
-            width: 105px;
-            height: 62px;
-            overflow: hidden;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 65px 65px 0 0;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.4);
-        }
-
+        .dashboard { display: flex; justify-content: center; gap: 10px; width: 100%; max-width: 550px; margin-bottom: 15px; transform: rotateX(15deg); }
+        .gauge-container { position: relative; width: 105px; height: 62px; overflow: hidden; background: rgba(255, 255, 255, 0.1); border-radius: 65px 65px 0 0; border: 2px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 15px rgba(0,0,0,0.4); }
         .gauge-svg { width: 105px; height: 105px; transform: rotate(-180deg); }
         .gauge-bg { fill: none; stroke: rgba(255, 255, 255, 0.1); stroke-width: 10; }
         .gauge-fill { fill: none; stroke-width: 10; stroke-dasharray: 142; stroke-dashoffset: 142; transition: 1s cubic-bezier(0.4, 0, 0.2, 1); stroke-linecap: round; }
-
         .gauge-label { position: absolute; bottom: 2px; width: 100%; text-align: center; font-size: 0.6rem; font-weight: bold; color: rgba(255,255,255,0.7); }
         .gauge-value { position: absolute; bottom: 16px; width: 100%; text-align: center; font-weight: bold; font-size: 0.95rem; }
 
-        .container { 
-            width: 100%; 
-            max-width: 500px; 
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(25px);
-            padding: 22px; 
-            border-radius: 35px; 
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5); 
-            text-align: center;
-            transform-style: preserve-3d;
-            animation: slideIn 0.8s ease-out;
-        }
+        .container { width: 100%; max-width: 500px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(25px); padding: 22px; border-radius: 35px; border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 30px 60px rgba(0,0,0,0.5); text-align: center; transform-style: preserve-3d; }
 
-        @keyframes slideIn {
-            from { transform: translateY(100px) rotateX(30deg); opacity: 0; }
-            to { transform: translateY(0) rotateX(0deg); opacity: 1; }
-        }
-
-        .math-area { 
-            font-family: 'Courier New', monospace; 
-            font-size: clamp(3rem, 14vw, 5.5rem); 
-            font-weight: 900; 
-            text-align: right; 
-            margin: 5px 0; 
-            text-shadow: 3px 3px 0px rgba(0,0,0,0.4);
-        }
-
+        .math-area { font-family: 'Courier New', monospace; font-size: clamp(3rem, 14vw, 5.5rem); font-weight: 900; text-align: right; margin: 5px 0; text-shadow: 3px 3px 0px rgba(0,0,0,0.4); }
         .op-row { display: flex; justify-content: space-between; align-items: center; }
-        .operator { padding-right: 15px; color: var(--secondary); font-size: 1.2em; }
-        
         .digit-row { display: flex; justify-content: flex-end; align-items: center; flex-direction: row-reverse;}
-        .carry-box { width: 24px; height: 24px; border: 1.5px dashed var(--primary); margin-left: 5px; color: var(--primary); border-radius: 5px; font-size: 15px; font-weight: bold; }
+        .digit-input { width: clamp(35px, 11vw, 55px); height: clamp(55px, 15vw, 75px); font-size: 2.5rem; text-align: center; border: 3px solid rgba(255,255,255,0.4); border-radius: 15px; background: rgba(0,0,0,0.5); color: white; margin: 0 3px; }
+        .fraction-input { width: 120px; height: 60px; font-size: 2rem; text-align: center; background: rgba(0,0,0,0.5); color: white; border: 3px solid var(--primary); border-radius: 15px; }
 
-        .digit-input { 
-            width: clamp(35px, 11vw, 55px); 
-            height: clamp(55px, 15vw, 75px); 
-            font-size: 2.5rem; 
-            text-align: center; 
-            border: 3px solid rgba(255,255,255,0.4); 
-            border-radius: 15px; 
-            background: rgba(0,0,0,0.5); 
-            color: white; 
-            margin: 0 3px;
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .digit-input:focus { border-color: var(--secondary); transform: scale(1.1) translateZ(15px); outline: none; background: rgba(0,0,0,0.7); }
-
-        /* Special input for fractions */
-        .fraction-input {
-            width: 120px;
-            height: 60px;
-            font-size: 2rem;
-            text-align: center;
-            background: rgba(0,0,0,0.5);
-            color: white;
-            border: 3px solid var(--primary);
-            border-radius: 15px;
-        }
-
-        #feedback { min-height: 1.8rem; font-weight: bold; margin: 10px 0; font-size: 1.2rem; }
-
-        .btn-submit { 
-            width: 100%; padding: 16px; font-size: 1.4rem; font-weight: bold; color: white; 
-            background: linear-gradient(45deg, var(--primary), #3a7bd5); 
-            border: none; border-radius: 20px; cursor: pointer;
-            box-shadow: 0 8px 0 #1e5f9a;
-            transition: 0.1s;
-        }
-        .btn-submit:active { transform: translateY(4px); box-shadow: 0 4px 0 #1e5f9a; }
-
-        .developer-credit { margin-top: auto; padding: 20px; font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+        .btn-submit { width: 100%; padding: 16px; font-size: 1.4rem; font-weight: bold; color: white; background: linear-gradient(45deg, var(--primary), #3a7bd5); border: none; border-radius: 20px; cursor: pointer; box-shadow: 0 8px 0 #1e5f9a; transition: 0.1s; margin-bottom: 10px;}
         .hidden { display: none; }
+
+        /* Auth and Leaderboard Styles */
+        .auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .auth-box { background: #16213e; padding: 30px; border-radius: 20px; border: 2px solid var(--primary); width: 90%; max-width: 400px; text-align: center; }
+        .auth-input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: none; font-size: 1rem; }
+        
+        .leaderboard-card { margin-top: 20px; background: rgba(0,0,0,0.3); border-radius: 20px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); }
+        .leader-entry { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
 <body>
+
+    <div id="auth-modal" class="auth-overlay">
+        <div class="auth-box">
+            <h2>Welcome Explorer!</h2>
+            <p>Sign in to save your progress & compete!</p>
+            <input type="email" id="auth-email" class="auth-input" placeholder="Email">
+            <input type="password" id="auth-password" class="auth-input" placeholder="Password">
+            <button class="btn-submit" id="btn-login">Login</button>
+            <button style="background:none; border:none; color:var(--primary); cursor:pointer;" id="btn-toggle-signup">Need an account? Sign Up</button>
+        </div>
+    </div>
 
     <h1 class="portal-title">Math World 3D</h1>
 
@@ -219,30 +107,49 @@
         </div>
 
         <div id="game-area">
-            <div id="carry-container" class="digit-row"></div>
             <div class="math-area">
                 <div id="num1">00</div>
                 <div class="op-row">
                     <span id="operator-sym" class="operator">+</span>
                     <span id="num2">00</span>
                 </div>
-                <div style="border-top: 5px solid white; margin: 8px 0; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);"></div>
+                <div style="border-top: 5px solid white; margin: 8px 0; border-radius: 10px;"></div>
                 <div id="answer-container" class="digit-row"></div>
             </div>
         </div>
 
         <div id="feedback"></div>
-        <button class="btn-submit" id="submit-btn" onclick="checkAnswer()">SUBMIT ANSWER</button>
-        <button class="btn-submit hidden" id="next-btn" onclick="nextQuestion()">NEXT CHALLENGE ➔</button>
-        <button style="background:none; border:none; color:rgba(255,255,255,0.2); font-size:0.75rem; margin-top:15px; cursor:pointer;" onclick="resetProgress()">Reset Progress</button>
+        <button class="btn-submit" id="submit-btn">SUBMIT ANSWER</button>
+        <button class="btn-submit hidden" id="next-btn">NEXT CHALLENGE ➔</button>
+
+        <div class="leaderboard-card">
+            <h4>🏆 Top 5 Champions</h4>
+            <div id="leaderboard-list">Loading...</div>
+        </div>
     </div>
 
-    <div class="developer-credit">Designed & Developed by <b>Mohammad Ashraf Rather</b></div>
+<script type="module">
+    // --- FIREBASE SDK CONFIGURATION ---
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-<script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC6FbPb36F69k7cw_tLbGQoVQxs6shzfAo",
+      authDomain: "math-world-3d.firebaseapp.com",
+      projectId: "math-world-3d",
+      storageBucket: "math-world-3d.firebasestorage.app",
+      messagingSenderId: "526717782686",
+      appId: "1:526717782686:web:21dddbcb293323eda8098f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // --- GAME VARIABLES ---
     let currentStep = 0, coins = 0, correctCount = 0, totalTimeSpent = 0;
     let timer, timeLeft = 60, currentCorrectAns = 0;
-    const maxDash = 142;
     const TOTAL_QUESTS = 210;
 
     const sounds = {
@@ -251,150 +158,143 @@
         fanfare: new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_1459207869.mp3')
     };
 
-    function loadProgress() {
-        const saved = localStorage.getItem('math3DProProgress');
-        if (saved) {
-            const data = JSON.parse(saved);
-            currentStep = data.currentStep || 0;
-            coins = data.coins || 0;
-            correctCount = data.correctCount || 0;
-            totalTimeSpent = data.totalTimeSpent || 0;
-            document.getElementById('coin-count').innerText = coins;
+    // --- FIREBASE SYNC FUNCTIONS ---
+    async function syncToCloud() {
+        if (auth.currentUser) {
+            await setDoc(doc(db, "users", auth.currentUser.uid), {
+                email: auth.currentUser.email,
+                currentStep, coins, correctCount, totalTimeSpent,
+                lastActive: new Date()
+            }, { merge: true });
         }
     }
 
-    function saveProgress() {
-        localStorage.setItem('math3DProProgress', JSON.stringify({ currentStep, coins, correctCount, totalTimeSpent }));
+    function initLeaderboard() {
+        const q = query(collection(db, "users"), orderBy("correctCount", "desc"), limit(5));
+        onSnapshot(q, (snapshot) => {
+            const list = document.getElementById('leaderboard-list');
+            list.innerHTML = "";
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                list.innerHTML += `<div class="leader-entry"><span>${data.email.split('@')[0]}</span><span>${data.correctCount} ✅</span></div>`;
+            });
+        });
     }
 
-    function resetProgress() { if(confirm("Start your journey from zero?")) { localStorage.clear(); location.reload(); } }
+    // --- AUTH UI HANDLERS ---
+    let isSigningUp = false;
+    document.getElementById('btn-toggle-signup').onclick = () => {
+        isSigningUp = !isSigningUp;
+        document.getElementById('btn-login').innerText = isSigningUp ? "Sign Up" : "Login";
+        document.getElementById('btn-toggle-signup').innerText = isSigningUp ? "Already have an account? Login" : "Need an account? Sign Up";
+    };
 
+    document.getElementById('btn-login').onclick = async () => {
+        const email = document.getElementById('auth-email').value;
+        const pass = document.getElementById('auth-password').value;
+        try {
+            if (isSigningUp) await createUserWithEmailAndPassword(auth, email, pass);
+            else await signInWithEmailAndPassword(auth, email, pass);
+            document.getElementById('auth-modal').classList.add('hidden');
+        } catch (e) { alert(e.message); }
+    };
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            document.getElementById('auth-modal').classList.add('hidden');
+            const snap = await getDoc(doc(db, "users", user.uid));
+            if (snap.exists()) {
+                const d = snap.data();
+                currentStep = d.currentStep; coins = d.coins; correctCount = d.correctCount; totalTimeSpent = d.totalTimeSpent;
+                document.getElementById('coin-count').innerText = coins;
+            }
+            initLeaderboard();
+            generateQuestion();
+        }
+    });
+
+    // --- GAME CORE LOGIC ---
     function updateGauges() {
-        document.getElementById('timer-fill').style.strokeDashoffset = maxDash - (timeLeft / 60) * maxDash;
+        document.getElementById('timer-fill').style.strokeDashoffset = 142 - (timeLeft / 60) * 142;
         document.getElementById('timer-text').innerText = timeLeft;
-        document.getElementById('score-fill').style.strokeDashoffset = maxDash - (correctCount / TOTAL_QUESTS) * maxDash;
+        document.getElementById('score-fill').style.strokeDashoffset = 142 - (correctCount / TOTAL_QUESTS) * 142;
         document.getElementById('score-text').innerText = correctCount;
-        document.getElementById('total-time-fill').style.strokeDashoffset = maxDash - (Math.min(totalTimeSpent, 5000) / 5000) * maxDash;
         document.getElementById('total-time-text').innerText = totalTimeSpent + "s";
     }
 
-    function startTimer() {
-        clearInterval(timer); timeLeft = 60; updateGauges();
+    function generateQuestion() {
+        clearInterval(timer); timeLeft = 60; 
         timer = setInterval(() => {
             timeLeft--; totalTimeSpent++; updateGauges();
-            if (timeLeft <= 0) { clearInterval(timer); sounds.wrong.play(); nextQuestion(); }
-            saveProgress();
+            if (timeLeft <= 0) { sounds.wrong.play(); generateQuestion(); }
         }, 1000);
-    }
 
-    function generateQuestion() {
-        startTimer();
         document.getElementById('feedback').innerText = "";
         document.getElementById('submit-btn').classList.remove('hidden');
         document.getElementById('next-btn').classList.add('hidden');
         document.querySelectorAll('.level-dot').forEach((d, i) => d.classList.toggle('active', Math.floor(currentStep/30) === i));
 
-        let n1, n2, op;
-        let isFraction = false;
-
-        // Level Logic
-        if (currentStep < 30) { // L1: Add
-            n1 = Math.floor(Math.random() * 500) + 100; n2 = Math.floor(Math.random() * 400) + 100; op = "+"; currentCorrectAns = n1 + n2; 
-        } else if (currentStep < 60) { // L2: Sub
-            n1 = Math.floor(Math.random() * 900) + 100; n2 = Math.floor(Math.random() * n1); op = "-"; currentCorrectAns = n1 - n2; 
-        } else if (currentStep < 90) { // L3: Updated to 4-Digit Sub
-            n1 = Math.floor(Math.random() * 8000) + 1000; n2 = Math.floor(Math.random() * n1); op = "-"; currentCorrectAns = n1 - n2; 
-        } else if (currentStep < 120) { // L4: Easy X
-            n1 = Math.floor(Math.random() * 50) + 10; n2 = Math.floor(Math.random() * 9) + 2; op = "×"; currentCorrectAns = n1 * n2; 
-        } else if (currentStep < 150) { // L5: Pro X
-            n1 = Math.floor(Math.random() * 99) + 11; n2 = Math.floor(Math.random() * 89) + 11; op = "×"; currentCorrectAns = n1 * n2; 
-        } else if (currentStep < 180) { // L6: Tables
-            n1 = Math.floor(Math.random() * 12) + 1; n2 = Math.floor(Math.random() * 12) + 1; op = "×"; currentCorrectAns = n1 * n2;
-        } else { // L7: Fractions
-            isFraction = true;
-            let den = Math.floor(Math.random() * 8) + 2;
-            let num1 = Math.floor(Math.random() * (den - 1)) + 1;
-            let num2 = Math.floor(Math.random() * (den - 1)) + 1;
-            n1 = `${num1}/${den}`; n2 = `${num2}/${den}`; op = "+";
-            currentCorrectAns = `${num1 + num2}/${den}`;
+        let n1, n2, op, isFraction = false;
+        if (currentStep < 30) { n1 = Math.floor(Math.random()*500)+100; n2 = Math.floor(Math.random()*400)+100; op="+"; currentCorrectAns = n1+n2; }
+        else if (currentStep < 60) { n1 = Math.floor(Math.random()*900)+100; n2 = Math.floor(Math.random()*n1); op="-"; currentCorrectAns = n1-n2; }
+        else if (currentStep < 90) { n1 = Math.floor(Math.random()*8000)+1000; n2 = Math.floor(Math.random()*n1); op="-"; currentCorrectAns = n1-n2; }
+        else if (currentStep < 120) { n1 = Math.floor(Math.random()*50)+10; n2 = Math.floor(Math.random()*9)+2; op="×"; currentCorrectAns = n1*n2; }
+        else if (currentStep < 150) { n1 = Math.floor(Math.random()*99)+11; n2 = Math.floor(Math.random()*89)+11; op="×"; currentCorrectAns = n1*n2; }
+        else if (currentStep < 180) { n1 = Math.floor(Math.random()*12)+1; n2 = Math.floor(Math.random()*12)+1; op="×"; currentCorrectAns = n1*n2; }
+        else { 
+            isFraction = true; let den = Math.floor(Math.random()*8)+2; 
+            let u1 = Math.floor(Math.random()*(den-1))+1; let u2 = Math.floor(Math.random()*(den-1))+1;
+            n1 = `${u1}/${den}`; n2 = `${u2}/${den}`; op="+"; currentCorrectAns = `${u1+u2}/${den}`;
         }
 
         document.getElementById('num1').innerText = isFraction ? n1 : n1.toLocaleString();
         document.getElementById('num2').innerText = isFraction ? n2 : n2.toLocaleString();
         document.getElementById('operator-sym').innerText = op;
-        document.getElementById('q-label').innerText = `Quest: ${currentStep + 1}/${TOTAL_QUESTS}`;
+        document.getElementById('q-label').innerText = `Quest: ${currentStep+1}/${TOTAL_QUESTS}`;
 
         const ansRow = document.getElementById('answer-container');
-        const cryRow = document.getElementById('carry-container');
-        ansRow.innerHTML = ""; cryRow.innerHTML = "";
-
+        ansRow.innerHTML = "";
         if (isFraction) {
-            const input = document.createElement('input');
-            input.type = "text"; input.className = "fraction-input";
-            input.placeholder = "n/d";
-            ansRow.appendChild(input);
-            setTimeout(() => input.focus(), 300);
+            const input = document.createElement('input'); input.type = "text"; input.className = "fraction-input"; input.placeholder = "n/d";
+            ansRow.appendChild(input); setTimeout(() => input.focus(), 300);
         } else {
             const digits = currentCorrectAns.toString().length;
             for (let i = 0; i < digits; i++) {
-                cryRow.innerHTML += `<div class="carry-box" contenteditable="true"></div>`;
-                const input = document.createElement('input');
-                input.type = "number"; input.className = "digit-input";
-                input.oninput = function() { 
-                    if (this.value.length > 0) { 
-                        this.value = this.value.slice(-1); 
-                        if(this.previousElementSibling) this.previousElementSibling.focus(); 
-                    }
-                };
+                const input = document.createElement('input'); input.type = "number"; input.className = "digit-input";
+                input.oninput = function() { if(this.value.length > 0) { this.value = this.value.slice(-1); if(this.previousElementSibling) this.previousElementSibling.focus(); } };
                 ansRow.appendChild(input);
             }
             setTimeout(() => ansRow.lastElementChild.focus(), 300);
         }
     }
 
-    function checkAnswer() {
+    document.getElementById('submit-btn').onclick = () => {
         let userAns = "";
         const inputs = document.querySelectorAll('.digit-input, .fraction-input');
-        
-        if (inputs[0].classList.contains('fraction-input')) {
-            userAns = inputs[0].value.replace(/\s/g, '');
-        } else {
-            // Collect digits from left-to-right (the row is reversed in CSS for math alignment)
-            const digitInputs = Array.from(document.querySelectorAll('.digit-input'));
-            digitInputs.reverse().forEach(inp => userAns += inp.value);
-        }
-
-        if (userAns === "") return;
+        if (inputs[0].classList.contains('fraction-input')) { userAns = inputs[0].value.replace(/\s/g, ''); }
+        else { Array.from(inputs).reverse().forEach(inp => userAns += inp.value); }
 
         if (userAns.toString() === currentCorrectAns.toString()) {
-            clearInterval(timer); coins += 10; correctCount++;
-            sounds.correct.play();
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#00d2ff', '#00ff88', '#ffd700'] });
-            
+            clearInterval(timer); coins += 10; correctCount++; sounds.correct.play();
+            confetti({ particleCount: 100, spread: 70 });
             document.getElementById('coin-count').innerText = coins;
-            document.getElementById('feedback').innerHTML = "<span style='color:var(--secondary)'>✨ BRILLIANT! +10 Coins</span>";
+            document.getElementById('feedback').innerHTML = "<span style='color:var(--secondary)'>✨ BRILLIANT!</span>";
             document.getElementById('submit-btn').classList.add('hidden');
             document.getElementById('next-btn').classList.remove('hidden');
-            saveProgress();
+            syncToCloud();
         } else {
-            sounds.wrong.play();
-            document.getElementById('feedback').innerHTML = "<span style='color:var(--error)'>🌪️ TRY AGAIN</span>";
+            sounds.wrong.play(); document.getElementById('feedback').innerHTML = "<span style='color:var(--error)'>🌪️ TRY AGAIN</span>";
             setTimeout(generateQuestion, 1200);
         }
-    }
+    };
 
-    function nextQuestion() {
+    document.getElementById('next-btn').onclick = () => {
         currentStep++;
         if (currentStep % 30 === 0) sounds.fanfare.play();
         if (currentStep < TOTAL_QUESTS) generateQuestion();
-        else {
-            confetti({ particleCount: 500, spread: 160 });
-            document.getElementById('game-area').innerHTML = "<h1 style='color:var(--accent)'>🎓 MATH LEGEND!</h1><p>You completed all quests!</p>";
-        }
-    }
-
-    loadProgress();
-    generateQuestion();
+        else { document.getElementById('game-area').innerHTML = "<h1>🎓 MATH LEGEND!</h1>"; syncToCloud(); }
+    };
 </script>
 </body>
 </html>
+                    
