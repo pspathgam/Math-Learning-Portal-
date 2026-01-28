@@ -14,7 +14,7 @@
         .auth-card { background: #16213e; padding: 30px; border-radius: 25px; border: 2px solid var(--primary); width: 90%; max-width: 380px; text-align: center; }
         input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--primary); background: #0f3460; color: white; box-sizing: border-box; text-align: center; font-size: 16px; }
         
-        /* Speedometer Clock Styles */
+        /* Speedometer Dashboard */
         .dashboard { display: flex; justify-content: space-around; width: 100%; max-width: 500px; margin-top: 15px; }
         .clock-container { text-align: center; width: 30%; }
         .speed-clock { 
@@ -24,18 +24,31 @@
             background: radial-gradient(#16213e, #0b0e14); margin: 0 auto;
             position: relative; box-shadow: 0 0 15px rgba(0,210,255,0.3);
         }
-        .clock-val { font-size: 1.2rem; font-weight: bold; color: var(--text); }
-        .clock-label { font-size: 0.6rem; text-transform: uppercase; color: var(--primary); margin-top: 5px; letter-spacing: 1px; }
+        .clock-val { font-size: 1.2rem; font-weight: bold; }
+        .clock-label { font-size: 0.6rem; text-transform: uppercase; color: var(--primary); margin-top: 5px; }
 
-        /* Existing Game UI */
+        /* Level Navigator */
+        .level-navigator { width: 95%; max-width: 500px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 15px; margin-top: 15px; overflow-x: auto; white-space: nowrap; display: flex; gap: 8px; border: 1px solid #444; }
+        .nav-dot { min-width: 35px; height: 35px; border-radius: 8px; background: #333; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; border: 1px solid #555; }
+        .nav-dot.active { background: var(--primary); color: #000; font-weight: bold; border-color: white; }
+        .nav-dot.completed { background: var(--secondary); color: #000; }
+
+        /* Game Container */
         .container { width: 95%; max-width: 500px; background: rgba(255,255,255,0.1); padding: 20px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.2); margin-top: 15px; }
         .math-area { font-size: clamp(2.5rem, 10vw, 4rem); font-weight: 900; text-align: right; margin: 15px 0; }
         .digit-input { width: 45px; height: 65px; font-size: 2rem; text-align: center; margin: 0 4px; border-radius: 12px; border: 2px solid var(--primary); background: rgba(0,0,0,0.4); color: white; }
         .fraction-input { width: 140px; height: 60px; font-size: 1.8rem; text-align: center; border: 2px solid var(--accent); border-radius: 10px; background: rgba(0,0,0,0.5); color: white; }
         
-        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 5px; }
+        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; margin-top: 5px; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-logout { width: auto; padding: 8px 15px; font-size: 0.8rem; background: #ff4757; border-radius: 8px; border: none; color: white; cursor: pointer; }
+        .btn-logout { background: #ff4757; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; }
+        
+        /* Designer Footer */
+        .designer-box { margin-top: 30px; padding: 20px; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 500px; }
+        .designer-photo { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--primary); margin-bottom: 10px; object-fit: cover; }
+        .designer-name { font-weight: bold; color: var(--primary); margin: 0; }
+        .designer-title { font-size: 0.8rem; color: #888; margin: 2px 0; }
+
         .hidden { display: none !important; }
         #recaptcha-container { margin: 10px 0; display: flex; justify-content: center; }
     </style>
@@ -45,11 +58,11 @@
     <div id="auth-overlay">
         <div class="auth-card">
             <h2 style="color:var(--primary)">MATH WORLD 3D</h2>
-            <p id="auth-status">Enter Phone to Progress</p>
+            <p id="auth-status">Login with Mobile</p>
             <div id="phone-box">
-                <input type="tel" id="phone-number" placeholder="Mobile Number">
+                <input type="tel" id="phone-number" placeholder="9876543210">
                 <div id="recaptcha-container"></div>
-                <button class="btn btn-primary" id="btn-send-otp">Send SMS OTP</button>
+                <button class="btn btn-primary" id="btn-send-otp">Send OTP</button>
             </div>
             <div id="otp-box" class="hidden">
                 <input type="text" id="otp-code" placeholder="6-digit OTP">
@@ -66,7 +79,7 @@
     <div class="dashboard">
         <div class="clock-container">
             <div class="speed-clock" id="timer-clock"><span class="clock-val" id="q-timer">80</span></div>
-            <div class="clock-label">Quest Time</div>
+            <div class="clock-label">Time Limit</div>
         </div>
         <div class="clock-container">
             <div class="speed-clock" style="border-top-color: var(--secondary);"><span class="clock-val" id="total-time">0</span></div>
@@ -78,8 +91,11 @@
         </div>
     </div>
 
+    <div class="level-navigator" id="level-nav">
+        </div>
+
     <div class="container">
-        <div id="level-title" style="color: var(--secondary); font-weight: bold; text-align: center; text-transform: uppercase;">LEVEL LOADING...</div>
+        <div id="level-title" style="color: var(--secondary); font-weight: bold; text-align: center; text-transform: uppercase;">LOADING...</div>
         <div class="math-area">
             <div id="n1">0</div>
             <div style="display:flex; justify-content: space-between;"><span style="color:var(--secondary)" id="op">+</span><span id="n2">0</span></div>
@@ -87,8 +103,14 @@
             <div id="ans-box" style="display:flex; justify-content: flex-end; flex-direction: row-reverse;"></div>
         </div>
         <div id="feedback" style="text-align:center; height: 25px; font-weight:bold; color:var(--accent)"></div>
-        <button class="btn btn-primary" id="submit-btn">SUBMIT ANSWER</button>
+        <button class="btn btn-primary" id="submit-btn">SUBMIT</button>
         <button class="btn btn-primary hidden" id="next-btn">NEXT QUEST ➔</button>
+    </div>
+
+    <div class="designer-box">
+        <img src="https://via.placeholder.com/80" alt="Mohammad Ashraf Rather" class="designer-photo" id="arch-photo">
+        <p class="designer-name">Mohammad Ashraf Rather</p>
+        <p class="designer-title">Designer & Architect</p>
     </div>
 
 <script type="module">
@@ -110,12 +132,11 @@
     const db = getFirestore(app);
 
     let currentStep = 0, currentCorrectAns = 0, confirmationResult;
-    let questSeconds = 80, totalSeconds = 0, correctTotal = 0, timerActive = false;
+    let questSeconds = 80, totalSeconds = 0, correctTotal = 0;
     let timerInterval, totalTimeInterval;
 
     window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 'size': 'normal' });
 
-    // Login logic
     document.getElementById('btn-send-otp').onclick = async () => {
         let phone = document.getElementById('phone-number').value.trim();
         if (!phone.startsWith('+')) phone = "+91" + phone;
@@ -144,10 +165,26 @@
                 correctTotal = snap.data().correctTotal || 0;
                 totalSeconds = snap.data().totalSeconds || 0;
             }
+            updateNavigator();
             startTotalTimer();
             generateQuestion();
         }
     });
+
+    function updateNavigator() {
+        const nav = document.getElementById('level-nav');
+        nav.innerHTML = "";
+        const totalLevels = 13;
+        for(let i=1; i<=totalLevels; i++) {
+            const dot = document.createElement('div');
+            dot.className = "nav-dot";
+            const levelStart = (i-1) * 30;
+            if (currentStep >= levelStart && currentStep < levelStart + 30) dot.classList.add('active');
+            else if (currentStep >= levelStart + 30) dot.classList.add('completed');
+            dot.innerText = i;
+            nav.appendChild(dot);
+        }
+    }
 
     function startTotalTimer() {
         if (totalTimeInterval) clearInterval(totalTimeInterval);
@@ -160,16 +197,13 @@
     function startQuestTimer() {
         questSeconds = 80;
         document.getElementById('q-timer').innerText = questSeconds;
-        document.getElementById('timer-clock').style.borderTopColor = "var(--primary)";
-        
         if (timerInterval) clearInterval(timerInterval);
         timerInterval = setInterval(() => {
             questSeconds--;
             document.getElementById('q-timer').innerText = questSeconds;
-            if (questSeconds <= 10) document.getElementById('timer-clock').style.borderTopColor = "red";
             if (questSeconds <= 0) {
                 clearInterval(timerInterval);
-                document.getElementById('feedback').innerText = "⏰ TIME OUT! TRY AGAIN";
+                document.getElementById('feedback').innerText = "⏰ TIME OUT!";
             }
         }, 1000);
     }
@@ -183,7 +217,7 @@
         
         let n1, n2, op = "+", title = "", isFrac = false;
 
-        // Level Logic (30 Quests each)
+        // Level Math Logic
         if (currentStep < 30) { n1 = Math.floor(Math.random()*500); n2 = Math.floor(Math.random()*400); currentCorrectAns = n1+n2; title="Addition Easy"; }
         else if (currentStep < 60) { n1 = Math.floor(Math.random()*9000)+1000; n2 = Math.floor(Math.random()*9000)+1000; currentCorrectAns = n1+n2; title="Addition Hard"; }
         else if (currentStep < 90) { n1 = Math.floor(Math.random()*900); n2 = Math.floor(Math.random()*n1); op="-"; currentCorrectAns = n1-n2; title="Subtraction Easy"; }
@@ -191,10 +225,10 @@
         else if (currentStep < 150) { n1 = Math.floor(Math.random()*9)+1; n2 = Math.floor(Math.random()*9)+1; op="×"; currentCorrectAns = n1*n2; title="Multiplication Easy"; }
         else if (currentStep < 180) { n1 = Math.floor(Math.random()*15)+2; n2 = Math.floor(Math.random()*12)+2; op="×"; currentCorrectAns = n1*n2; title="Multiplication Hard"; }
         else if (currentStep < 270) { n1 = Math.floor((currentStep-180)/10)+2; n2 = Math.floor(Math.random()*10)+1; op="×"; currentCorrectAns = n1*n2; title="Tables: Level " + (Math.floor((currentStep-180)/30)+1); }
-        else if (currentStep < 300) { currentCorrectAns = Math.floor(Math.random()*9)+1; n2 = Math.floor(Math.random()*9)+1; n1 = currentCorrectAns * n2; op="÷"; title="Division Level 1"; }
-        else if (currentStep < 330) { currentCorrectAns = Math.floor(Math.random()*15)+5; n2 = Math.floor(Math.random()*12)+2; n1 = currentCorrectAns * n2; op="÷"; title="Division Level 2"; }
-        else if (currentStep < 360) { isFrac = true; let den = Math.floor(Math.random()*8)+2; let u1 = Math.floor(Math.random()*(den-1))+1; let u2 = Math.floor(Math.random()*(den-1))+1; n1=`${u1}/${den}`; n2=`${u2}/${den}`; currentCorrectAns=`${u1+u2}/${den}`; title="Fractions Level 1"; }
-        else { isFrac = true; let den = Math.floor(Math.random()*12)+2; let u1 = Math.floor(Math.random()*den)+2; u2 = Math.floor(Math.random()*den)+1; n1=`${u1}/${den}`; n2=`${u2}/${den}`; currentCorrectAns=`${u1+u2}/${den}`; title="Fractions Level 2"; }
+        else if (currentStep < 300) { currentCorrectAns = Math.floor(Math.random()*9)+1; n2 = Math.floor(Math.random()*9)+1; n1 = currentCorrectAns * n2; op="÷"; title="Division Easy"; }
+        else if (currentStep < 330) { currentCorrectAns = Math.floor(Math.random()*15)+5; n2 = Math.floor(Math.random()*12)+2; n1 = currentCorrectAns * n2; op="÷"; title="Division Hard"; }
+        else if (currentStep < 360) { isFrac = true; let den = Math.floor(Math.random()*8)+2; let u1 = Math.floor(Math.random()*(den-1))+1; let u2 = Math.floor(Math.random()*(den-1))+1; n1=`${u1}/${den}`; n2=`${u2}/${den}`; currentCorrectAns=`${u1+u2}/${den}`; title="Fractions Easy"; }
+        else { isFrac = true; let den = Math.floor(Math.random()*12)+2; let u1 = Math.floor(Math.random()*den)+2; let u2 = Math.floor(Math.random()*den)+1; n1=`${u1}/${den}`; n2=`${u2}/${den}`; currentCorrectAns=`${u1+u2}/${den}`; title="Fractions Hard"; }
 
         document.getElementById('n1').innerText = n1;
         document.getElementById('n2').innerText = n2;
@@ -224,21 +258,17 @@
         if (userAns == currentCorrectAns && questSeconds > 0) {
             clearInterval(timerInterval);
             correctTotal++;
-            document.getElementById('correct-count').innerText = correctTotal;
             document.getElementById('feedback').innerText = "✅ EXCELLENT!";
             document.getElementById('submit-btn').classList.add('hidden');
             document.getElementById('next-btn').classList.remove('hidden');
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            confetti();
         } else { document.getElementById('feedback').innerText = "❌ TRY AGAIN"; }
     };
 
     document.getElementById('next-btn').onclick = async () => {
         currentStep++;
-        if (auth.currentUser) await setDoc(doc(db, "users", auth.currentUser.uid), { 
-            currentStep: currentStep, 
-            correctTotal: correctTotal,
-            totalSeconds: totalSeconds 
-        }, { merge: true });
+        updateNavigator();
+        if (auth.currentUser) await setDoc(doc(db, "users", auth.currentUser.uid), { currentStep, correctTotal, totalSeconds }, { merge: true });
         generateQuestion();
     };
 </script>
