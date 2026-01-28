@@ -57,14 +57,6 @@
 
         .hidden { display: none !important; }
         #recaptcha-container { margin: 10px 0; display: flex; justify-content: center; }
-        
-        @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
-            100% { transform: translateX(0); }
-        }
     </style>
 </head>
 <body>
@@ -121,7 +113,7 @@
     </div>
 
     <div class="designer-box">
-        <img src="https://via.placeholder.com/70" alt="Mohammad Ashraf Rather" class="designer-photo">
+        <img src="IMG_20221004_191436.jpg" alt="Mohammad Ashraf Rather" class="designer-photo">
         <div class="designer-info">
             <p class="designer-name">Mohammad Ashraf Rather</p>
             <p class="designer-title">Designer & Architect</p>
@@ -228,7 +220,6 @@
         
         let n1, n2, op = "+", title = "", isFrac = false;
 
-        // Level Logic
         if (currentStep < 30) { n1 = Math.floor(Math.random()*500); n2 = Math.floor(Math.random()*400); currentCorrectAns = n1+n2; title="Addition Easy"; }
         else if (currentStep < 60) { n1 = Math.floor(Math.random()*9000)+1000; n2 = Math.floor(Math.random()*9000)+1000; currentCorrectAns = n1+n2; title="Addition Hard"; }
         else if (currentStep < 90) { n1 = Math.floor(Math.random()*900); n2 = Math.floor(Math.random()*n1); op="-"; currentCorrectAns = n1-n2; title="Subtraction Easy"; }
@@ -272,7 +263,7 @@
         if (fracInp) {
             userAns = fracInp.value.replace(/\s/g, '');
         } else { 
-            // FIXED: Reads digits left-to-right correctly
+            // FIXED logic to correctly read 2-1-9 as 219
             document.querySelectorAll('.digit-input').forEach(i => userAns += i.value);
         }
 
@@ -284,11 +275,7 @@
             document.getElementById('submit-btn').classList.add('hidden');
             document.getElementById('next-btn').classList.remove('hidden');
             confetti();
-        } else { 
-            document.getElementById('feedback').innerText = "❌ TRY AGAIN";
-            document.getElementById('ans-box').style.animation = "shake 0.5s";
-            setTimeout(() => document.getElementById('ans-box').style.animation = "", 500);
-        }
+        } else { document.getElementById('feedback').innerText = "❌ TRY AGAIN"; }
     };
 
     document.getElementById('next-btn').onclick = async () => {
@@ -299,4 +286,4 @@
     };
 </script>
 </body>
-</html>
+</html>            
