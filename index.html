@@ -9,12 +9,10 @@
         :root { --primary: #00d2ff; --secondary: #00ff88; --accent: #ffd700; --text: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; background: #1a1a2e; margin: 0; color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
-        /* Auth UI */
         #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(10px); }
         .auth-card { background: #16213e; padding: 30px; border-radius: 25px; border: 2px solid var(--primary); width: 90%; max-width: 380px; text-align: center; }
         input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--primary); background: #0f3460; color: white; box-sizing: border-box; text-align: center; font-size: 16px; }
         
-        /* Dashboard - Speedometer Clocks */
         .dashboard { display: flex; justify-content: space-around; width: 100%; max-width: 500px; margin-top: 15px; }
         .clock-container { text-align: center; width: 30%; }
         .speed-clock { 
@@ -27,28 +25,30 @@
         .clock-val { font-size: 1.2rem; font-weight: bold; }
         .clock-label { font-size: 0.6rem; text-transform: uppercase; color: var(--primary); margin-top: 5px; }
 
-        /* Level Navigator */
         .level-navigator { width: 95%; max-width: 500px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 15px; margin-top: 15px; overflow-x: auto; white-space: nowrap; display: flex; gap: 8px; border: 1px solid #444; }
         .nav-dot { min-width: 35px; height: 35px; border-radius: 8px; background: #333; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; border: 1px solid #555; }
         .nav-dot.active { background: var(--primary); color: #000; font-weight: bold; border-color: white; }
         .nav-dot.completed { background: var(--secondary); color: #000; }
 
-        /* Game Container */
         .container { width: 95%; max-width: 500px; background: rgba(255,255,255,0.1); padding: 20px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.2); margin-top: 15px; }
         .math-area { font-size: clamp(2.5rem, 10vw, 4rem); font-weight: 900; text-align: right; margin: 15px 0; }
         .digit-input { width: 45px; height: 65px; font-size: 2rem; text-align: center; margin: 0 4px; border-radius: 12px; border: 2px solid var(--primary); background: rgba(0,0,0,0.4); color: white; }
-        .fraction-input { width: 140px; height: 60px; font-size: 1.8rem; text-align: center; border: 2px solid var(--accent); border-radius: 10px; background: rgba(0,0,0,0.5); color: white; }
         
+        /* Leaderboard Styling */
+        .leaderboard-container { width: 95%; max-width: 500px; background: rgba(0,0,0,0.4); margin-top: 20px; border-radius: 20px; border: 1px solid var(--primary); padding: 15px; }
+        .leaderboard-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .leaderboard-table th { color: var(--primary); text-align: left; font-size: 0.8rem; padding-bottom: 10px; border-bottom: 1px solid #333; }
+        .leaderboard-table td { padding: 10px 0; border-bottom: 1px solid #222; font-size: 0.9rem; }
+        .rank-gold { color: var(--accent); font-weight: bold; }
+
         .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; margin-top: 5px; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-logout { background: #ff4757; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; }
         
-        /* Designer Footer */
         .designer-box { 
             margin-top: 30px; padding: 20px; 
             display: flex; align-items: center; justify-content: center;
-            border-top: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 500px;
-            gap: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 500px; gap: 15px;
         }
         .designer-photo { width: 70px; height: 70px; border-radius: 15px; border: 2px solid var(--primary); object-fit: cover; }
         .designer-info { text-align: left; }
@@ -66,7 +66,7 @@
             <h2 style="color:var(--primary)">MATH WORLD 3D</h2>
             <p id="auth-status">Login to Save Progress</p>
             <div id="phone-box">
-                <input type="tel" id="phone-number" placeholder="Mobile Number">
+                <input type="tel" id="phone-number" placeholder="Mobile Number" value="+919596449881">
                 <div id="recaptcha-container"></div>
                 <button class="btn btn-primary" id="btn-send-otp">Send SMS OTP</button>
             </div>
@@ -93,7 +93,7 @@
         </div>
         <div class="clock-container">
             <div class="speed-clock" style="border-top-color: var(--accent);"><span class="clock-val" id="correct-count">0</span></div>
-            <div class="clock-label">Correct</div>
+            <div class="clock-label">Points</div>
         </div>
     </div>
 
@@ -112,6 +112,24 @@
         <button class="btn btn-primary hidden" id="next-btn">NEXT QUEST ➔</button>
     </div>
 
+    <div class="leaderboard-container">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin:0; color:var(--primary); font-size: 1rem;">WORLD LEADERBOARD</h3>
+            <span id="user-rank" style="font-size: 0.7rem; color: var(--secondary);">Calculating Rank...</span>
+        </div>
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th>RANK</th>
+                    <th>PLAYER</th>
+                    <th style="text-align: right;">POINTS</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+                </tbody>
+        </table>
+    </div>
+
     <div class="designer-box">
         <img src="IMG_20221004_191436.jpg" alt="Mohammad Ashraf Rather" class="designer-photo">
         <div class="designer-info">
@@ -123,7 +141,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyC6FbPb36F69k7cw_tLbGQoVQxs6shzfAo",
@@ -142,7 +160,7 @@
     let questSeconds = 80, totalSeconds = 0, correctTotal = 0;
     let timerInterval, totalTimeInterval;
 
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 'size': 'normal' });
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 'size': 'invisible' });
 
     document.getElementById('btn-send-otp').onclick = async () => {
         let phone = document.getElementById('phone-number').value.trim();
@@ -151,17 +169,14 @@
             confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
             document.getElementById('phone-box').classList.add('hidden');
             document.getElementById('otp-box').classList.remove('hidden');
-        } catch (e) { alert("Format Error: " + e.message); }
+        } catch (e) { alert("Auth Error: " + e.message); }
     };
 
     document.getElementById('btn-verify-otp').onclick = async () => {
         try { await confirmationResult.confirm(document.getElementById('otp-code').value); } catch (e) { alert("Invalid OTP"); }
     };
 
-    document.getElementById('btn-logout').onclick = async () => {
-        await signOut(auth);
-        location.reload();
-    };
+    document.getElementById('btn-logout').onclick = async () => { await signOut(auth); location.reload(); };
 
     onAuthStateChanged(auth, async (user) => {
         if (user) {
@@ -175,18 +190,38 @@
             updateNavigator();
             startTotalTimer();
             generateQuestion();
+            fetchLeaderboard();
         }
     });
 
+    async function fetchLeaderboard() {
+        const q = query(collection(db, "users"), orderBy("correctTotal", "desc"), limit(5));
+        const querySnapshot = await getDocs(q);
+        const list = document.getElementById('leaderboard-body');
+        list.innerHTML = "";
+        
+        let rank = 1;
+        querySnapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            const row = `<tr>
+                <td class="${rank === 1 ? 'rank-gold' : ''}">#${rank}</td>
+                <td>Player ${docSnap.id.substring(0, 5)}</td>
+                <td style="text-align: right; font-weight: bold; color: var(--secondary);">${(data.correctTotal || 0) * 10}</td>
+            </tr>`;
+            list.innerHTML += row;
+            if (auth.currentUser && docSnap.id === auth.currentUser.uid) {
+                document.getElementById('user-rank').innerText = `Your Rank: #${rank}`;
+            }
+            rank++;
+        });
+    }
+
     function updateNavigator() {
-        const nav = document.getElementById('level-nav');
-        nav.innerHTML = "";
+        const nav = document.getElementById('level-nav'); nav.innerHTML = "";
         for(let i=1; i<=13; i++) {
             const dot = document.createElement('div');
             const levelStart = (i-1) * 30;
-            dot.className = "nav-dot";
-            if (currentStep >= levelStart && currentStep < levelStart + 30) dot.classList.add('active');
-            else if (currentStep >= levelStart + 30) dot.classList.add('completed');
+            dot.className = "nav-dot " + (currentStep >= levelStart + 30 ? 'completed' : (currentStep >= levelStart ? 'active' : ''));
             dot.innerText = i;
             nav.appendChild(dot);
         }
@@ -194,19 +229,14 @@
 
     function startTotalTimer() {
         if (totalTimeInterval) clearInterval(totalTimeInterval);
-        totalTimeInterval = setInterval(() => {
-            totalSeconds++;
-            document.getElementById('total-time').innerText = totalSeconds;
-        }, 1000);
+        totalTimeInterval = setInterval(() => { totalSeconds++; document.getElementById('total-time').innerText = totalSeconds; }, 1000);
     }
 
     function startQuestTimer() {
-        questSeconds = 80;
-        document.getElementById('q-timer').innerText = questSeconds;
+        questSeconds = 80; document.getElementById('q-timer').innerText = questSeconds;
         if (timerInterval) clearInterval(timerInterval);
         timerInterval = setInterval(() => {
-            questSeconds--;
-            document.getElementById('q-timer').innerText = questSeconds;
+            questSeconds--; document.getElementById('q-timer').innerText = questSeconds;
             if (questSeconds <= 0) clearInterval(timerInterval);
         }, 1000);
     }
@@ -216,74 +246,54 @@
         document.getElementById('feedback').innerText = "";
         document.getElementById('submit-btn').classList.remove('hidden');
         document.getElementById('next-btn').classList.add('hidden');
-        document.getElementById('correct-count').innerText = correctTotal;
+        document.getElementById('correct-count').innerText = correctTotal * 10;
         
-        let n1, n2, op = "+", title = "", isFrac = false;
-
-        if (currentStep < 30) { n1 = Math.floor(Math.random()*500); n2 = Math.floor(Math.random()*400); currentCorrectAns = n1+n2; title="Addition Easy"; }
-        else if (currentStep < 60) { n1 = Math.floor(Math.random()*9000)+1000; n2 = Math.floor(Math.random()*9000)+1000; currentCorrectAns = n1+n2; title="Addition Hard"; }
-        else if (currentStep < 90) { n1 = Math.floor(Math.random()*900); n2 = Math.floor(Math.random()*n1); op="-"; currentCorrectAns = n1-n2; title="Subtraction Easy"; }
-        else if (currentStep < 120) { n1 = Math.floor(Math.random()*9000)+1000; n2 = Math.floor(Math.random()*n1); op="-"; currentCorrectAns = n1-n2; title="Subtraction Hard"; }
-        else if (currentStep < 150) { n1 = Math.floor(Math.random()*9)+1; n2 = Math.floor(Math.random()*9)+1; op="×"; currentCorrectAns = n1*n2; title="Multiplication Easy"; }
-        else if (currentStep < 180) { n1 = Math.floor(Math.random()*15)+2; n2 = Math.floor(Math.random()*12)+2; op="×"; currentCorrectAns = n1*n2; title="Multiplication Hard"; }
-        else if (currentStep < 270) { n1 = Math.floor((currentStep-180)/10)+2; n2 = Math.floor(Math.random()*10)+1; op="×"; currentCorrectAns = n1*n2; title="Tables: Level " + (Math.floor((currentStep-180)/30)+1); }
-        else if (currentStep < 300) { currentCorrectAns = Math.floor(Math.random()*9)+1; n2 = Math.floor(Math.random()*9)+1; n1 = currentCorrectAns * n2; op="÷"; title="Division Easy"; }
-        else if (currentStep < 330) { currentCorrectAns = Math.floor(Math.random()*15)+5; n2 = Math.floor(Math.random()*12)+2; n1 = currentCorrectAns * n2; op="÷"; title="Division Hard"; }
-        else if (currentStep < 360) { isFrac = true; let den = Math.floor(Math.random()*8)+2; let u1 = Math.floor(Math.random()*(den-1))+1; let u2 = Math.floor(Math.random()*(den-1))+1; n1=`${u1}/${den}`; n2=`${u2}/${den}`; currentCorrectAns=`${u1+u2}/${den}`; title="Fractions Easy"; }
-        else { isFrac = true; let den = Math.floor(Math.random()*12)+2; let u1 = Math.floor(Math.random()*den)+2; let u2 = Math.floor(Math.random()*den)+1; n1=`${u1}/${den}`; n2=`${u2}/${den}`; currentCorrectAns=`${u1+u2}/${den}`; title="Fractions Hard"; }
+        let n1 = Math.floor(Math.random()*500), n2 = Math.floor(Math.random()*400);
+        currentCorrectAns = n1 + n2; 
 
         document.getElementById('n1').innerText = n1;
         document.getElementById('n2').innerText = n2;
-        document.getElementById('op').innerText = op;
-        document.getElementById('level-title').innerText = title;
+        document.getElementById('op').innerText = "+";
+        document.getElementById('level-title').innerText = "Addition Easy";
         document.getElementById('q-num').innerText = currentStep + 1;
 
         const box = document.getElementById('ans-box'); box.innerHTML = "";
-        if (isFrac) { box.innerHTML = `<input type="text" id="frac-ans" class="fraction-input" placeholder="n/d">`; }
-        else {
-            const digits = currentCorrectAns.toString().length;
-            for(let i=0; i<digits; i++) {
-                const inp = document.createElement('input'); 
-                inp.type = "number"; inp.className = "digit-input";
-                inp.oninput = function() { 
-                    if(this.value.length > 0) { 
-                        this.value = this.value.slice(-1); 
-                        if(this.previousElementSibling) this.previousElementSibling.focus(); 
-                    } 
-                };
-                box.appendChild(inp);
-            }
-            box.lastElementChild.focus(); 
+        const digits = currentCorrectAns.toString().length;
+        for(let i=0; i<digits; i++) {
+            const inp = document.createElement('input'); 
+            inp.type = "number"; inp.className = "digit-input";
+            inp.oninput = function() { 
+                if(this.value.length > 0) { 
+                    this.value = this.value.slice(-1); 
+                    if(this.previousElementSibling) this.previousElementSibling.focus(); 
+                } 
+            };
+            box.appendChild(inp);
         }
+        box.lastElementChild.focus(); 
     }
 
     document.getElementById('submit-btn').onclick = () => {
         let userAns = "";
-        const fracInp = document.getElementById('frac-ans');
-        if (fracInp) {
-            userAns = fracInp.value.replace(/\s/g, '');
-        } else { 
-            // FIXED logic to correctly read 2-1-9 as 219
-            document.querySelectorAll('.digit-input').forEach(i => userAns += i.value);
-        }
+        document.querySelectorAll('.digit-input').forEach(i => userAns += i.value);
 
         if (userAns == currentCorrectAns.toString() && questSeconds > 0) {
             clearInterval(timerInterval);
             correctTotal++;
-            document.getElementById('correct-count').innerText = correctTotal;
             document.getElementById('feedback').innerText = "✅ EXCELLENT!";
             document.getElementById('submit-btn').classList.add('hidden');
             document.getElementById('next-btn').classList.remove('hidden');
             confetti();
+            fetchLeaderboard(); // Update rankings immediately
         } else { document.getElementById('feedback').innerText = "❌ TRY AGAIN"; }
     };
 
     document.getElementById('next-btn').onclick = async () => {
-        currentStep++;
-        updateNavigator();
+        currentStep++; updateNavigator();
         if (auth.currentUser) await setDoc(doc(db, "users", auth.currentUser.uid), { currentStep, correctTotal, totalSeconds }, { merge: true });
         generateQuestion();
     };
 </script>
 </body>
-</html>            
+</html>
+                                            
