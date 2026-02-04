@@ -353,30 +353,4 @@
 </script>
 </body>
 </html>
-                                        }
-    };
-
-    document.getElementById('next-btn').onclick = async () => {
-        userData.currentStep++; await updateDoc(doc(db, "users", auth.currentUser.uid), userData);
-        generateQuestion(); startTotalTimer(); updateLeaderboard();
-    };
-
-    async function updateLeaderboard() {
-        const q = query(collection(db, "users"), orderBy("points", "desc"), limit(5));
-        const snap = await getDocs(q);
-        const body = document.getElementById('lb-body'); body.innerHTML = "";
-        let i = 1; snap.forEach(d => {
-            body.innerHTML += `<tr><td>#${i++}</td><td>${d.data().email.split('@')[0]}</td><td>${d.data().points}</td></tr>`;
-        });
-    }
-
-    function startQuestTimer() { clearInterval(qInterval); qInterval = setInterval(() => { qTimerVal--; document.getElementById('q-timer').innerText = qTimerVal; if(qTimerVal <= 0) document.getElementById('submit-btn').click(); }, 1000); }
-    function startTotalTimer() { clearInterval(tInterval); tInterval = setInterval(() => { userData.totalSeconds++; document.getElementById('total-time').innerText = userData.totalSeconds; }, 1000); }
-    function updateUI() { document.getElementById('points').innerText = userData.points; document.getElementById('correct-count').innerText = userData.correctTotal; document.getElementById('user-photo').src = userData.photoURL || "https://via.placeholder.com/50"; }
-    function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-    window.profileMenu = () => { const url = prompt("Photo URL:"); if(url) { userData.photoURL = url; updateDoc(doc(db, "users", auth.currentUser.uid), {photoURL: url}); updateUI(); } };
-    window.logout = () => signOut(auth).then(() => location.reload());
-</script>
-</body>
-</html>
- 
+                                        
