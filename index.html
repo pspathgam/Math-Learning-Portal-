@@ -63,13 +63,14 @@
         #auth-overlay, #admin-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .modal-card { background: var(--card-bg); padding: 30px; border-radius: 25px; border: 2px solid var(--primary); width: 90%; max-width: 400px; text-align: center; }
         input[type="email"], input[type="password"], input[type="text"], input[type="number"] { 
-            width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid var(--primary); background: #0f3460; color: white; box-sizing: border-box; 
+            width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid var(--primary); background: #0f3460; color: white; box-sizing: border-box; text-align: center;
         }
 
-        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .btn:active { transform: scale(0.98); }
         .btn-primary { background: var(--primary); color: white; }
         .btn-next { background: var(--secondary); color: #000; }
-        .btn-link { background: none; color: var(--primary); border: none; text-decoration: underline; cursor: pointer; font-size: 0.8rem; }
+        .btn-link { background: none; color: var(--primary); border: none; text-decoration: underline; cursor: pointer; font-size: 0.8rem; padding: 5px; }
 
         .designer-box { margin-top: 20px; padding: 15px; display: flex; align-items: center; justify-content: center; gap: 15px; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; }
         .designer-photo { width: 60px; height: 60px; border-radius: 15px; border: 2px solid var(--primary); object-fit: cover; }
@@ -81,17 +82,17 @@
 
     <div id="auth-overlay">
         <div class="modal-card">
-            <h2 id="auth-title" style="color:var(--primary)">QUEST LOGIN</h2>
+            <h2 id="auth-title" style="color:var(--primary); margin-top:0;">QUEST LOGIN</h2>
             <div id="auth-inputs">
                 <input type="email" id="user-email" placeholder="Email Address">
                 <input type="password" id="user-pass" placeholder="Password">
             </div>
             <button class="btn btn-primary" id="btn-auth-action">SIGN IN</button>
             <div id="auth-toggles">
-                <button class="btn-link" onclick="setAuthState('signup')">Sign Up</button> | 
-                <button class="btn-link" onclick="setAuthState('forgot')">Forgot Password?</button>
+                <button class="btn-link" onclick="window.setAuthState('signup')">Sign Up</button> | 
+                <button class="btn-link" onclick="window.setAuthState('forgot')">Forgot Password?</button>
             </div>
-            <button id="btn-back-to-login" class="btn-link hidden" onclick="setAuthState('signin')">Back to Login</button>
+            <button id="btn-back-to-login" class="btn-link hidden" onclick="window.setAuthState('signin')">Back to Login</button>
         </div>
     </div>
 
@@ -99,13 +100,13 @@
         <div class="modal-card" style="max-width: 500px;">
             <h3 style="color:var(--accent)">ADMIN WORLD MANAGER</h3>
             <input type="text" id="admin-search" placeholder="Search User Email">
-            <button class="btn btn-primary" onclick="adminSearch()">FIND USER</button>
+            <button class="btn btn-primary" onclick="window.adminSearch()">FIND USER</button>
             <div id="admin-result" class="hidden" style="text-align: left; margin-top: 15px; font-size: 0.8rem;">
                 <p>User: <span id="adm-res-email"></span></p>
-                Level: <input type="number" id="adm-res-step" style="width: 80px;">
-                Points: <input type="number" id="adm-res-pts" style="width: 80px;">
-                <button class="btn btn-primary" onclick="adminUpdate()">SAVE CHANGES</button>
-                <button class="btn" style="background:#ff4757; color:white;" onclick="adminDelete()">DELETE USER</button>
+                Level (Step): <input type="number" id="adm-res-step">
+                Points: <input type="number" id="adm-res-pts">
+                <button class="btn btn-primary" onclick="window.adminUpdate()">SAVE CHANGES</button>
+                <button class="btn" style="background:#ff4757; color:white;" onclick="window.adminDelete()">DELETE USER</button>
             </div>
             <button class="btn-link" onclick="document.getElementById('admin-overlay').classList.add('hidden')">Close Manager</button>
         </div>
@@ -113,15 +114,15 @@
 
     <header style="width: 95%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
         <div style="display:flex; align-items:center; gap:10px;">
-            <img id="user-photo" src="https://via.placeholder.com/50" style="width:40px; height:40px; border-radius:50%; border:2px solid var(--primary); cursor:pointer;" onclick="profileMenu()">
+            <img id="user-photo" src="https://via.placeholder.com/50" style="width:40px; height:40px; border-radius:50%; border:2px solid var(--primary); cursor:pointer;" onclick="window.profileMenu()">
             <div>
                 <div id="player-name" style="font-weight:bold; font-size:0.8rem;">Explorer</div>
                 <div id="level-tag" style="font-size:0.6rem; color:var(--secondary);">LEVEL 1</div>
             </div>
         </div>
         <div>
-            <button id="admin-btn" class="hidden" onclick="document.getElementById('admin-overlay').classList.remove('hidden')" style="background:var(--accent); border:none; padding:5px 10px; border-radius:5px; font-size:0.6rem; font-weight:bold;">ADMIN</button>
-            <button onclick="logout()" style="background:#ff4757; color:white; border:none; padding:5px 10px; border-radius:5px; font-size:0.6rem;">LOGOUT</button>
+            <button id="admin-btn" class="hidden" onclick="document.getElementById('admin-overlay').classList.remove('hidden')" style="background:var(--accent); border:none; padding:5px 10px; border-radius:5px; font-size:0.6rem; font-weight:bold; color:black; cursor:pointer;">ADMIN</button>
+            <button onclick="window.logout()" style="background:#ff4757; color:white; border:none; padding:5px 10px; border-radius:5px; font-size:0.6rem; cursor:pointer;">LOGOUT</button>
         </div>
     </header>
 
@@ -184,25 +185,54 @@
     let userData = { currentStep: 0, correctTotal: 0, totalSeconds: 0, points: 0, photoURL: "" };
     let currentAns = "", attempts = 0, qTimerVal = 80, authState = 'signin', qInterval, tInterval;
 
-    // --- Auth Logic ---
+    // --- Tab Controller (Correction: Globally Assigned) ---
     window.setAuthState = (state) => {
         authState = state;
-        document.getElementById('auth-title').innerText = state === 'signin' ? "QUEST LOGIN" : (state === 'signup' ? "NEW EXPLORER" : "RECOVER KEY");
-        document.getElementById('user-pass').classList.toggle('hidden', state === 'forgot');
-        document.getElementById('btn-back-to-login').classList.toggle('hidden', state === 'signin');
-        document.getElementById('auth-toggles').classList.toggle('hidden', state !== 'signin');
-        document.getElementById('btn-auth-action').innerText = state === 'signin' ? "SIGN IN" : (state === 'signup' ? "CREATE" : "SEND RESET");
+        const authTitle = document.getElementById('auth-title');
+        const passField = document.getElementById('user-pass');
+        const backBtn = document.getElementById('btn-back-to-login');
+        const toggles = document.getElementById('auth-toggles');
+        const mainBtn = document.getElementById('btn-auth-action');
+
+        if (state === 'signin') {
+            authTitle.innerText = "QUEST LOGIN";
+            mainBtn.innerText = "SIGN IN";
+            passField.classList.remove('hidden');
+            toggles.classList.remove('hidden');
+            backBtn.classList.add('hidden');
+        } else if (state === 'signup') {
+            authTitle.innerText = "NEW EXPLORER";
+            mainBtn.innerText = "CREATE ACCOUNT";
+            passField.classList.remove('hidden');
+            toggles.classList.add('hidden');
+            backBtn.classList.remove('hidden');
+        } else if (state === 'forgot') {
+            authTitle.innerText = "RECOVER KEY";
+            mainBtn.innerText = "SEND RESET LINK";
+            passField.classList.add('hidden');
+            toggles.classList.add('hidden');
+            backBtn.classList.remove('hidden');
+        }
     };
 
+    // --- Main Auth Execution ---
     document.getElementById('btn-auth-action').onclick = async () => {
         const email = document.getElementById('user-email').value;
         const pass = document.getElementById('user-pass').value;
+        if(!email) return alert("Email is required");
+
         try {
-            if (authState === 'signin') await signInWithEmailAndPassword(auth, email, pass);
-            else if (authState === 'signup') {
+            if (authState === 'signin') {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } else if (authState === 'signup') {
+                if(!pass) return alert("Password is required");
                 const res = await createUserWithEmailAndPassword(auth, email, pass);
                 await setDoc(doc(db, "users", res.user.uid), { ...userData, email });
-            } else await sendPasswordResetEmail(auth, email);
+            } else if (authState === 'forgot') {
+                await sendPasswordResetEmail(auth, email);
+                alert("Reset link sent! Check your email.");
+                window.setAuthState('signin');
+            }
         } catch (e) { alert(e.message); }
     };
 
@@ -214,14 +244,16 @@
             const snap = await getDoc(doc(db, "users", user.uid));
             if (snap.exists()) userData = snap.data();
             updateUI(); generateQuestion(); startTotalTimer(); updateLeaderboard();
+        } else {
+            document.getElementById('auth-overlay').classList.remove('hidden');
         }
     });
 
-    // --- Admin Functions ---
+    // --- Admin Logic ---
     let targetUid = "";
     window.adminSearch = async () => {
-        const email = document.getElementById('admin-search').value;
-        const q = query(collection(db, "users"), where("email", "==", email));
+        const emailInput = document.getElementById('admin-search').value;
+        const q = query(collection(db, "users"), where("email", "==", emailInput));
         const snap = await getDocs(q);
         if(!snap.empty) {
             const d = snap.docs[0]; targetUid = d.id;
@@ -229,20 +261,27 @@
             document.getElementById('adm-res-email').innerText = d.data().email;
             document.getElementById('adm-res-step').value = d.data().currentStep;
             document.getElementById('adm-res-pts').value = d.data().points;
-        } else alert("Not found");
+        } else alert("Player not found in database.");
     };
     window.adminUpdate = async () => {
         await updateDoc(doc(db, "users", targetUid), { 
             currentStep: parseInt(document.getElementById('adm-res-step').value),
             points: parseInt(document.getElementById('adm-res-pts').value)
         });
-        alert("Updated"); updateLeaderboard();
+        alert("Data Updated!"); updateLeaderboard();
     };
     window.adminDelete = async () => {
-        if(confirm("Delete?")) { await deleteDoc(doc(db, "users", targetUid)); alert("Deleted"); }
+        if(confirm("Permanently delete this explorer?")) { 
+            await deleteDoc(doc(db, "users", targetUid)); 
+            alert("Deleted."); 
+            document.getElementById('admin-result').classList.add('hidden');
+            updateLeaderboard();
+        }
     };
 
-    // --- Math & Game Logic ---
+    // --- Math Engine & UI ---
+    function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
     function generateQuestion() {
         attempts = 0; qTimerVal = 80;
         document.getElementById('feedback').innerText = "";
@@ -253,16 +292,8 @@
 
         if (level === 1) { n1 = rand(100, 999); n2 = rand(100, 999); ans = n1 + n2; }
         else if (level === 2) { n1 = rand(1000, 9999); n2 = rand(1000, 9999); ans = n1 + n2; }
-        else if (level === 3) { n1 = rand(500, 999); n2 = rand(100, 499); op = "-"; ans = n1 - n2; }
-        else if (level === 4) { n1 = rand(5000, 9999); n2 = rand(1000, 4999); op = "-"; ans = n1 - n2; }
-        else if (level === 5) { n1 = rand(2, 5); n2 = rand(1, 12); op = "×"; ans = n1 * n2; }
-        else if (level === 6) { n1 = rand(6, 10); n2 = rand(1, 12); op = "×"; ans = n1 * n2; }
-        else if (level === 7) { n1 = rand(11, 15); n2 = rand(1, 12); op = "×"; ans = n1 * n2; }
-        else if (level === 8) { n1 = rand(16, 20); n2 = rand(1, 12); op = "×"; ans = n1 * n2; }
-        else if (level === 9) { n1 = rand(100, 999); n2 = rand(2, 9); op = "×"; ans = n1 * n2; }
-        else if (level === 10) { n1 = rand(100, 999); n2 = rand(11, 50); op = "×"; ans = n1 * n2; }
-        else if (level === 11) { n2 = rand(2, 9); ans = rand(50, 200); n1 = ans * n2; op = "÷"; }
-        else { n1 = rand(1, 10); n2 = rand(1, 10); ans = n1 + n2; }
+        else if (level <= 4) { n1 = rand(500, 9999); n2 = rand(100, 4999); op = "-"; ans = n1 - n2; }
+        else { n1 = rand(2, 20); n2 = rand(1, 12); op = "×"; ans = n1 * n2; }
 
         currentAns = ans.toString();
         document.getElementById('n1').innerText = n1; document.getElementById('n2').innerText = n2; document.getElementById('op').innerText = op;
@@ -283,15 +314,46 @@
     document.getElementById('submit-btn').onclick = () => {
         let userAns = ""; document.querySelectorAll('.digit-input').forEach(i => userAns += i.value);
         if (userAns === currentAns) {
-            clearInterval(qInterval); clearInterval(tInterval);
+            clearInterval(qInterval);
             const earn = (attempts === 0) ? 10 : 5;
             userData.points += earn; userData.correctTotal++;
             document.getElementById('feedback').innerText = `✅ +${earn} POINTS!`; confetti();
             document.getElementById('submit-btn').classList.add('hidden'); document.getElementById('next-btn').classList.remove('hidden'); updateUI();
         } else {
-            attempts++; document.getElementById('feedback').innerText = attempts >= 2 ? "❌ FAILED" : "❌ TRY AGAIN";
-            if(attempts >= 2) { clearInterval(qInterval); clearInterval(tInterval); document.getElementById('submit-btn').classList.add('hidden'); document.getElementById('next-btn').classList.remove('hidden'); }
+            attempts++; 
+            document.getElementById('feedback').innerText = attempts >= 2 ? "❌ FAILED" : "❌ TRY AGAIN";
+            if(attempts >= 2) { clearInterval(qInterval); document.getElementById('submit-btn').classList.add('hidden'); document.getElementById('next-btn').classList.remove('hidden'); }
         }
+    };
+
+    document.getElementById('next-btn').onclick = async () => {
+        userData.currentStep++; 
+        await updateDoc(doc(db, "users", auth.currentUser.uid), userData);
+        generateQuestion(); updateLeaderboard();
+    };
+
+    async function updateLeaderboard() {
+        const q = query(collection(db, "users"), orderBy("points", "desc"), limit(5));
+        const snap = await getDocs(q);
+        const body = document.getElementById('lb-body'); body.innerHTML = "";
+        let i = 1; snap.forEach(d => {
+            body.innerHTML += `<tr><td>#${i++}</td><td>${d.data().email.split('@')[0]}</td><td>${d.data().points}</td></tr>`;
+        });
+    }
+
+    function startQuestTimer() { clearInterval(qInterval); qInterval = setInterval(() => { qTimerVal--; document.getElementById('q-timer').innerText = qTimerVal; if(qTimerVal <= 0) document.getElementById('submit-btn').click(); }, 1000); }
+    function startTotalTimer() { clearInterval(tInterval); tInterval = setInterval(() => { userData.totalSeconds++; document.getElementById('total-time').innerText = userData.totalSeconds; }, 1000); }
+    function updateUI() { document.getElementById('points').innerText = userData.points; document.getElementById('correct-count').innerText = userData.correctTotal; document.getElementById('user-photo').src = userData.photoURL || "https://via.placeholder.com/50"; }
+    
+    window.profileMenu = () => { const url = prompt("Photo URL:"); if(url) { userData.photoURL = url; updateDoc(doc(db, "users", auth.currentUser.uid), {photoURL: url}); updateUI(); } };
+    window.logout = () => signOut(auth).then(() => location.reload());
+
+    // Initialize first state
+    window.setAuthState('signin');
+</script>
+</body>
+</html>
+                                        }
     };
 
     document.getElementById('next-btn').onclick = async () => {
