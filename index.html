@@ -84,6 +84,12 @@
         <div class="modal-card">
             <h2 id="auth-title" style="color:var(--primary); margin-top:0;">QUEST LOGIN</h2>
             <div id="auth-inputs">
+                <div id="signup-photo-area" class="hidden" style="margin-bottom: 15px;">
+                    <div id="photo-preview" style="width: 70px; height: 70px; border-radius: 50%; border: 2px dashed var(--primary); margin: 0 auto 10px; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: #888;">No Photo</div>
+                    <button class="btn-link" style="color: var(--secondary);" onclick="document.getElementById('file-input').click()">+ GALLERY IMAGE</button>
+                    <input type="file" id="file-input" class="hidden" accept="image/*" onchange="window.handleImageSelect(event)">
+                </div>
+
                 <input type="email" id="user-email" placeholder="Email Address">
                 <input type="password" id="user-pass" placeholder="Password">
             </div>
@@ -104,6 +110,256 @@
             <div id="admin-result" class="hidden" style="text-align: left; margin-top: 15px; font-size: 0.8rem;">
                 <p>User: <span id="adm-res-email"></span></p>
                 Level (Step): <input type="number" id="adm-res-step">
+                Points: <input type="number" id="adm-res-pts">
+                <button class="btn btn-primary" onclick="window.adminUpdate()">SAVE CHANGES</button>
+                <button class="btn" style="background:#ff4757; color:white;" onclick="window.adminDelete()">DELETE USER</button>
+            </div>
+            <button class="btn-link" onclick="document.getElementById('admin-overlay').classList.add('hidden')">Close Manager</button>
+        </div>
+    </div>
+
+    <header style="width: 95%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <img id="user-photo" src="https://via.placeholder.com/50" style="width:40px; height:40px; border-radius:50%; border:2px solid var(--primary); cursor:pointer;" onclick="window.profileMenu()">
+            <div>
+                <div id="player-name" style="font-weight:bold; font-size:0.8rem;">Explorer</div>
+                <div id="level-tag" style="font-size:0.6rem; color:var(--secondary);">LEVEL 1</div>
+            </div>
+        </div>
+        <div>
+            <button id="admin-btn" class="hidden" onclick="document.getElementById('admin-overlay').classList.remove('hidden')" style="background:var(--accent); border:none; padding:5px 10px; border-radius:5px; font-size:0.6rem; font-weight:bold; color:black; cursor:pointer;">ADMIN</button>
+            <button onclick="window.logout()" style="background:#ff4757; color:white; border:none; padding:5px 10px; border-radius:5px; font-size:0.6rem; cursor:pointer;">LOGOUT</button>
+        </div>
+    </header>
+
+    <div class="main-wrapper">
+        <div class="dashboard">
+            <div class="gauge-box"><div class="gauge" style="border-top-color: var(--primary);"><span class="gauge-val" id="q-timer">80</span></div><div class="gauge-label">Quest</div></div>
+            <div class="gauge-box"><div class="gauge" style="border-top-color: var(--secondary);"><span class="gauge-val" id="total-time">0</span></div><div class="gauge-label">Total</div></div>
+            <div class="gauge-box"><div class="gauge" style="border-top-color: var(--accent);"><span class="gauge-val" id="points">0</span></div><div class="gauge-label">Points</div></div>
+            <div class="gauge-box"><div class="gauge" style="border-top-color: #ff4757;"><span class="gauge-val" id="correct-count">0</span></div><div class="gauge-label">Correct</div></div>
+        </div>
+
+        <div class="container">
+            <div class="math-area">
+                <div id="n1">0</div>
+                <div style="display:flex; justify-content: space-between;"><span style="color:var(--secondary)" id="op">+</span><span id="n2">0</span></div>
+                <hr style="border:1px solid #333">
+                <div id="ans-box" style="display:flex; justify-content: flex-end;"></div>
+            </div>
+            <div id="feedback" style="text-align:center; height: 20px; font-weight:bold; color:var(--accent); font-size: 0.8rem;"></div>
+            <button class="btn btn-primary" id="submit-btn">SUBMIT ANSWER</button>
+            <button class="btn btn-next hidden" id="next-btn">NEXT QUEST ➔</button>
+        </div>
+
+        <div class="leaderboard-card">
+            <h4 style="margin:0 0 10px 0; color:var(--primary); font-size:0.9rem;">WORLD LEADERBOARD</h4>
+            <table class="lb-table">
+                <thead><tr><th>Rank</th><th>Player</th><th>Points</th></tr></thead>
+                <tbody id="lb-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="designer-box">
+        <img src="IMG_20221004_191436.jpg" alt="Mohammad Ashraf Rather" class="designer-photo">
+        <div style="text-align: left;">
+            <p style="font-weight: bold; color: var(--primary); margin: 0; font-size: 0.9rem;">Mohammad Ashraf Rather</p>
+            <p style="font-size: 0.65rem; color: #888; margin: 2px 0;">Designer & Architect</p>
+        </div>
+    </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC6FbPb36F69k7cw_tLbGQoVQxs6shzfAo",
+      authDomain: "math-world-3d.firebaseapp.com",
+      projectId: "math-world-3d",
+      storageBucket: "math-world-3d.firebasestorage.app",
+      messagingSenderId: "526717782686",
+      appId: "1:526717782686:web:21dddbcb293323eda8098f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const ADMIN_EMAIL = "ratherashraf786@gmail.com";
+    let userData = { currentStep: 0, correctTotal: 0, totalSeconds: 0, points: 0, photoURL: "" };
+    let currentAns = "", attempts = 0, qTimerVal = 80, authState = 'signin', qInterval, tInterval;
+    let base64Photo = "";
+
+    // --- Tab Controller ---
+    window.setAuthState = (state) => {
+        authState = state;
+        const authTitle = document.getElementById('auth-title');
+        const passField = document.getElementById('user-pass');
+        const backBtn = document.getElementById('btn-back-to-login');
+        const toggles = document.getElementById('auth-toggles');
+        const mainBtn = document.getElementById('btn-auth-action');
+        const photoArea = document.getElementById('signup-photo-area');
+
+        photoArea.classList.add('hidden');
+        base64Photo = ""; // Reset photo selection
+        document.getElementById('photo-preview').style.backgroundImage = "none";
+        document.getElementById('photo-preview').innerText = "No Photo";
+
+        if (state === 'signin') {
+            authTitle.innerText = "QUEST LOGIN";
+            mainBtn.innerText = "SIGN IN";
+            passField.classList.remove('hidden');
+            toggles.classList.remove('hidden');
+            backBtn.classList.add('hidden');
+        } else if (state === 'signup') {
+            authTitle.innerText = "NEW EXPLORER";
+            mainBtn.innerText = "CREATE ACCOUNT";
+            passField.classList.remove('hidden');
+            toggles.classList.add('hidden');
+            backBtn.classList.remove('hidden');
+            photoArea.classList.remove('hidden'); // SHOW PHOTO UPLOAD
+        } else if (state === 'forgot') {
+            authTitle.innerText = "RECOVER KEY";
+            mainBtn.innerText = "SEND RESET LINK";
+            passField.classList.add('hidden');
+            toggles.classList.add('hidden');
+            backBtn.classList.remove('hidden');
+        }
+    };
+
+    // --- Image Processing ---
+    window.handleImageSelect = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                base64Photo = e.target.result;
+                const preview = document.getElementById('photo-preview');
+                preview.style.backgroundImage = `url(${base64Photo})`;
+                preview.innerText = "";
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    // --- Main Auth Execution ---
+    document.getElementById('btn-auth-action').onclick = async () => {
+        const email = document.getElementById('user-email').value;
+        const pass = document.getElementById('user-pass').value;
+        if(!email) return alert("Email is required");
+
+        try {
+            if (authState === 'signin') {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } else if (authState === 'signup') {
+                if(!pass) return alert("Password is required");
+                const res = await createUserWithEmailAndPassword(auth, email, pass);
+                // Save user data + base64 photo
+                await setDoc(doc(db, "users", res.user.uid), { 
+                    ...userData, 
+                    email: email, 
+                    photoURL: base64Photo || "" 
+                });
+            } else if (authState === 'forgot') {
+                await sendPasswordResetEmail(auth, email);
+                alert("Reset link sent! Check your email.");
+                window.setAuthState('signin');
+            }
+        } catch (e) { alert(e.message); }
+    };
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            document.getElementById('auth-overlay').classList.add('hidden');
+            document.getElementById('player-name').innerText = user.email.split('@')[0];
+            if(user.email === ADMIN_EMAIL) document.getElementById('admin-btn').classList.remove('hidden');
+            const snap = await getDoc(doc(db, "users", user.uid));
+            if (snap.exists()) userData = snap.data();
+            updateUI(); generateQuestion(); startTotalTimer(); updateLeaderboard();
+        } else {
+            document.getElementById('auth-overlay').classList.remove('hidden');
+        }
+    });
+
+    // --- Admin Logic ---
+    let targetUid = "";
+    window.adminSearch = async () => {
+        const emailInput = document.getElementById('admin-search').value;
+        const q = query(collection(db, "users"), where("email", "==", emailInput));
+        const snap = await getDocs(q);
+        if(!snap.empty) {
+            const d = snap.docs[0]; targetUid = d.id;
+            document.getElementById('admin-result').classList.remove('hidden');
+            document.getElementById('adm-res-email').innerText = d.data().email;
+            document.getElementById('adm-res-step').value = d.data().currentStep;
+            document.getElementById('adm-res-pts').value = d.data().points;
+        } else alert("Player not found.");
+    };
+    window.adminUpdate = async () => {
+        await updateDoc(doc(db, "users", targetUid), { 
+            currentStep: parseInt(document.getElementById('adm-res-step').value),
+            points: parseInt(document.getElementById('adm-res-pts').value)
+        });
+        alert("Updated!"); updateLeaderboard();
+    };
+    window.adminDelete = async () => {
+        if(confirm("Delete this user?")) { 
+            await deleteDoc(doc(db, "users", targetUid)); 
+            document.getElementById('admin-result').classList.add('hidden');
+            updateLeaderboard();
+        }
+    };
+
+    // --- Math Engine & UI ---
+    function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+    function generateQuestion() {
+        attempts = 0; qTimerVal = 80;
+        document.getElementById('feedback').innerText = "";
+        document.getElementById('submit-btn').classList.remove('hidden');
+        document.getElementById('next-btn').classList.add('hidden');
+        const level = Math.floor(userData.currentStep / 30) + 1;
+        let n1, n2, op = "+", ans;
+
+        if (level === 1) { n1 = rand(100, 999); n2 = rand(100, 999); ans = n1 + n2; }
+        else if (level === 2) { n1 = rand(1000, 9999); n2 = rand(1000, 9999); ans = n1 + n2; }
+        else if (level <= 4) { n1 = rand(500, 9999); n2 = rand(100, 4999); op = "-"; ans = n1 - n2; }
+        else { n1 = rand(2, 20); n2 = rand(1, 12); op = "×"; ans = n1 * n2; }
+
+        currentAns = ans.toString();
+        document.getElementById('n1').innerText = n1; document.getElementById('n2').innerText = n2; document.getElementById('op').innerText = op;
+        document.getElementById('level-tag').innerText = `LEVEL ${level} (${userData.currentStep % 30}/30)`;
+        setupInputs(currentAns.length); startQuestTimer();
+    }
+
+    function setupInputs(len) {
+        const box = document.getElementById('ans-box'); box.innerHTML = "";
+        for(let i=0; i<len; i++) {
+            const inp = document.createElement('input'); inp.type = "number"; inp.className = "digit-input";
+            inp.oninput = function() { if(this.value.length > 0) { this.value = this.value.slice(-1); if(this.previousElementSibling) this.previousElementSibling.focus(); } };
+            box.appendChild(inp);
+        }
+        box.lastElementChild.focus();
+    }
+
+    document.getElementById('submit-btn').onclick = () => {
+        let userAns = ""; document.querySelectorAll('.digit-input').forEach(i => userAns += i.value);
+        if (userAns === currentAns) {
+            clearInterval(qInterval);
+            const earn = (attempts === 0) ? 10 : 5;
+            userData.points += earn; userData.correctTotal++;
+            document.getElementById('feedback').innerText = `✅ +${earn} POINTS!`; confetti();
+            document.getElementById('submit-btn').classList.add('hidden'); document.getElementById('next-btn').classList.remove('hidden'); updateUI();
+        } else {
+            attempts++; 
+            document.getElementById('feedback').innerText = attempts >= 2 ? "❌ FAILED" : "❌ TRY AGAIN";
+            if(attempts >= 2) { clearInterval(qInterval); document.getElementById('submit-btn').classList.add('hidden'); document.getElementById('next-btn').classList.remove('hidden'); }
+        }
+    };
+
+    document.getElementById('next-btn').onclick = a                Level (Step): <input type="number" id="adm-res-step">
                 Points: <input type="number" id="adm-res-pts">
                 <button class="btn btn-primary" onclick="window.adminUpdate()">SAVE CHANGES</button>
                 <button class="btn" style="background:#ff4757; color:white;" onclick="window.adminDelete()">DELETE USER</button>
