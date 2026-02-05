@@ -33,7 +33,7 @@
         }
         .container:hover { transform: rotateX(0deg); }
 
-        /* Half-Circular Gauges */
+        /* Gauges */
         .dashboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
         .gauge-box { text-align: center; }
         .gauge {
@@ -44,7 +44,7 @@
         .gauge-val { font-size: 0.9rem; font-weight: bold; margin-bottom: 2px; }
         .gauge-label { font-size: 0.55rem; text-transform: uppercase; margin-top: 5px; color: var(--primary); }
 
-        /* Math Area */
+        /* Math UI */
         .math-area { font-size: clamp(2rem, 8vw, 3.5rem); font-weight: 900; text-align: right; margin: 15px 0; }
         .digit-input { 
             width: 40px; height: 55px; font-size: 1.8rem; text-align: center; 
@@ -53,47 +53,56 @@
             box-shadow: inset 0 0 10px rgba(0,210,255,0.2);
         }
 
-        /* Leaderboard Style */
+        /* Leaderboard */
         .leaderboard-card { background: rgba(0,0,0,0.3); border-radius: 20px; padding: 15px; margin-top: 20px; border: 1px solid var(--primary); width: 100%; }
         .lb-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
         .lb-table th { color: var(--primary); border-bottom: 1px solid #444; padding: 5px; text-align: left; }
         .lb-table td { padding: 8px 5px; border-bottom: 1px solid #222; }
 
-        /* Auth & Admin Modals */
-        #auth-overlay, #admin-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        /* Modals */
+        #auth-overlay, #admin-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
         .modal-card { background: var(--card-bg); padding: 30px; border-radius: 25px; border: 2px solid var(--primary); width: 90%; max-width: 400px; text-align: center; }
+        
         input[type="email"], input[type="password"], input[type="text"], input[type="number"] { 
             width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid var(--primary); background: #0f3460; color: white; box-sizing: border-box; text-align: center;
         }
 
-        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        .btn:active { transform: scale(0.98); }
+        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-next { background: var(--secondary); color: #000; }
         .btn-link { background: none; color: var(--primary); border: none; text-decoration: underline; cursor: pointer; font-size: 0.8rem; padding: 5px; }
 
-        .designer-box { margin-top: 20px; padding: 15px; display: flex; align-items: center; justify-content: center; gap: 15px; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; }
-        .designer-photo { width: 60px; height: 60px; border-radius: 15px; border: 2px solid var(--primary); object-fit: cover; }
-
         .hidden { display: none !important; }
+        
+        #photo-preview { 
+            width: 80px; height: 80px; border-radius: 50%; border: 2px dashed var(--primary); 
+            margin: 0 auto 10px; background-size: cover; background-position: center; 
+            display: flex; align-items: center; justify-content: center; font-size: 0.6rem; 
+        }
+
+        .designer-box { margin-top: 20px; padding: 15px; display: flex; align-items: center; justify-content: center; gap: 15px; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; }
+        .designer-photo { width: 50px; height: 50px; border-radius: 10px; border: 2px solid var(--primary); object-fit: cover; }
     </style>
 </head>
 <body>
 
     <div id="auth-overlay">
         <div class="modal-card">
-            <h2 id="auth-title" style="color:var(--primary); margin-top:0;">QUEST LOGIN</h2>
-            <div id="auth-inputs">
-                <div id="signup-photo-area" class="hidden" style="margin-bottom: 15px;">
-                    <div id="photo-preview" style="width: 70px; height: 70px; border-radius: 50%; border: 2px dashed var(--primary); margin: 0 auto 10px; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: #888;">No Photo</div>
-                    <button class="btn-link" style="color: var(--secondary);" onclick="document.getElementById('file-input').click()">+ GALLERY IMAGE</button>
-                    <input type="file" id="file-input" class="hidden" accept="image/*" onchange="window.handleImageSelect(event)">
-                </div>
+            <h2 id="auth-title" style="color:var(--primary); margin:0 0 15px 0;">QUEST LOGIN</h2>
+            
+            <div id="signup-photo-area" class="hidden">
+                <div id="photo-preview">No Photo</div>
+                <button class="btn-link" style="color:var(--secondary);" onclick="document.getElementById('file-input').click()">+ ADD PHOTO FROM GALLERY</button>
+                <input type="file" id="file-input" class="hidden" accept="image/*" onchange="window.handleImageSelect(event)">
+            </div>
 
+            <div id="auth-inputs">
                 <input type="email" id="user-email" placeholder="Email Address">
                 <input type="password" id="user-pass" placeholder="Password">
             </div>
+
             <button class="btn btn-primary" id="btn-auth-action">SIGN IN</button>
+            
             <div id="auth-toggles">
                 <button class="btn-link" onclick="window.setAuthState('signup')">Sign Up</button> | 
                 <button class="btn-link" onclick="window.setAuthState('forgot')">Forgot Password?</button>
@@ -103,32 +112,32 @@
     </div>
 
     <div id="admin-overlay" class="hidden">
-        <div class="modal-card" style="max-width: 500px;">
-            <h3 style="color:var(--accent)">ADMIN WORLD MANAGER</h3>
-            <input type="text" id="admin-search" placeholder="Search User Email">
+        <div class="modal-card">
+            <h3 style="color:var(--accent)">ADMIN TOOLS</h3>
+            <input type="text" id="admin-search" placeholder="User Email">
             <button class="btn btn-primary" onclick="window.adminSearch()">FIND USER</button>
-            <div id="admin-result" class="hidden" style="text-align: left; margin-top: 15px; font-size: 0.8rem;">
-                <p>User: <span id="adm-res-email"></span></p>
-                Level (Step): <input type="number" id="adm-res-step">
+            <div id="admin-result" class="hidden">
+                <p style="font-size:0.7rem;">UID: <span id="adm-res-uid"></span></p>
                 Points: <input type="number" id="adm-res-pts">
-                <button class="btn btn-primary" onclick="window.adminUpdate()">SAVE CHANGES</button>
-                <button class="btn" style="background:#ff4757; color:white;" onclick="window.adminDelete()">DELETE USER</button>
+                Step: <input type="number" id="adm-res-step">
+                <button class="btn btn-primary" onclick="window.adminUpdate()">SAVE</button>
+                <button class="btn" style="background:#ff4757; color:white;" onclick="window.adminDelete()">DELETE</button>
             </div>
-            <button class="btn-link" onclick="document.getElementById('admin-overlay').classList.add('hidden')">Close Manager</button>
+            <button class="btn-link" onclick="document.getElementById('admin-overlay').classList.add('hidden')">Close</button>
         </div>
     </div>
 
     <header style="width: 95%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
         <div style="display:flex; align-items:center; gap:10px;">
-            <img id="user-photo" src="https://via.placeholder.com/50" style="width:40px; height:40px; border-radius:50%; border:2px solid var(--primary); cursor:pointer;" onclick="window.profileMenu()">
+            <img id="user-photo" src="https://via.placeholder.com/50" style="width:40px; height:40px; border-radius:50%; border:2px solid var(--primary); cursor:pointer;" onclick="window.changePhoto()">
             <div>
                 <div id="player-name" style="font-weight:bold; font-size:0.8rem;">Explorer</div>
                 <div id="level-tag" style="font-size:0.6rem; color:var(--secondary);">LEVEL 1</div>
             </div>
         </div>
         <div>
-            <button id="admin-btn" class="hidden" onclick="document.getElementById('admin-overlay').classList.remove('hidden')" style="background:var(--accent); border:none; padding:5px 10px; border-radius:5px; font-size:0.6rem; font-weight:bold; color:black; cursor:pointer;">ADMIN</button>
-            <button onclick="window.logout()" style="background:#ff4757; color:white; border:none; padding:5px 10px; border-radius:5px; font-size:0.6rem; cursor:pointer;">LOGOUT</button>
+            <button id="admin-btn" class="hidden" onclick="document.getElementById('admin-overlay').classList.remove('hidden')" style="background:var(--accent); color:black; border:none; padding:5px 8px; border-radius:5px; font-size:0.6rem; font-weight:bold; cursor:pointer;">ADMIN</button>
+            <button onclick="window.logout()" style="background:#ff4757; color:white; border:none; padding:5px 8px; border-radius:5px; font-size:0.6rem; cursor:pointer;">LOGOUT</button>
         </div>
     </header>
 
@@ -153,19 +162,16 @@
         </div>
 
         <div class="leaderboard-card">
-            <h4 style="margin:0 0 10px 0; color:var(--primary); font-size:0.9rem;">WORLD LEADERBOARD</h4>
-            <table class="lb-table">
-                <thead><tr><th>Rank</th><th>Player</th><th>Points</th></tr></thead>
-                <tbody id="lb-body"></tbody>
-            </table>
+            <h4 style="margin:0 0 10px 0; color:var(--primary); font-size:0.8rem;">WORLD LEADERBOARD</h4>
+            <table class="lb-table"><thead><tr><th>#</th><th>Player</th><th>Points</th></tr></thead><tbody id="lb-body"></tbody></table>
         </div>
     </div>
 
     <div class="designer-box">
         <img src="IMG_20221004_191436.jpg" alt="Mohammad Ashraf Rather" class="designer-photo">
         <div style="text-align: left;">
-            <p style="font-weight: bold; color: var(--primary); margin: 0; font-size: 0.9rem;">Mohammad Ashraf Rather</p>
-            <p style="font-size: 0.65rem; color: #888; margin: 2px 0;">Designer & Architect</p>
+            <p style="font-weight: bold; color: var(--primary); margin: 0; font-size: 0.8rem;">Mohammad Ashraf Rather</p>
+            <p style="font-size: 0.6rem; color: #888; margin: 0;">Architect & Designer</p>
         </div>
     </div>
 
@@ -189,82 +195,49 @@
 
     const ADMIN_EMAIL = "ratherashraf786@gmail.com";
     let userData = { currentStep: 0, correctTotal: 0, totalSeconds: 0, points: 0, photoURL: "" };
-    let currentAns = "", attempts = 0, qTimerVal = 80, authState = 'signin', qInterval, tInterval;
-    let base64Photo = "";
+    let currentAns = "", authState = 'signin', base64Photo = "", qInterval, tInterval;
 
-    // --- Tab Controller ---
+    // --- Tab Switching Logic (Fix: Globally assigned) ---
     window.setAuthState = (state) => {
         authState = state;
-        const authTitle = document.getElementById('auth-title');
-        const passField = document.getElementById('user-pass');
-        const backBtn = document.getElementById('btn-back-to-login');
-        const toggles = document.getElementById('auth-toggles');
-        const mainBtn = document.getElementById('btn-auth-action');
-        const photoArea = document.getElementById('signup-photo-area');
-
-        photoArea.classList.add('hidden');
-        base64Photo = ""; // Reset photo selection
-        document.getElementById('photo-preview').style.backgroundImage = "none";
-        document.getElementById('photo-preview').innerText = "No Photo";
-
-        if (state === 'signin') {
-            authTitle.innerText = "QUEST LOGIN";
-            mainBtn.innerText = "SIGN IN";
-            passField.classList.remove('hidden');
-            toggles.classList.remove('hidden');
-            backBtn.classList.add('hidden');
-        } else if (state === 'signup') {
-            authTitle.innerText = "NEW EXPLORER";
-            mainBtn.innerText = "CREATE ACCOUNT";
-            passField.classList.remove('hidden');
-            toggles.classList.add('hidden');
-            backBtn.classList.remove('hidden');
-            photoArea.classList.remove('hidden'); // SHOW PHOTO UPLOAD
-        } else if (state === 'forgot') {
-            authTitle.innerText = "RECOVER KEY";
-            mainBtn.innerText = "SEND RESET LINK";
-            passField.classList.add('hidden');
-            toggles.classList.add('hidden');
-            backBtn.classList.remove('hidden');
-        }
+        document.getElementById('auth-title').innerText = state === 'signin' ? "QUEST LOGIN" : (state === 'signup' ? "NEW EXPLORER" : "RECOVER KEY");
+        document.getElementById('signup-photo-area').classList.toggle('hidden', state !== 'signup');
+        document.getElementById('user-pass').classList.toggle('hidden', state === 'forgot');
+        document.getElementById('btn-back-to-login').classList.toggle('hidden', state === 'signin');
+        document.getElementById('auth-toggles').classList.toggle('hidden', state !== 'signin');
+        document.getElementById('btn-auth-action').innerText = state === 'signin' ? "SIGN IN" : (state === 'signup' ? "CREATE ACCOUNT" : "SEND RESET LINK");
     };
 
-    // --- Image Processing ---
-    window.handleImageSelect = (event) => {
-        const file = event.target.files[0];
+    // --- Image Selection ---
+    window.handleImageSelect = (e) => {
+        const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = (e) => {
-                base64Photo = e.target.result;
-                const preview = document.getElementById('photo-preview');
-                preview.style.backgroundImage = `url(${base64Photo})`;
-                preview.innerText = "";
+            reader.onload = (ev) => {
+                base64Photo = ev.target.result;
+                document.getElementById('photo-preview').style.backgroundImage = `url(${base64Photo})`;
+                document.getElementById('photo-preview').innerText = "";
             };
             reader.readAsDataURL(file);
         }
     };
 
-    // --- Main Auth Execution ---
+    // --- Authentication ---
     document.getElementById('btn-auth-action').onclick = async () => {
         const email = document.getElementById('user-email').value;
         const pass = document.getElementById('user-pass').value;
-        if(!email) return alert("Email is required");
+        if(!email) return alert("Email required");
 
         try {
             if (authState === 'signin') {
                 await signInWithEmailAndPassword(auth, email, pass);
             } else if (authState === 'signup') {
-                if(!pass) return alert("Password is required");
+                if(!pass) return alert("Password required");
                 const res = await createUserWithEmailAndPassword(auth, email, pass);
-                // Save user data + base64 photo
-                await setDoc(doc(db, "users", res.user.uid), { 
-                    ...userData, 
-                    email: email, 
-                    photoURL: base64Photo || "" 
-                });
-            } else if (authState === 'forgot') {
+                await setDoc(doc(db, "users", res.user.uid), { ...userData, email, photoURL: base64Photo });
+            } else {
                 await sendPasswordResetEmail(auth, email);
-                alert("Reset link sent! Check your email.");
+                alert("Reset link sent!");
                 window.setAuthState('signin');
             }
         } catch (e) { alert(e.message); }
@@ -286,48 +259,36 @@
     // --- Admin Logic ---
     let targetUid = "";
     window.adminSearch = async () => {
-        const emailInput = document.getElementById('admin-search').value;
-        const q = query(collection(db, "users"), where("email", "==", emailInput));
+        const email = document.getElementById('admin-search').value;
+        const q = query(collection(db, "users"), where("email", "==", email));
         const snap = await getDocs(q);
         if(!snap.empty) {
             const d = snap.docs[0]; targetUid = d.id;
             document.getElementById('admin-result').classList.remove('hidden');
-            document.getElementById('adm-res-email').innerText = d.data().email;
-            document.getElementById('adm-res-step').value = d.data().currentStep;
+            document.getElementById('adm-res-uid').innerText = targetUid;
             document.getElementById('adm-res-pts').value = d.data().points;
-        } else alert("Player not found.");
+            document.getElementById('adm-res-step').value = d.data().currentStep;
+        } else alert("Not found");
     };
     window.adminUpdate = async () => {
         await updateDoc(doc(db, "users", targetUid), { 
-            currentStep: parseInt(document.getElementById('adm-res-step').value),
-            points: parseInt(document.getElementById('adm-res-pts').value)
+            points: parseInt(document.getElementById('adm-res-pts').value),
+            currentStep: parseInt(document.getElementById('adm-res-step').value)
         });
-        alert("Updated!"); updateLeaderboard();
+        alert("Updated"); updateLeaderboard();
     };
     window.adminDelete = async () => {
-        if(confirm("Delete this user?")) { 
-            await deleteDoc(doc(db, "users", targetUid)); 
-            document.getElementById('admin-result').classList.add('hidden');
-            updateLeaderboard();
-        }
+        if(confirm("Delete user?")) { await deleteDoc(doc(db, "users", targetUid)); alert("Deleted"); }
     };
 
-    // --- Math Engine & UI ---
-    function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-
+    // --- Math Game Logic ---
     function generateQuestion() {
-        attempts = 0; qTimerVal = 80;
-        document.getElementById('feedback').innerText = "";
-        document.getElementById('submit-btn').classList.remove('hidden');
-        document.getElementById('next-btn').classList.add('hidden');
         const level = Math.floor(userData.currentStep / 30) + 1;
         let n1, n2, op = "+", ans;
-
-        if (level === 1) { n1 = rand(100, 999); n2 = rand(100, 999); ans = n1 + n2; }
-        else if (level === 2) { n1 = rand(1000, 9999); n2 = rand(1000, 9999); ans = n1 + n2; }
-        else if (level <= 4) { n1 = rand(500, 9999); n2 = rand(100, 4999); op = "-"; ans = n1 - n2; }
-        else { n1 = rand(2, 20); n2 = rand(1, 12); op = "×"; ans = n1 * n2; }
-
+        if (level === 1) { n1 = rand(10, 99); n2 = rand(10, 99); ans = n1 + n2; }
+        else if (level === 2) { n1 = rand(100, 999); n2 = rand(100, 999); ans = n1 + n2; }
+        else { n1 = rand(2, 12); n2 = rand(1, 12); op = "×"; ans = n1 * n2; }
+        
         currentAns = ans.toString();
         document.getElementById('n1').innerText = n1; document.getElementById('n2').innerText = n2; document.getElementById('op').innerText = op;
         document.getElementById('level-tag').innerText = `LEVEL ${level} (${userData.currentStep % 30}/30)`;
@@ -347,245 +308,18 @@
     document.getElementById('submit-btn').onclick = () => {
         let userAns = ""; document.querySelectorAll('.digit-input').forEach(i => userAns += i.value);
         if (userAns === currentAns) {
-            clearInterval(qInterval);
-            const earn = (attempts === 0) ? 10 : 5;
-            userData.points += earn; userData.correctTotal++;
-            document.getElementById('feedback').innerText = `✅ +${earn} POINTS!`; confetti();
+            clearInterval(qInterval); userData.points += 10; userData.correctTotal++;
+            document.getElementById('feedback').innerText = "✅ CORRECT!"; confetti();
             document.getElementById('submit-btn').classList.add('hidden'); document.getElementById('next-btn').classList.remove('hidden'); updateUI();
         } else {
-            attempts++; 
-            document.getElementById('feedback').innerText = attempts >= 2 ? "❌ FAILED" : "❌ TRY AGAIN";
-            if(attempts >= 2) { clearInterval(qInterval); document.getElementById('submit-btn').classList.add('hidden'); document.getElementById('next-btn').classList.remove('hidden'); }
-        }
-    };
-
-    document.getElementById('next-btn').onclick = a                Level (Step): <input type="number" id="adm-res-step">
-                Points: <input type="number" id="adm-res-pts">
-                <button class="btn btn-primary" onclick="window.adminUpdate()">SAVE CHANGES</button>
-                <button class="btn" style="background:#ff4757; color:white;" onclick="window.adminDelete()">DELETE USER</button>
-            </div>
-            <button class="btn-link" onclick="document.getElementById('admin-overlay').classList.add('hidden')">Close Manager</button>
-        </div>
-    </div>
-
-    <header style="width: 95%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <img id="user-photo" src="https://via.placeholder.com/50" style="width:40px; height:40px; border-radius:50%; border:2px solid var(--primary); cursor:pointer;" onclick="window.profileMenu()">
-            <div>
-                <div id="player-name" style="font-weight:bold; font-size:0.8rem;">Explorer</div>
-                <div id="level-tag" style="font-size:0.6rem; color:var(--secondary);">LEVEL 1</div>
-            </div>
-        </div>
-        <div>
-            <button id="admin-btn" class="hidden" onclick="document.getElementById('admin-overlay').classList.remove('hidden')" style="background:var(--accent); border:none; padding:5px 10px; border-radius:5px; font-size:0.6rem; font-weight:bold; color:black; cursor:pointer;">ADMIN</button>
-            <button onclick="window.logout()" style="background:#ff4757; color:white; border:none; padding:5px 10px; border-radius:5px; font-size:0.6rem; cursor:pointer;">LOGOUT</button>
-        </div>
-    </header>
-
-    <div class="main-wrapper">
-        <div class="dashboard">
-            <div class="gauge-box"><div class="gauge" style="border-top-color: var(--primary);"><span class="gauge-val" id="q-timer">80</span></div><div class="gauge-label">Quest</div></div>
-            <div class="gauge-box"><div class="gauge" style="border-top-color: var(--secondary);"><span class="gauge-val" id="total-time">0</span></div><div class="gauge-label">Total</div></div>
-            <div class="gauge-box"><div class="gauge" style="border-top-color: var(--accent);"><span class="gauge-val" id="points">0</span></div><div class="gauge-label">Points</div></div>
-            <div class="gauge-box"><div class="gauge" style="border-top-color: #ff4757;"><span class="gauge-val" id="correct-count">0</span></div><div class="gauge-label">Correct</div></div>
-        </div>
-
-        <div class="container">
-            <div class="math-area">
-                <div id="n1">0</div>
-                <div style="display:flex; justify-content: space-between;"><span style="color:var(--secondary)" id="op">+</span><span id="n2">0</span></div>
-                <hr style="border:1px solid #333">
-                <div id="ans-box" style="display:flex; justify-content: flex-end;"></div>
-            </div>
-            <div id="feedback" style="text-align:center; height: 20px; font-weight:bold; color:var(--accent); font-size: 0.8rem;"></div>
-            <button class="btn btn-primary" id="submit-btn">SUBMIT ANSWER</button>
-            <button class="btn btn-next hidden" id="next-btn">NEXT QUEST ➔</button>
-        </div>
-
-        <div class="leaderboard-card">
-            <h4 style="margin:0 0 10px 0; color:var(--primary); font-size:0.9rem;">WORLD LEADERBOARD</h4>
-            <table class="lb-table">
-                <thead><tr><th>Rank</th><th>Player</th><th>Points</th></tr></thead>
-                <tbody id="lb-body"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="designer-box">
-        <img src="IMG_20221004_191436.jpg" alt="Mohammad Ashraf Rather" class="designer-photo">
-        <div style="text-align: left;">
-            <p style="font-weight: bold; color: var(--primary); margin: 0; font-size: 0.9rem;">Mohammad Ashraf Rather</p>
-            <p style="font-size: 0.65rem; color: #888; margin: 2px 0;">Designer & Architect</p>
-        </div>
-    </div>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyC6FbPb36F69k7cw_tLbGQoVQxs6shzfAo",
-      authDomain: "math-world-3d.firebaseapp.com",
-      projectId: "math-world-3d",
-      storageBucket: "math-world-3d.firebasestorage.app",
-      messagingSenderId: "526717782686",
-      appId: "1:526717782686:web:21dddbcb293323eda8098f"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    const ADMIN_EMAIL = "ratherashraf786@gmail.com";
-    let userData = { currentStep: 0, correctTotal: 0, totalSeconds: 0, points: 0, photoURL: "" };
-    let currentAns = "", attempts = 0, qTimerVal = 80, authState = 'signin', qInterval, tInterval;
-
-    // --- Tab Controller (Correction: Globally Assigned) ---
-    window.setAuthState = (state) => {
-        authState = state;
-        const authTitle = document.getElementById('auth-title');
-        const passField = document.getElementById('user-pass');
-        const backBtn = document.getElementById('btn-back-to-login');
-        const toggles = document.getElementById('auth-toggles');
-        const mainBtn = document.getElementById('btn-auth-action');
-
-        if (state === 'signin') {
-            authTitle.innerText = "QUEST LOGIN";
-            mainBtn.innerText = "SIGN IN";
-            passField.classList.remove('hidden');
-            toggles.classList.remove('hidden');
-            backBtn.classList.add('hidden');
-        } else if (state === 'signup') {
-            authTitle.innerText = "NEW EXPLORER";
-            mainBtn.innerText = "CREATE ACCOUNT";
-            passField.classList.remove('hidden');
-            toggles.classList.add('hidden');
-            backBtn.classList.remove('hidden');
-        } else if (state === 'forgot') {
-            authTitle.innerText = "RECOVER KEY";
-            mainBtn.innerText = "SEND RESET LINK";
-            passField.classList.add('hidden');
-            toggles.classList.add('hidden');
-            backBtn.classList.remove('hidden');
-        }
-    };
-
-    // --- Main Auth Execution ---
-    document.getElementById('btn-auth-action').onclick = async () => {
-        const email = document.getElementById('user-email').value;
-        const pass = document.getElementById('user-pass').value;
-        if(!email) return alert("Email is required");
-
-        try {
-            if (authState === 'signin') {
-                await signInWithEmailAndPassword(auth, email, pass);
-            } else if (authState === 'signup') {
-                if(!pass) return alert("Password is required");
-                const res = await createUserWithEmailAndPassword(auth, email, pass);
-                await setDoc(doc(db, "users", res.user.uid), { ...userData, email });
-            } else if (authState === 'forgot') {
-                await sendPasswordResetEmail(auth, email);
-                alert("Reset link sent! Check your email.");
-                window.setAuthState('signin');
-            }
-        } catch (e) { alert(e.message); }
-    };
-
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            document.getElementById('auth-overlay').classList.add('hidden');
-            document.getElementById('player-name').innerText = user.email.split('@')[0];
-            if(user.email === ADMIN_EMAIL) document.getElementById('admin-btn').classList.remove('hidden');
-            const snap = await getDoc(doc(db, "users", user.uid));
-            if (snap.exists()) userData = snap.data();
-            updateUI(); generateQuestion(); startTotalTimer(); updateLeaderboard();
-        } else {
-            document.getElementById('auth-overlay').classList.remove('hidden');
-        }
-    });
-
-    // --- Admin Logic ---
-    let targetUid = "";
-    window.adminSearch = async () => {
-        const emailInput = document.getElementById('admin-search').value;
-        const q = query(collection(db, "users"), where("email", "==", emailInput));
-        const snap = await getDocs(q);
-        if(!snap.empty) {
-            const d = snap.docs[0]; targetUid = d.id;
-            document.getElementById('admin-result').classList.remove('hidden');
-            document.getElementById('adm-res-email').innerText = d.data().email;
-            document.getElementById('adm-res-step').value = d.data().currentStep;
-            document.getElementById('adm-res-pts').value = d.data().points;
-        } else alert("Player not found in database.");
-    };
-    window.adminUpdate = async () => {
-        await updateDoc(doc(db, "users", targetUid), { 
-            currentStep: parseInt(document.getElementById('adm-res-step').value),
-            points: parseInt(document.getElementById('adm-res-pts').value)
-        });
-        alert("Data Updated!"); updateLeaderboard();
-    };
-    window.adminDelete = async () => {
-        if(confirm("Permanently delete this explorer?")) { 
-            await deleteDoc(doc(db, "users", targetUid)); 
-            alert("Deleted."); 
-            document.getElementById('admin-result').classList.add('hidden');
-            updateLeaderboard();
-        }
-    };
-
-    // --- Math Engine & UI ---
-    function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-
-    function generateQuestion() {
-        attempts = 0; qTimerVal = 80;
-        document.getElementById('feedback').innerText = "";
-        document.getElementById('submit-btn').classList.remove('hidden');
-        document.getElementById('next-btn').classList.add('hidden');
-        const level = Math.floor(userData.currentStep / 30) + 1;
-        let n1, n2, op = "+", ans;
-
-        if (level === 1) { n1 = rand(100, 999); n2 = rand(100, 999); ans = n1 + n2; }
-        else if (level === 2) { n1 = rand(1000, 9999); n2 = rand(1000, 9999); ans = n1 + n2; }
-        else if (level <= 4) { n1 = rand(500, 9999); n2 = rand(100, 4999); op = "-"; ans = n1 - n2; }
-        else { n1 = rand(2, 20); n2 = rand(1, 12); op = "×"; ans = n1 * n2; }
-
-        currentAns = ans.toString();
-        document.getElementById('n1').innerText = n1; document.getElementById('n2').innerText = n2; document.getElementById('op').innerText = op;
-        document.getElementById('level-tag').innerText = `LEVEL ${level} (${userData.currentStep % 30}/30)`;
-        setupInputs(currentAns.length); startQuestTimer();
-    }
-
-    function setupInputs(len) {
-        const box = document.getElementById('ans-box'); box.innerHTML = "";
-        for(let i=0; i<len; i++) {
-            const inp = document.createElement('input'); inp.type = "number"; inp.className = "digit-input";
-            inp.oninput = function() { if(this.value.length > 0) { this.value = this.value.slice(-1); if(this.previousElementSibling) this.previousElementSibling.focus(); } };
-            box.appendChild(inp);
-        }
-        box.lastElementChild.focus();
-    }
-
-    document.getElementById('submit-btn').onclick = () => {
-        let userAns = ""; document.querySelectorAll('.digit-input').forEach(i => userAns += i.value);
-        if (userAns === currentAns) {
-            clearInterval(qInterval);
-            const earn = (attempts === 0) ? 10 : 5;
-            userData.points += earn; userData.correctTotal++;
-            document.getElementById('feedback').innerText = `✅ +${earn} POINTS!`; confetti();
-            document.getElementById('submit-btn').classList.add('hidden'); document.getElementById('next-btn').classList.remove('hidden'); updateUI();
-        } else {
-            attempts++; 
-            document.getElementById('feedback').innerText = attempts >= 2 ? "❌ FAILED" : "❌ TRY AGAIN";
-            if(attempts >= 2) { clearInterval(qInterval); document.getElementById('submit-btn').classList.add('hidden'); document.getElementById('next-btn').classList.remove('hidden'); }
+            document.getElementById('feedback').innerText = "❌ WRONG";
         }
     };
 
     document.getElementById('next-btn').onclick = async () => {
         userData.currentStep++; 
         await updateDoc(doc(db, "users", auth.currentUser.uid), userData);
-        generateQuestion(); updateLeaderboard();
+        generateQuestion(); document.getElementById('next-btn').classList.add('hidden');
     };
 
     async function updateLeaderboard() {
@@ -593,20 +327,17 @@
         const snap = await getDocs(q);
         const body = document.getElementById('lb-body'); body.innerHTML = "";
         let i = 1; snap.forEach(d => {
-            body.innerHTML += `<tr><td>#${i++}</td><td>${d.data().email.split('@')[0]}</td><td>${d.data().points}</td></tr>`;
+            body.innerHTML += `<tr><td>${i++}</td><td>${d.data().email.split('@')[0]}</td><td>${d.data().points}</td></tr>`;
         });
     }
 
-    function startQuestTimer() { clearInterval(qInterval); qInterval = setInterval(() => { qTimerVal--; document.getElementById('q-timer').innerText = qTimerVal; if(qTimerVal <= 0) document.getElementById('submit-btn').click(); }, 1000); }
+    function startQuestTimer() { let qv = 80; clearInterval(qInterval); qInterval = setInterval(() => { qv--; document.getElementById('q-timer').innerText = qv; if(qv<=0) clearInterval(qInterval); }, 1000); }
     function startTotalTimer() { clearInterval(tInterval); tInterval = setInterval(() => { userData.totalSeconds++; document.getElementById('total-time').innerText = userData.totalSeconds; }, 1000); }
     function updateUI() { document.getElementById('points').innerText = userData.points; document.getElementById('correct-count').innerText = userData.correctTotal; document.getElementById('user-photo').src = userData.photoURL || "https://via.placeholder.com/50"; }
-    
-    window.profileMenu = () => { const url = prompt("Photo URL:"); if(url) { userData.photoURL = url; updateDoc(doc(db, "users", auth.currentUser.uid), {photoURL: url}); updateUI(); } };
+    function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
     window.logout = () => signOut(auth).then(() => location.reload());
-
-    // Initialize first state
+    window.changePhoto = () => document.getElementById('file-input').click();
     window.setAuthState('signin');
 </script>
 </body>
 </html>
-                                        
