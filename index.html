@@ -241,15 +241,7 @@
 
   const ADMIN_EMAIL = "ratherashraf786@gmail.com";
 
-  // default profile for new users
-  let userData = {
-    currentStep: 0,
-    correctTotal: 0,
-    totalSeconds: 0,
-    points: 0,
-    photoURL: ""
-  };
-
+  let userData = { currentStep: 0, correctTotal: 0, totalSeconds: 0, points: 0, photoURL: "" };
   let currentAns = "";
   let authState = "signin";
   let base64Photo = "";
@@ -257,7 +249,7 @@
   let qInterval = null;
   let tInterval = null;
 
-  // ---------- AUTH UI STATE ----------
+  // ---------- AUTH STATE UI ----------
   window.setAuthState = (state) => {
     authState = state;
 
@@ -268,7 +260,6 @@
     const togglesEl = document.getElementById("auth-toggles");
     const backEl = document.getElementById("btn-back-to-login");
 
-    // reset
     photoEl.classList.add("hidden");
     passEl.classList.remove("hidden");
     togglesEl.classList.add("hidden");
@@ -313,19 +304,14 @@
     const pass = document.getElementById("user-pass").value;
 
     if (!email) return alert("Email required");
-    if ((authState === "signin" || authState === "signup") && !pass)
-      return alert("Password required");
+    if ((authState === "signin" || authState === "signup") && !pass) return alert("Password required");
 
     try {
       if (authState === "signin") {
         await signInWithEmailAndPassword(auth, email, pass);
       } else if (authState === "signup") {
         const res = await createUserWithEmailAndPassword(auth, email, pass);
-        await setDoc(doc(db, "users", res.user.uid), {
-          ...userData,
-          email,
-          photoURL: base64Photo
-        });
+        await setDoc(doc(db, "users", res.user.uid), { ...userData, email, photoURL: base64Photo });
       } else if (authState === "forgot") {
         await sendPasswordResetEmail(auth, email);
         alert("Reset link sent!");
@@ -336,30 +322,25 @@
     }
   };
 
-  // ---------- AUTH LISTENER ----------
   onAuthStateChanged(auth, async (user) => {
-    if (!user) {
+    if (user) {
+      document.getElementById("auth-overlay").classList.add("hidden");
+      document.getElementById("player-name").innerText = user.email.split("@")[0];
+      if (user.email === ADMIN_EMAIL) document.getElementById("admin-btn").classList.remove("hidden");
+
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (snap.exists()) userData = snap.data();
+
+      updateUI();
+      generateQuestion();
+      startTotalTimer();
+      updateLeaderboard();
+    } else {
       document.getElementById("auth-overlay").classList.remove("hidden");
-      return;
     }
-
-    document.getElementById("auth-overlay").classList.add("hidden");
-    document.getElementById("player-name").innerText = user.email.split("@")[0];
-
-    if (user.email === ADMIN_EMAIL) {
-      document.getElementById("admin-btn").classList.remove("hidden");
-    }
-
-    const snap = await getDoc(doc(db, "users", user.uid));
-    if (snap.exists()) userData = snap.data();
-
-    updateUI();
-    generateQuestion();
-    startTotalTimer();
-    updateLeaderboard();
   });
 
-  // ---------- ADMIN TOOLS ----------
+  // ---------- ADMIN ----------
   window.adminSearch = async () => {
     const email = document.getElementById("admin-search").value.trim();
     if (!email) return alert("Enter an email");
@@ -374,7 +355,6 @@
 
     const data = d.data();
     document.getElementById("admin-result").classList.remove("hidden");
-
     document.getElementById("adm-res-email").value = data.email || "";
     document.getElementById("adm-res-pts").value = data.points || 0;
     document.getElementById("adm-res-step").value = data.currentStep || 0;
@@ -401,21 +381,21 @@
 
   window.adminDelete = async () => {
     if (!window.targetUid) return alert("Search a user first");
-    if (!confirm("Delete this user?")) return;
+    if (!confirm("Delete?")) return;
 
     await deleteDoc(doc(db, "users", window.targetUid));
     alert("Deleted");
-    document.getElementById("admin-result").classList.add("hidden");
     updateLeaderboard();
   };
 
-  // ---------- GAME LOGIC ----------
+  // ---------- GAME ----------
   function generateQuestion() {
     document.getElementById("submit-btn").classList.remove("hidden");
     document.getElementById("next-btn").classList.add("hidden");
     document.getElementById("feedback").innerText = "";
 
-    const level = Math.floor((userData.currentStep || 0) / 30) + 1;
+    const step = userData.currentStep || 0;
+    const level = Math.floor(step / 30) + 1;
 
     let n1, n2, op = "+", ans;
 
@@ -439,14 +419,13 @@
     document.getElementById("n1").innerText = n1;
     document.getElementById("n2").innerText = n2;
     document.getElementById("op").innerText = op;
-
-    document.getElementById("level-tag").innerText =
-      `LEVEL ${level} (${(userData.currentStep || 0) % 30}/30)`;
+    document.getElementById("level-tag").innerText = `LEVEL ${level} (${step % 30}/30)`;
 
     setupInputs(currentAns.length);
     startQuestTimer();
   }
 
+  // IMPORTANT: Ones-place first (rightmost), then move left
   function setupInputs(len) {
     const box = document.getElementById("ans-box");
     box.innerHTML = "";
@@ -458,29 +437,32 @@
       inp.inputMode = "numeric";
 
       inp.oninput = function () {
-        // keep last digit only
+        // keep only last digit
         if (this.value.length > 1) this.value = this.value.slice(-1);
 
-        // go RIGHT (next box) after typing
-        if (this.value.length === 1 && this.nextElementSibling) {
-          this.nextElementSibling.focus();
+        // after entering a digit: move LEFT (toward higher place value)
+        if (this.value.length === 1 && this.previousElementSibling) {
+          this.previousElementSibling.focus();
         }
       };
 
       inp.onkeydown = function (ev) {
-        // backspace goes LEFT if empty
-        if (ev.key === "Backspace" && this.value === "" && this.previousElementSibling) {
-          this.previousElementSibling.focus();
+        // if empty and backspace: move RIGHT (toward ones place)
+        if (ev.key === "Backspace" && this.value === "" && this.nextElementSibling) {
+          this.nextElementSibling.focus();
         }
       };
 
       box.appendChild(inp);
     }
 
-    box.firstElementChild?.focus();
+    // start at ones place (rightmost input)
+    box.lastElementChild?.focus();
   }
 
   document.getElementById("submit-btn").onclick = () => {
+    // IMPORTANT: digits are displayed left->right (highest->lowest)
+    // so we can read them normally in DOM order
     let userAns = "";
     document.querySelectorAll(".digit-input").forEach((i) => (userAns += i.value));
 
@@ -526,7 +508,7 @@
     let i = 1;
     snap.forEach((d) => {
       const data = d.data();
-      const name = ((data.email || "Player") + "").split("@")[0];
+      const name = ((data.email || "") + "").split("@")[0] || "Player";
       const pts = data.points || 0;
 
       body.innerHTML += `
@@ -568,8 +550,7 @@
   function updateUI() {
     document.getElementById("points").innerText = userData.points || 0;
     document.getElementById("correct-count").innerText = userData.correctTotal || 0;
-    document.getElementById("user-photo").src =
-      userData.photoURL || "https://via.placeholder.com/50";
+    document.getElementById("user-photo").src = userData.photoURL || "https://via.placeholder.com/50";
   }
 
   function rand(min, max) {
@@ -589,8 +570,7 @@
   window.logout = () => signOut(auth).then(() => location.reload());
   window.changePhoto = () => document.getElementById("file-input").click();
 
-  // initial auth screen
   window.setAuthState("signin");
-</script>
+</script>        
 </body> 
 </html>
