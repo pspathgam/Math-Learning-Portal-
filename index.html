@@ -202,190 +202,395 @@
     </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getAuth,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    sendPasswordResetEmail,
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import {
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc,
+    updateDoc,
+    collection,
+    query,
+    orderBy,
+    limit,
+    getDocs,
+    where,
+    deleteDoc
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyC6FbPb36F69k7cw_tLbGQoVQxs6shzfAo",
-      authDomain: "math-world-3d.firebaseapp.com",
-      projectId: "math-world-3d",
-      storageBucket: "math-world-3d.firebasestorage.app",
-      messagingSenderId: "526717782686",
-      appId: "1:526717782686:web:21dddbcb293323eda8098f"
+  const firebaseConfig = {
+    apiKey: "AIzaSyC6FbPb36F69k7cw_tLbGQoVQxs6shzfAo",
+    authDomain: "math-world-3d.firebaseapp.com",
+    projectId: "math-world-3d",
+    storageBucket: "math-world-3d.firebasestorage.app",
+    messagingSenderId: "526717782686",
+    appId: "1:526717782686:web:21dddbcb293323eda8098f"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const ADMIN_EMAIL = "ratherashraf786@gmail.com";
+
+  // default profile for new users
+  let userData = {
+    currentStep: 0,
+    correctTotal: 0,
+    totalSeconds: 0,
+    points: 0,
+    photoURL: ""
+  };
+
+  let currentAns = "";
+  let authState = "signin";
+  let base64Photo = "";
+  let adminBase64 = "";
+  let qInterval = null;
+  let tInterval = null;
+
+  // ---------- AUTH UI STATE ----------
+  window.setAuthState = (state) => {
+    authState = state;
+
+    const titleEl = document.getElementById("auth-title");
+    const photoEl = document.getElementById("signup-photo-area");
+    const passEl = document.getElementById("user-pass");
+    const btnEl = document.getElementById("btn-auth-action");
+    const togglesEl = document.getElementById("auth-toggles");
+    const backEl = document.getElementById("btn-back-to-login");
+
+    // reset
+    photoEl.classList.add("hidden");
+    passEl.classList.remove("hidden");
+    togglesEl.classList.add("hidden");
+    backEl.classList.add("hidden");
+
+    if (state === "signin") {
+      titleEl.innerText = "QUEST LOGIN";
+      btnEl.innerText = "SIGN IN";
+      togglesEl.classList.remove("hidden");
+    } else if (state === "signup") {
+      titleEl.innerText = "NEW EXPLORER";
+      photoEl.classList.remove("hidden");
+      btnEl.innerText = "CREATE ACCOUNT";
+      backEl.classList.remove("hidden");
+    } else if (state === "forgot") {
+      titleEl.innerText = "RECOVER KEY";
+      passEl.classList.add("hidden");
+      btnEl.innerText = "SEND RESET LINK";
+      backEl.classList.remove("hidden");
+    }
+  };
+
+  window.handleImageSelect = (e, previewId) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const res = ev.target.result;
+      if (previewId === "photo-preview") base64Photo = res;
+      else adminBase64 = res;
+
+      const prev = document.getElementById(previewId);
+      prev.style.backgroundImage = `url(${res})`;
+      prev.innerText = "";
     };
+    reader.readAsDataURL(file);
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+  document.getElementById("btn-auth-action").onclick = async () => {
+    const email = document.getElementById("user-email").value.trim();
+    const pass = document.getElementById("user-pass").value;
 
-    const ADMIN_EMAIL = "ratherashraf786@gmail.com";
-    let userData = { currentStep: 0, correctTotal: 0, totalSeconds: 0, points: 0, photoURL: "" };
-    let currentAns = "", authState = 'signin', base64Photo = "", adminBase64 = "", qInterval, tInterval;
+    if (!email) return alert("Email required");
+    if ((authState === "signin" || authState === "signup") && !pass)
+      return alert("Password required");
 
-    // THE ABSOLUTE FIX FOR BUTTON RESPONSIVENESS
-    window.setAuthState = (state) => {
-        console.log("Switching to state:", state);
-        authState = state;
-        const titleEl = document.getElementById('auth-title');
-        const photoEl = document.getElementById('signup-photo-area');
-        const passEl = document.getElementById('user-pass');
-        const btnEl = document.getElementById('btn-auth-action');
-        const togglesEl = document.getElementById('auth-toggles');
-        const backEl = document.getElementById('btn-back-to-login');
+    try {
+      if (authState === "signin") {
+        await signInWithEmailAndPassword(auth, email, pass);
+      } else if (authState === "signup") {
+        const res = await createUserWithEmailAndPassword(auth, email, pass);
+        await setDoc(doc(db, "users", res.user.uid), {
+          ...userData,
+          email,
+          photoURL: base64Photo
+        });
+      } else if (authState === "forgot") {
+        await sendPasswordResetEmail(auth, email);
+        alert("Reset link sent!");
+        window.setAuthState("signin");
+      }
+    } catch (e) {
+      alert(e.message);
+    }
+  };
 
-        // Reset everything first
-        photoEl.classList.add('hidden');
-        passEl.classList.remove('hidden');
-        togglesEl.classList.add('hidden');
-        backEl.classList.add('hidden');
+  // ---------- AUTH LISTENER ----------
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      document.getElementById("auth-overlay").classList.remove("hidden");
+      return;
+    }
 
-        if (state === 'signin') {
-            titleEl.innerText = "QUEST LOGIN";
-            btnEl.innerText = "SIGN IN";
-            togglesEl.classList.remove('hidden');
-        } else if (state === 'signup') {
-            titleEl.innerText = "NEW EXPLORER";
-            photoEl.classList.remove('hidden');
-            btnEl.innerText = "CREATE ACCOUNT";
-            backEl.classList.remove('hidden');
-        } else if (state === 'forgot') {
-            titleEl.innerText = "RECOVER KEY";
-            passEl.classList.add('hidden');
-            btnEl.innerText = "SEND RESET LINK";
-            backEl.classList.remove('hidden');
-        }
-    };
+    document.getElementById("auth-overlay").classList.add("hidden");
+    document.getElementById("player-name").innerText = user.email.split("@")[0];
 
-    window.handleImageSelect = (e, previewId) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                const res = ev.target.result;
-                if(previewId === 'photo-preview') base64Photo = res;
-                else adminBase64 = res;
-                document.getElementById(previewId).style.backgroundImage = `url(${res})`;
-                document.getElementById(previewId).innerText = "";
-            };
-            reader.readAsDataURL(file);
-        }
-    };
+    if (user.email === ADMIN_EMAIL) {
+      document.getElementById("admin-btn").classList.remove("hidden");
+    }
 
-    document.getElementById('btn-auth-action').onclick = async () => {
-        const email = document.getElementById('user-email').value;
-        const pass = document.getElementById('user-pass').value;
-        if(!email) return alert("Email required");
-        try {
-            if (authState === 'signin') await signInWithEmailAndPassword(auth, email, pass);
-            else if (authState === 'signup') {
-                const res = await createUserWithEmailAndPassword(auth, email, pass);
-                await setDoc(doc(db, "users", res.user.uid), { ...userData, email, photoURL: base64Photo });
-            } else { await sendPasswordResetEmail(auth, email); alert("Reset link sent!"); window.setAuthState('signin'); }
-        } catch (e) { alert(e.message); }
-    };
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (snap.exists()) userData = snap.data();
 
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            document.getElementById('auth-overlay').classList.add('hidden');
-            document.getElementById('player-name').innerText = user.email.split('@')[0];
-            if(user.email === ADMIN_EMAIL) document.getElementById('admin-btn').classList.remove('hidden');
-            const snap = await getDoc(doc(db, "users", user.uid));
-            if (snap.exists()) userData = snap.data();
-            updateUI(); generateQuestion(); startTotalTimer(); updateLeaderboard();
-        } else { document.getElementById('auth-overlay').classList.remove('hidden'); }
+    updateUI();
+    generateQuestion();
+    startTotalTimer();
+    updateLeaderboard();
+  });
+
+  // ---------- ADMIN TOOLS ----------
+  window.adminSearch = async () => {
+    const email = document.getElementById("admin-search").value.trim();
+    if (!email) return alert("Enter an email");
+
+    const q1 = query(collection(db, "users"), where("email", "==", email));
+    const snap = await getDocs(q1);
+
+    if (snap.empty) return alert("Not found");
+
+    const d = snap.docs[0];
+    window.targetUid = d.id;
+
+    const data = d.data();
+    document.getElementById("admin-result").classList.remove("hidden");
+
+    document.getElementById("adm-res-email").value = data.email || "";
+    document.getElementById("adm-res-pts").value = data.points || 0;
+    document.getElementById("adm-res-step").value = data.currentStep || 0;
+
+    adminBase64 = data.photoURL || "";
+    const prev = document.getElementById("admin-photo-preview");
+    prev.style.backgroundImage = adminBase64 ? `url(${adminBase64})` : "";
+    prev.innerText = adminBase64 ? "" : "No Photo";
+  };
+
+  window.adminUpdate = async () => {
+    if (!window.targetUid) return alert("Search a user first");
+
+    await updateDoc(doc(db, "users", window.targetUid), {
+      email: document.getElementById("adm-res-email").value.trim(),
+      points: parseInt(document.getElementById("adm-res-pts").value || "0", 10),
+      currentStep: parseInt(document.getElementById("adm-res-step").value || "0", 10),
+      photoURL: adminBase64
     });
 
-    // Admin Tools Persistence
-    window.adminSearch = async () => {
-        const email = document.getElementById('admin-search').value;
-        const q = query(collection(db, "users"), where("email", "==", email));
-        const snap = await getDocs(q);
-        if(!snap.empty) {
-            const d = snap.docs[0]; window.targetUid = d.id;
-            const data = d.data();
-            document.getElementById('admin-result').classList.remove('hidden');
-            document.getElementById('adm-res-uid').innerText = d.id;
-            document.getElementById('adm-res-email').value = data.email || "";
-            document.getElementById('adm-res-pts').value = data.points || 0;
-            document.getElementById('adm-res-step').value = data.currentStep || 0;
-            adminBase64 = data.photoURL || "";
-            document.getElementById('admin-photo-preview').style.backgroundImage = `url(${adminBase64})`;
-            document.getElementById('admin-photo-preview').innerText = adminBase64 ? "" : "No Photo";
-        } else alert("Not found");
-    };
+    alert("Updated");
+    updateLeaderboard();
+  };
 
-    window.adminUpdate = async () => {
-        await updateDoc(doc(db, "users", window.targetUid), { 
-            email: document.getElementById('adm-res-email').value,
-            points: parseInt(document.getElementById('adm-res-pts').value), 
-            currentStep: parseInt(document.getElementById('adm-res-step').value),
-            photoURL: adminBase64
-        });
-        alert("Updated"); updateLeaderboard();
-    };
+  window.adminDelete = async () => {
+    if (!window.targetUid) return alert("Search a user first");
+    if (!confirm("Delete this user?")) return;
 
-    window.adminDelete = async () => { if(confirm("Delete?")) { await deleteDoc(doc(db, "users", window.targetUid)); alert("Deleted"); updateLeaderboard(); } };
+    await deleteDoc(doc(db, "users", window.targetUid));
+    alert("Deleted");
+    document.getElementById("admin-result").classList.add("hidden");
+    updateLeaderboard();
+  };
 
-    function generateQuestion() {
-        document.getElementById('submit-btn').classList.remove('hidden');
-        document.getElementById('next-btn').classList.add('hidden');
-        document.getElementById('feedback').innerText = "";
-        const level = Math.floor(userData.currentStep / 30) + 1;
-        let n1, n2, op = "+", ans;
-        if (level <= 5) { n1 = rand(100, 999); n2 = rand(100, 999); ans = n1 + n2; }
-        else if (level <= 10) { n1 = rand(1000, 9999); n2 = rand(1000, 9999); ans = n1 + n2; }
-        else { n1 = rand(10, 50); n2 = rand(2, 12); op = "×"; ans = n1 * n2; }
-        currentAns = ans.toString();
-        document.getElementById('n1').innerText = n1; 
-        document.getElementById('n2').innerText = n2; 
-        document.getElementById('op').innerText = op;
-        document.getElementById('level-tag').innerText = `LEVEL ${level} (${userData.currentStep % 30}/30)`;
-        setupInputs(currentAns.length); startQuestTimer();
+  // ---------- GAME LOGIC ----------
+  function generateQuestion() {
+    document.getElementById("submit-btn").classList.remove("hidden");
+    document.getElementById("next-btn").classList.add("hidden");
+    document.getElementById("feedback").innerText = "";
+
+    const level = Math.floor((userData.currentStep || 0) / 30) + 1;
+
+    let n1, n2, op = "+", ans;
+
+    if (level <= 5) {
+      n1 = rand(100, 999);
+      n2 = rand(100, 999);
+      ans = n1 + n2;
+    } else if (level <= 10) {
+      n1 = rand(1000, 9999);
+      n2 = rand(1000, 9999);
+      ans = n1 + n2;
+    } else {
+      n1 = rand(10, 50);
+      n2 = rand(2, 12);
+      op = "×";
+      ans = n1 * n2;
     }
 
-    function setupInputs(len) {
-        const box = document.getElementById('ans-box'); box.innerHTML = "";
-        for(let i=0; i<len; i++) {
-            const inp = document.createElement('input'); inp.type = "number"; inp.className = "digit-input";
-            inp.oninput = function() { if(this.value.length > 0) { this.value = this.value.slice(-1); if(this.previousElementSibling) this.previousElementSibling.focus(); } };
-            box.appendChild(inp);
+    currentAns = String(ans);
+
+    document.getElementById("n1").innerText = n1;
+    document.getElementById("n2").innerText = n2;
+    document.getElementById("op").innerText = op;
+
+    document.getElementById("level-tag").innerText =
+      `LEVEL ${level} (${(userData.currentStep || 0) % 30}/30)`;
+
+    setupInputs(currentAns.length);
+    startQuestTimer();
+  }
+
+  function setupInputs(len) {
+    const box = document.getElementById("ans-box");
+    box.innerHTML = "";
+
+    for (let i = 0; i < len; i++) {
+      const inp = document.createElement("input");
+      inp.type = "number";
+      inp.className = "digit-input";
+      inp.inputMode = "numeric";
+
+      inp.oninput = function () {
+        // keep last digit only
+        if (this.value.length > 1) this.value = this.value.slice(-1);
+
+        // go RIGHT (next box) after typing
+        if (this.value.length === 1 && this.nextElementSibling) {
+          this.nextElementSibling.focus();
         }
-        box.lastElementChild.focus();
+      };
+
+      inp.onkeydown = function (ev) {
+        // backspace goes LEFT if empty
+        if (ev.key === "Backspace" && this.value === "" && this.previousElementSibling) {
+          this.previousElementSibling.focus();
+        }
+      };
+
+      box.appendChild(inp);
     }
 
-    document.getElementById('submit-btn').onclick = () => {
-        let userAns = ""; document.querySelectorAll('.digit-input').forEach(i => userAns += i.value);
-        if (userAns === currentAns) {
-            clearInterval(qInterval);
-userData.points += 10;
-userData.correctTotal++;
-document.getElementByI d('feedback').innerText = COINS!"; confetti(); 11 +10
-document.getElementById('submit-btn ').classList.add('hidden');
-document.getElementById('next-btn')
-.classList.remove('hidden');
-updateUI();
-} else document.getElement ById('feedback').innerText = WRONG";
-};
-document.getElementById( xt-btn').onclick = async () => {
-userData.currentStep++;
-await updateDoc (doc(db,
-"users", auth.currentUser.uid),
-{ points: userData.points,
-currentStep: userData.currentStep,
-correctTotal:
-userData.correctTotal });
-updateLeaderboard(); generateQuestion(); };
-async function update Leaderboard() {
-const q = query(collection (db, "users"), orderBy("points", "desc"), const snap = await limit(5));
-getDocs(q);
-const body = let i = 1; document.getElementById('lb-body'); body.innerHTML = "";
-snap.forEach(d => { const data = d.data(); body.innerHTML += `<tr><td class="col-rank">${i++} </td><td class="col-name">${(data .email||"").split('@')[0]}</td><td class="col-pts"> ${data.points || 0}</td></tr>'; }); }
-function startQuestTimer() { let qv = 80; clearInterval(qInterval); qInterval = setInterval(() => { qv--; document.getElementById('q-tim er').innerText = qv; if(qv<=0) { clearInterval(qInterval); document.getElementById('s ubmit-btn').click(); } }, 1000); }
-function startTotalTimer() { clearInterval(tInterval); tInterval = setInterval(() => { userData.totalSeconds +; document.getElementById ('total-time').innerText = userData.totalSeconds; }, 1000); }
-function updateUI() { document. getElementById('points').innerText = userData.points; document.getEle mentById('correct-count').innerText = userData.correctTotal; document.getElementById('user-pho to').src = userData.photoURL || "https://via.placeholder.com/50"; } function rand(min, max) { return Math.floor(Math.random() *
-min + 1)) + min; } (max window.logout = () => signOut(auth).then(() => location.reload()); window.changePhoto = () => document.getElementById('file-input ').click();
-// Initial State Set window.setAuthState('signin');
-</script> 
+    box.firstElementChild?.focus();
+  }
+
+  document.getElementById("submit-btn").onclick = () => {
+    let userAns = "";
+    document.querySelectorAll(".digit-input").forEach((i) => (userAns += i.value));
+
+    if (userAns === currentAns) {
+      clearInterval(qInterval);
+
+      userData.points = (userData.points || 0) + 10;
+      userData.correctTotal = (userData.correctTotal || 0) + 1;
+
+      document.getElementById("feedback").innerText = "COINS +10!";
+      try { confetti(); } catch {}
+
+      document.getElementById("submit-btn").classList.add("hidden");
+      document.getElementById("next-btn").classList.remove("hidden");
+      updateUI();
+    } else {
+      document.getElementById("feedback").innerText = "WRONG";
+    }
+  };
+
+  document.getElementById("next-btn").onclick = async () => {
+    userData.currentStep = (userData.currentStep || 0) + 1;
+
+    await updateDoc(doc(db, "users", auth.currentUser.uid), {
+      points: userData.points || 0,
+      currentStep: userData.currentStep || 0,
+      correctTotal: userData.correctTotal || 0,
+      totalSeconds: userData.totalSeconds || 0,
+      photoURL: userData.photoURL || ""
+    });
+
+    updateLeaderboard();
+    generateQuestion();
+  };
+
+  async function updateLeaderboard() {
+    const q1 = query(collection(db, "users"), orderBy("points", "desc"), limit(5));
+    const snap = await getDocs(q1);
+
+    const body = document.getElementById("lb-body");
+    body.innerHTML = "";
+
+    let i = 1;
+    snap.forEach((d) => {
+      const data = d.data();
+      const name = ((data.email || "Player") + "").split("@")[0];
+      const pts = data.points || 0;
+
+      body.innerHTML += `
+        <tr>
+          <td class="col-rank">${i++}</td>
+          <td class="col-name">${escapeHtml(name)}</td>
+          <td class="col-pts">${pts}</td>
+        </tr>
+      `;
+    });
+  }
+
+  function startQuestTimer() {
+    let qv = 80;
+    clearInterval(qInterval);
+
+    document.getElementById("q-timer").innerText = qv;
+
+    qInterval = setInterval(() => {
+      qv--;
+      document.getElementById("q-timer").innerText = qv;
+
+      if (qv <= 0) {
+        clearInterval(qInterval);
+        document.getElementById("submit-btn").click();
+      }
+    }, 1000);
+  }
+
+  function startTotalTimer() {
+    clearInterval(tInterval);
+
+    tInterval = setInterval(() => {
+      userData.totalSeconds = (userData.totalSeconds || 0) + 1;
+      document.getElementById("total-time").innerText = userData.totalSeconds;
+    }, 1000);
+  }
+
+  function updateUI() {
+    document.getElementById("points").innerText = userData.points || 0;
+    document.getElementById("correct-count").innerText = userData.correctTotal || 0;
+    document.getElementById("user-photo").src =
+      userData.photoURL || "https://via.placeholder.com/50";
+  }
+
+  function rand(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, (m) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    }[m]));
+  }
+
+  window.logout = () => signOut(auth).then(() => location.reload());
+  window.changePhoto = () => document.getElementById("file-input").click();
+
+  // initial auth screen
+  window.setAuthState("signin");
+</script>
 </body> 
 </html>
