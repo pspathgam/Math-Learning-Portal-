@@ -197,7 +197,6 @@
     let userData = { currentStep: 0, correctTotal: 0, totalSeconds: 0, points: 0, photoURL: "" };
     let currentAns = "", authState = 'signin', base64Photo = "", qInterval, tInterval;
 
-    // --- Tab Switching Logic (Fix: Globally assigned) ---
     window.setAuthState = (state) => {
         authState = state;
         document.getElementById('auth-title').innerText = state === 'signin' ? "QUEST LOGIN" : (state === 'signup' ? "NEW EXPLORER" : "RECOVER KEY");
@@ -208,7 +207,6 @@
         document.getElementById('btn-auth-action').innerText = state === 'signin' ? "SIGN IN" : (state === 'signup' ? "CREATE ACCOUNT" : "SEND RESET LINK");
     };
 
-    // --- Image Selection ---
     window.handleImageSelect = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -222,24 +220,17 @@
         }
     };
 
-    // --- Authentication ---
     document.getElementById('btn-auth-action').onclick = async () => {
         const email = document.getElementById('user-email').value;
         const pass = document.getElementById('user-pass').value;
         if(!email) return alert("Email required");
-
         try {
-            if (authState === 'signin') {
-                await signInWithEmailAndPassword(auth, email, pass);
-            } else if (authState === 'signup') {
+            if (authState === 'signin') { await signInWithEmailAndPassword(auth, email, pass); }
+            else if (authState === 'signup') {
                 if(!pass) return alert("Password required");
                 const res = await createUserWithEmailAndPassword(auth, email, pass);
                 await setDoc(doc(db, "users", res.user.uid), { ...userData, email, photoURL: base64Photo });
-            } else {
-                await sendPasswordResetEmail(auth, email);
-                alert("Reset link sent!");
-                window.setAuthState('signin');
-            }
+            } else { await sendPasswordResetEmail(auth, email); alert("Reset link sent!"); window.setAuthState('signin'); }
         } catch (e) { alert(e.message); }
     };
 
@@ -251,9 +242,7 @@
             const snap = await getDoc(doc(db, "users", user.uid));
             if (snap.exists()) userData = snap.data();
             updateUI(); generateQuestion(); startTotalTimer(); updateLeaderboard();
-        } else {
-            document.getElementById('auth-overlay').classList.remove('hidden');
-        }
+        } else { document.getElementById('auth-overlay').classList.remove('hidden'); }
     });
 
     // --- Admin Logic ---
@@ -271,26 +260,30 @@
         } else alert("Not found");
     };
     window.adminUpdate = async () => {
-        await updateDoc(doc(db, "users", targetUid), { 
-            points: parseInt(document.getElementById('adm-res-pts').value),
-            currentStep: parseInt(document.getElementById('adm-res-step').value)
-        });
+        await updateDoc(doc(db, "users", targetUid), { points: parseInt(document.getElementById('adm-res-pts').value), currentStep: parseInt(document.getElementById('adm-res-step').value) });
         alert("Updated"); updateLeaderboard();
     };
-    window.adminDelete = async () => {
-        if(confirm("Delete user?")) { await deleteDoc(doc(db, "users", targetUid)); alert("Deleted"); }
-    };
+    window.adminDelete = async () => { if(confirm("Delete user?")) { await deleteDoc(doc(db, "users", targetUid)); alert("Deleted"); } };
 
-    // --- Math Game Logic ---
+    // --- Math Engine (Updated to 3-digit) ---
     function generateQuestion() {
+        // Reset Button Visibility for new Quest
+        document.getElementById('submit-btn').classList.remove('hidden');
+        document.getElementById('next-btn').classList.add('hidden');
+        document.getElementById('feedback').innerText = "";
+
         const level = Math.floor(userData.currentStep / 30) + 1;
         let n1, n2, op = "+", ans;
-        if (level === 1) { n1 = rand(10, 99); n2 = rand(10, 99); ans = n1 + n2; }
-        else if (level === 2) { n1 = rand(100, 999); n2 = rand(100, 999); ans = n1 + n2; }
-        else { n1 = rand(2, 12); n2 = rand(1, 12); op = "×"; ans = n1 * n2; }
+        
+        // Start with 3-digit addition (100 to 999)
+        if (level <= 5) { n1 = rand(100, 999); n2 = rand(100, 999); ans = n1 + n2; }
+        else if (level <= 10) { n1 = rand(1000, 9999); n2 = rand(1000, 9999); ans = n1 + n2; }
+        else { n1 = rand(10, 50); n2 = rand(2, 12); op = "×"; ans = n1 * n2; }
         
         currentAns = ans.toString();
-        document.getElementById('n1').innerText = n1; document.getElementById('n2').innerText = n2; document.getElementById('op').innerText = op;
+        document.getElementById('n1').innerText = n1; 
+        document.getElementById('n2').innerText = n2; 
+        document.getElementById('op').innerText = op;
         document.getElementById('level-tag').innerText = `LEVEL ${level} (${userData.currentStep % 30}/30)`;
         setupInputs(currentAns.length); startQuestTimer();
     }
@@ -310,28 +303,26 @@
         if (userAns === currentAns) {
             clearInterval(qInterval); userData.points += 10; userData.correctTotal++;
             document.getElementById('feedback').innerText = "✅ CORRECT!"; confetti();
-            document.getElementById('submit-btn').classList.add('hidden'); document.getElementById('next-btn').classList.remove('hidden'); updateUI();
-        } else {
-            document.getElementById('feedback').innerText = "❌ WRONG";
-        }
+            document.getElementById('submit-btn').classList.add('hidden'); 
+            document.getElementById('next-btn').classList.remove('hidden'); 
+            updateUI();
+        } else { document.getElementById('feedback').innerText = "❌ WRONG"; }
     };
 
     document.getElementById('next-btn').onclick = async () => {
         userData.currentStep++; 
         await updateDoc(doc(db, "users", auth.currentUser.uid), userData);
-        generateQuestion(); document.getElementById('next-btn').classList.add('hidden');
+        generateQuestion(); // This will trigger the Submit button reset
     };
 
     async function updateLeaderboard() {
         const q = query(collection(db, "users"), orderBy("points", "desc"), limit(5));
         const snap = await getDocs(q);
         const body = document.getElementById('lb-body'); body.innerHTML = "";
-        let i = 1; snap.forEach(d => {
-            body.innerHTML += `<tr><td>${i++}</td><td>${d.data().email.split('@')[0]}</td><td>${d.data().points}</td></tr>`;
-        });
+        let i = 1; snap.forEach(d => { body.innerHTML += `<tr><td>${i++}</td><td>${d.data().email.split('@')[0]}</td><td>${d.data().points}</td></tr>`; });
     }
 
-    function startQuestTimer() { let qv = 80; clearInterval(qInterval); qInterval = setInterval(() => { qv--; document.getElementById('q-timer').innerText = qv; if(qv<=0) clearInterval(qInterval); }, 1000); }
+    function startQuestTimer() { let qv = 80; clearInterval(qInterval); qInterval = setInterval(() => { qv--; document.getElementById('q-timer').innerText = qv; if(qv<=0) { clearInterval(qInterval); document.getElementById('submit-btn').click(); } }, 1000); }
     function startTotalTimer() { clearInterval(tInterval); tInterval = setInterval(() => { userData.totalSeconds++; document.getElementById('total-time').innerText = userData.totalSeconds; }, 1000); }
     function updateUI() { document.getElementById('points').innerText = userData.points; document.getElementById('correct-count').innerText = userData.correctTotal; document.getElementById('user-photo').src = userData.photoURL || "https://via.placeholder.com/50"; }
     function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
@@ -341,3 +332,5 @@
 </script>
 </body>
 </html>
+                
+        
