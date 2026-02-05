@@ -96,6 +96,36 @@
 
         .designer-box { margin-top: 20px; padding: 15px; display: flex; align-items: center; justify-content: center; gap: 15px; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; }
         .designer-photo { width: 50px; height: 50px; border-radius: 10px; border: 2px solid var(--primary); object-fit: cover; }
+        /* Certificate Overlay */
+#cert-overlay { 
+    position: fixed; inset: 0; background: rgba(0,0,0,0.95); 
+    z-index: 3000; display: flex; align-items: center; justify-content: center; 
+    padding: 20px;
+}
+
+.cert-container {
+    background: white; width: 100%; max-width: 800px; aspect-ratio: 1.414 / 1; /* A4 Landscape */
+    padding: 40px; border: 15px solid #00d2ff; position: relative; color: #1a1a2e;
+    box-sizing: border-box; background-image: radial-gradient(#f0f0f0 1px, transparent 1px);
+    background-size: 20px 20px; text-align: center;
+}
+
+.cert-border-math {
+    position: absolute; inset: 5px; border: 2px dashed #00ff88; pointer-events: none;
+}
+
+.cert-title { font-family: 'Times New Roman', serif; font-size: 2.5rem; color: #16213e; margin: 0; }
+.cert-name { font-size: 2rem; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; min-width: 300px; margin: 20px 0; color: #00d2ff; }
+.cert-op { font-weight: bold; text-transform: uppercase; color: #16213e; font-size: 1.4rem; }
+.cert-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; font-size: 0.7rem; text-align: left; }
+
+@media print {
+    body * { visibility: hidden; }
+    #cert-overlay, #cert-overlay * { visibility: visible; }
+    #cert-overlay { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: white; }
+    .btn-cert { display: none; }
+}
+        
     </style>
 </head>
 <body>
@@ -146,6 +176,33 @@
             </div>
             <button class="btn-link" onclick="document.getElementById('admin-overlay').classList.add('hidden')">Close</button>
         </div>
+    </div>
+
+    <div id="cert-overlay" class="hidden">
+    <div class="cert-container" id="printable-cert">
+        <div class="cert-border-math"></div>
+        <p style="font-size: 1rem; margin-bottom: 0;">🏆 CERTIFICATE OF MASTERY</p>
+        <h1 class="cert-title">Math World 3D</h1>
+        <p style="margin: 15px 0 5px;">This is to certify that</p>
+        <div class="cert-name" id="cert-student-name">Explorer</div>
+        <p>has successfully demonstrated outstanding mastery in the</p>
+        <p class="cert-op">Mathematical Operation of <span id="cert-op-name">ADDITION</span></p>
+        <p style="font-size: 0.8rem; padding: 0 40px;">Through consistent effort, practice, and strong numerical understanding, the learner has shown accuracy and confidence in solving these problems.</p>
+        
+        <div class="cert-footer">
+            <div>
+                <p><strong>Issuing Authority:</strong> Admin</p>
+                <p><strong>Certificate ID:</strong> <span id="cert-id"></span></p>
+                <p><strong>Issue Date:</strong> <span id="cert-date"></span></p>
+            </div>
+            <div style="text-align: right;">
+                <p style="font-size: 0.6rem;">Digitally Signed By:<br>Admin Math Learning Portal</p>
+                <img id="cert-qr" src="" style="width: 60px; height: 60px; margin-top: 5px;">
+            </div>
+        </div>
+        <button class="btn btn-primary btn-cert" onclick="window.print()" style="margin-top: 20px; width: auto; padding: 10px 30px;">PRINT CERTIFICATE</button>
+        <button class="btn-link btn-cert" onclick="document.getElementById('cert-overlay').classList.add('hidden')">Close</button>
+    </div>
     </div>
 
     <header style="width: 95%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
@@ -654,6 +711,48 @@
   window.changePhoto = () => document.getElementById("file-input").click();
 
   window.setAuthState("signin");
+    // Function to show the certificate
+window.showMasteryCertificate = (opName) => {
+    const user = auth.currentUser;
+    const name = user.email.split("@")[0].toUpperCase();
+    const date = new Date().toLocaleDateString();
+    const certId = "MW3D-" + Math.random().toString(36).substr(2, 9).toUpperCase();
+
+    document.getElementById("cert-student-name").innerText = name;
+    document.getElementById("cert-op-name").innerText = opName;
+    document.getElementById("cert-date").innerText = date;
+    document.getElementById("cert-id").innerText = certId;
+    
+    // Generate a simple QR code via API
+    document.getElementById("cert-qr").src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Verified-${certId}`;
+    
+    document.getElementById("cert-overlay").classList.remove("hidden");
+};
+
+// Update next-btn.onclick to trigger certificate
+document.getElementById("next-btn").onclick = async () => {
+    const oldStep = userData.currentStep || 0;
+    const newStep = oldStep + 1;
+    
+    // Check if they just finished step 30 of a specific level
+    if (newStep % 30 === 0) {
+        const levelFinished = Math.floor(oldStep / 30) + 1;
+        let opName = "ADDITION";
+        
+        if (levelFinished === 1 || levelFinished === 2) opName = "ADDITION";
+        else if (levelFinished === 3 || levelFinished === 4) opName = "SUBTRACTION";
+        else if (levelFinished >= 5 && levelFinished <= 8) opName = "MATHEMATICAL TABLES";
+        else if (levelFinished === 9 || levelFinished === 10) opName = "MULTIPLICATION";
+        else if (levelFinished === 11 || levelFinished === 12) opName = "DIVISION";
+        else if (levelFinished === 13 || levelFinished === 14) opName = "FRACTIONS";
+
+        window.showMasteryCertificate(opName);
+    }
+
+    userData.currentStep = newStep;
+    // ... existing updateDoc logic remains the same ...
+};
+    
 </script>        
 </body> 
 </html>
