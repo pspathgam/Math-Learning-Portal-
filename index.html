@@ -65,7 +65,7 @@
         .lb-table td { padding: 8px 5px; border-bottom: 1px solid #222; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .col-rank { width: 15%; } .col-name { width: 55%; } .col-pts { width: 30%; }
 
-        /* Auth Overlays & TAB FIXES */
+        /* Auth Overlays */
         #auth-overlay, #admin-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
         .modal-card { 
             background: var(--card-bg); padding: 25px; border-radius: 25px; 
@@ -83,7 +83,7 @@
         .btn-link { 
             background: none; color: var(--primary); border: none; text-decoration: underline; 
             cursor: pointer; font-size: 0.85rem; padding: 12px; display: inline-block;
-            position: relative; z-index: 2500; /* Highest priority for clicks */
+            position: relative; z-index: 2500; 
         }
 
         .hidden { display: none !important; }
@@ -105,16 +105,13 @@
         }
 
         .cert-container {
-            background: white; width: 100%; max-width: 800px; aspect-ratio: 1.414 / 1; /* A4 Landscape */
+            background: white; width: 100%; max-width: 800px; aspect-ratio: 1.414 / 1;
             padding: 40px; border: 15px solid #00d2ff; position: relative; color: #1a1a2e;
             box-sizing: border-box; background-image: radial-gradient(#f0f0f0 1px, transparent 1px);
             background-size: 20px 20px; text-align: center;
         }
 
-        .cert-border-math {
-            position: absolute; inset: 5px; border: 2px dashed #00ff88; pointer-events: none;
-        }
-
+        .cert-border-math { position: absolute; inset: 5px; border: 2px dashed #00ff88; pointer-events: none; }
         .cert-title { font-family: 'Times New Roman', serif; font-size: 2.5rem; color: #16213e; margin: 0; }
         .cert-name { font-size: 2rem; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; min-width: 300px; margin: 20px 0; color: #00d2ff; }
         .cert-op { font-weight: bold; text-transform: uppercase; color: #16213e; font-size: 1.4rem; }
@@ -132,7 +129,7 @@
 
     <div id="auth-overlay">
         <div class="modal-card">
-            <h2 id="auth-title" style="color:var(--primary); margin:0 0 15px 0; pointer-events:none;">QUEST LOGIN</h2>
+            <h2 id="auth-title" style="color:var(--primary); margin:0 0 15px 0;">QUEST LOGIN</h2>
             <div id="signup-photo-area" class="hidden">
                 <div id="photo-preview">No Photo</div>
                 <button type="button" class="btn-link" style="color:var(--secondary);" onclick="document.getElementById('file-input').click()">+ ADD PHOTO</button>
@@ -208,8 +205,8 @@
             </div>
         </div>
         <div>
-            <button id="admin-btn" class="hidden" onclick="document.getElementById('admin-overlay').classList.remove('hidden')" style="background:var(--accent); color:black; border:none; padding:5px 8px; border-radius:5px; font-size:0.6rem; font-weight:bold; cursor:pointer;">ADMIN</button>
-            <button onclick="window.logout()" style="background:#ff4757; color:white; border:none; padding:5px 8px; border-radius:5px; font-size:0.6rem; cursor:pointer;">LOGOUT</button>
+            <button id="admin-btn" class="hidden" onclick="document.getElementById('admin-overlay').classList.remove('hidden')" style="background:var(--accent); color:black; border:none; padding:5px 8px; border-radius:5px; font-size:0.6rem; font-weight:bold;">ADMIN</button>
+            <button onclick="window.logout()" style="background:#ff4757; color:white; border:none; padding:5px 8px; border-radius:5px; font-size:0.6rem;">LOGOUT</button>
         </div>
     </header>
 
@@ -254,28 +251,8 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import {
-    getAuth,
-    signInWithEmailAndPassword,
-    createUserWithEmailAndPassword,
-    sendPasswordResetEmail,
-    onAuthStateChanged,
-    signOut
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import {
-    getFirestore,
-    doc,
-    setDoc,
-    getDoc,
-    updateDoc,
-    collection,
-    query,
-    orderBy,
-    limit,
-    getDocs,
-    where,
-    deleteDoc
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyC6FbPb36F69k7cw_tLbGQoVQxs6shzfAo",
@@ -289,7 +266,6 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-
   const ADMIN_EMAIL = "ratherashraf786@gmail.com";
 
   let userData = { currentStep: 0, correctTotal: 0, totalSeconds: 0, points: 0, photoURL: "" };
@@ -300,6 +276,7 @@
   let qInterval = null;
   let tInterval = null;
 
+  // --- AUTH UI ---
   window.setAuthState = (state) => {
     authState = state;
     const titleEl = document.getElementById("auth-title");
@@ -314,21 +291,9 @@
     togglesEl.classList.add("hidden");
     backEl.classList.add("hidden");
 
-    if (state === "signin") {
-      titleEl.innerText = "QUEST LOGIN";
-      btnEl.innerText = "SIGN IN";
-      togglesEl.classList.remove("hidden");
-    } else if (state === "signup") {
-      titleEl.innerText = "NEW EXPLORER";
-      photoEl.classList.remove("hidden");
-      btnEl.innerText = "CREATE ACCOUNT";
-      backEl.classList.remove("hidden");
-    } else if (state === "forgot") {
-      titleEl.innerText = "RECOVER KEY";
-      passEl.classList.add("hidden");
-      btnEl.innerText = "SEND RESET LINK";
-      backEl.classList.remove("hidden");
-    }
+    if (state === "signin") { titleEl.innerText = "QUEST LOGIN"; btnEl.innerText = "SIGN IN"; togglesEl.classList.remove("hidden"); }
+    else if (state === "signup") { titleEl.innerText = "NEW EXPLORER"; photoEl.classList.remove("hidden"); btnEl.innerText = "CREATE ACCOUNT"; backEl.classList.remove("hidden"); }
+    else if (state === "forgot") { titleEl.innerText = "RECOVER KEY"; passEl.classList.add("hidden"); btnEl.innerText = "SEND RESET LINK"; backEl.classList.remove("hidden"); }
   };
 
   window.handleImageSelect = (e, previewId) => {
@@ -337,8 +302,7 @@
     const reader = new FileReader();
     reader.onload = (ev) => {
       const res = ev.target.result;
-      if (previewId === "photo-preview") base64Photo = res;
-      else adminBase64 = res;
+      if (previewId === "photo-preview") base64Photo = res; else adminBase64 = res;
       const prev = document.getElementById(previewId);
       prev.style.backgroundImage = `url(${res})`;
       prev.innerText = "";
@@ -352,15 +316,12 @@
     if (!email) return alert("Email required");
     if ((authState === "signin" || authState === "signup") && !pass) return alert("Password required");
     try {
-      if (authState === "signin") {
-        await signInWithEmailAndPassword(auth, email, pass);
-      } else if (authState === "signup") {
+      if (authState === "signin") await signInWithEmailAndPassword(auth, email, pass);
+      else if (authState === "signup") {
         const res = await createUserWithEmailAndPassword(auth, email, pass);
         await setDoc(doc(db, "users", res.user.uid), { ...userData, email, photoURL: base64Photo });
       } else if (authState === "forgot") {
-        await sendPasswordResetEmail(auth, email);
-        alert("Reset link sent!");
-        window.setAuthState("signin");
+        await sendPasswordResetEmail(auth, email); alert("Reset link sent!"); window.setAuthState("signin");
       }
     } catch (e) { alert(e.message); }
   };
@@ -372,54 +333,44 @@
       if (user.email === ADMIN_EMAIL) document.getElementById("admin-btn").classList.remove("hidden");
       const snap = await getDoc(doc(db, "users", user.uid));
       if (snap.exists()) userData = snap.data();
-      updateUI();
-      generateQuestion();
-      startTotalTimer();
-      updateLeaderboard();
-    } else {
-      document.getElementById("auth-overlay").classList.remove("hidden");
-    }
+      updateUI(); generateQuestion(); startTotalTimer(); updateLeaderboard();
+    } else { document.getElementById("auth-overlay").classList.remove("hidden"); }
   });
 
+  // --- ADMIN ---
   window.adminSearch = async () => {
     const email = document.getElementById("admin-search").value.trim();
-    if (!email) return alert("Enter an email");
     const q1 = query(collection(db, "users"), where("email", "==", email));
     const snap = await getDocs(q1);
     if (snap.empty) return alert("Not found");
-    const d = snap.docs[0];
-    window.targetUid = d.id;
+    const d = snap.docs[0]; window.targetUid = d.id;
     const data = d.data();
     document.getElementById("admin-result").classList.remove("hidden");
     document.getElementById("adm-res-email").value = data.email || "";
-    document.getElementById("adm-res-pts").value = data.points || 0;
     document.getElementById("adm-res-step").value = data.currentStep || 0;
     adminBase64 = data.photoURL || "";
     const prev = document.getElementById("admin-photo-preview");
-    prev.style.backgroundImage = adminBase64 ? `url(${adminBase64})` : "";
-    prev.innerText = adminBase64 ? "" : "No Photo";
+    prev.style.backgroundImage = adminBase64 ? `url(${adminBase64})` : ""; prev.innerText = adminBase64 ? "" : "No Photo";
   };
 
   window.adminUpdate = async () => {
-    if (!window.targetUid) return alert("Search a user first");
+    if (!window.targetUid) return;
     await updateDoc(doc(db, "users", window.targetUid), {
       email: document.getElementById("adm-res-email").value.trim(),
       points: parseInt(document.getElementById("adm-res-pts").value || "0", 10),
       currentStep: parseInt(document.getElementById("adm-res-step").value || "0", 10),
       photoURL: adminBase64
     });
-    alert("Updated");
-    updateLeaderboard();
+    alert("Updated"); updateLeaderboard();
   };
 
   window.adminDelete = async () => {
-    if (!window.targetUid) return alert("Search a user first");
-    if (!confirm("Delete?")) return;
+    if (!window.targetUid || !confirm("Delete?")) return;
     await deleteDoc(doc(db, "users", window.targetUid));
-    alert("Deleted");
-    updateLeaderboard();
+    alert("Deleted"); updateLeaderboard();
   };
 
+  // --- GAME LOGIC ---
   function generateQuestion() {
     document.getElementById("submit-btn").classList.remove("hidden");
     document.getElementById("next-btn").classList.add("hidden");
@@ -427,55 +378,48 @@
     const step = userData.currentStep || 0;
     const level = Math.floor(step / 30) + 1;
     let n1, n2, op = "+", ans;
-    switch(level) {
-      case 1: n1 = rand(100, 999); n2 = rand(100, 999); op = "+"; ans = n1 + n2; break;
-      case 2: n1 = rand(1000, 9999); n2 = rand(1000, 9999); op = "+"; ans = n1 + n2; break;
-      case 3: n1 = rand(100, 999); n2 = rand(100, n1); op = "-"; ans = n1 - n2; break;
-      case 4: n1 = rand(1000, 9999); n2 = rand(1000, n1); op = "-"; ans = n1 - n2; break;
-      case 5: n1 = rand(1, 10); n2 = rand(1, 5); op = "×"; ans = n1 * n2; break;
-      case 6: n1 = rand(1, 10); n2 = rand(5, 10); op = "×"; ans = n1 * n2; break;
-      case 7: n1 = rand(1, 10); n2 = rand(10, 15); op = "×"; ans = n1 * n2; break;
-      case 8: n1 = rand(1, 10); n2 = rand(15, 20); op = "×"; ans = n1 * n2; break;
-      case 9: n1 = rand(100, 999); n2 = rand(10, 99); op = "×"; ans = n1 * n2; break;
-      case 10: n1 = rand(1000, 9999); n2 = rand(10, 99); op = "×"; ans = n1 * n2; break;
-      case 11: n2 = rand(2, 9); ans = rand(10, 100); n1 = ans * n2; op = "÷"; break;
-      case 12: n2 = rand(2, 9); ans = rand(100, 1000); n1 = ans * n2; op = "÷"; break;
-      case 13: n2 = rand(2, 5); let nu1 = rand(1, 3); let nu2 = rand(1, 3); n1 = `${nu1}/${n2} + ${nu2}/${n2}`; n2 = ""; op = "="; ans = nu1 + nu2; break;
-      case 14: n2 = rand(6, 12); let h1 = rand(1, 10); let h2 = rand(1, 10); n1 = `${h1}/${n2} + ${h2}/${n2}`; n2 = ""; op = "="; ans = h1 + h2; break;
-      default: n1 = rand(100, 500); n2 = rand(10, 20); op = "×"; ans = n1 * n2;
-    }
+
+    if (level === 1) { n1 = rand(100, 999); n2 = rand(100, 999); ans = n1 + n2; }
+    else if (level === 2) { n1 = rand(1000, 9999); n2 = rand(1000, 9999); ans = n1 + n2; }
+    else if (level === 3) { n1 = rand(100, 999); n2 = rand(100, n1); op = "-"; ans = n1 - n2; }
+    else if (level === 4) { n1 = rand(1000, 9999); n2 = rand(1000, n1); op = "-"; ans = n1 - n2; }
+    else if (level === 5) { n1 = rand(1, 10); n2 = rand(1, 5); op = "×"; ans = n1 * n2; }
+    else if (level === 6) { n1 = rand(1, 10); n2 = rand(5, 10); op = "×"; ans = n1 * n2; }
+    else if (level === 7) { n1 = rand(1, 10); n2 = rand(10, 15); op = "×"; ans = n1 * n2; }
+    else if (level === 8) { n1 = rand(1, 10); n2 = rand(15, 20); op = "×"; ans = n1 * n2; }
+    else if (level === 9) { n1 = rand(100, 999); n2 = rand(10, 99); op = "×"; ans = n1 * n2; }
+    else if (level === 10) { n1 = rand(1000, 9999); n2 = rand(10, 99); op = "×"; ans = n1 * n2; }
+    else if (level === 11) { n2 = rand(2, 9); ans = rand(10, 100); n1 = ans * n2; op = "÷"; }
+    else if (level === 12) { n2 = rand(2, 9); ans = rand(100, 1000); n1 = ans * n2; op = "÷"; }
+    else if (level === 13) { n2 = rand(2, 5); let nu1 = rand(1, 3); let nu2 = rand(1, 3); n1 = `${nu1}/${n2} + ${nu2}/${n2}`; n2 = ""; op = "="; ans = nu1 + nu2; }
+    else if (level === 14) { n2 = rand(6, 12); let h1 = rand(1, 10); let h2 = rand(1, 10); n1 = `${h1}/${n2} + ${h2}/${n2}`; n2 = ""; op = "="; ans = h1 + h2; }
+    else { n1 = rand(100, 500); n2 = rand(10, 20); op = "×"; ans = n1 * n2; }
+
     currentAns = String(ans);
     document.getElementById("n1").innerText = n1;
     document.getElementById("n2").innerText = n2;
     document.getElementById("op").innerText = op;
     document.getElementById("level-tag").innerText = `LEVEL ${level} (${step % 30}/30)`;
-    setupInputs(currentAns.length);
-    startQuestTimer();
+    setupInputs(currentAns.length); startQuestTimer();
   }
 
   function setupInputs(len) {
-    const box = document.getElementById("ans-box");
-    box.innerHTML = "";
+    const box = document.getElementById("ans-box"); box.innerHTML = "";
     for (let i = 0; i < len; i++) {
       const inp = document.createElement("input");
-      inp.type = "number";
-      inp.className = "digit-input";
-      inp.inputMode = "numeric";
-      inp.oninput = function () {
+      inp.type = "number"; inp.className = "digit-input"; inp.inputMode = "numeric";
+      inp.oninput = function() {
         if (this.value.length > 1) this.value = this.value.slice(-1);
         if (this.value.length === 1 && this.previousElementSibling) this.previousElementSibling.focus();
       };
-      inp.onkeydown = function (ev) {
-        if (ev.key === "Backspace" && this.value === "" && this.nextElementSibling) this.nextElementSibling.focus();
-      };
+      inp.onkeydown = function(ev) { if (ev.key === "Backspace" && this.value === "" && this.nextElementSibling) this.nextElementSibling.focus(); };
       box.appendChild(inp);
     }
     box.lastElementChild?.focus();
   }
 
   document.getElementById("submit-btn").onclick = () => {
-    let userAns = "";
-    document.querySelectorAll(".digit-input").forEach((i) => (userAns += i.value));
+    let userAns = ""; document.querySelectorAll(".digit-input").forEach((i) => (userAns += i.value));
     if (userAns === currentAns) {
       clearInterval(qInterval);
       userData.points = (userData.points || 0) + 10;
@@ -488,27 +432,23 @@
     } else { document.getElementById("feedback").innerText = "WRONG"; }
   };
 
-  // FIXED NEXT BUTTON LOGIC
   document.getElementById("next-btn").onclick = async () => {
     const oldStep = userData.currentStep || 0;
     const newStep = oldStep + 1;
     
-    // Check for certificate
     if (newStep % 30 === 0) {
-        const levelFinished = Math.floor(oldStep / 30) + 1;
-        let opName = "ADDITION";
-        if (levelFinished === 1 || levelFinished === 2) opName = "ADDITION";
-        else if (levelFinished === 3 || levelFinished === 4) opName = "SUBTRACTION";
-        else if (levelFinished >= 5 && levelFinished <= 8) opName = "MATHEMATICAL TABLES";
-        else if (levelFinished === 9 || levelFinished === 10) opName = "MULTIPLICATION";
-        else if (levelFinished === 11 || levelFinished === 12) opName = "DIVISION";
-        else if (levelFinished === 13 || levelFinished === 14) opName = "FRACTIONS";
-        window.showMasteryCertificate(opName);
+        const lvF = Math.floor(oldStep / 30) + 1;
+        let opN = "ADDITION";
+        if (lvF === 1 || lvF === 2) opN = "ADDITION";
+        else if (lvF === 3 || lvF === 4) opN = "SUBTRACTION";
+        else if (lvF >= 5 && lvF <= 8) opN = "MATHEMATICAL TABLES";
+        else if (lvF === 9 || lvF === 10) opN = "MULTIPLICATION";
+        else if (lvF === 11 || lvF === 12) opN = "DIVISION";
+        else if (lvF === 13 || lvF === 14) opN = "FRACTIONS";
+        window.showMasteryCertificate(opN);
     }
 
     userData.currentStep = newStep;
-    
-    // Save to Firebase
     try {
         await updateDoc(doc(db, "users", auth.currentUser.uid), {
           points: userData.points || 0,
@@ -517,14 +457,12 @@
           totalSeconds: userData.totalSeconds || 0,
           photoURL: userData.photoURL || ""
         });
-        updateLeaderboard();
-        generateQuestion();
-    } catch(e) { alert("Error saving progress: " + e.message); }
+        updateLeaderboard(); generateQuestion();
+    } catch(e) { console.error(e); }
   };
 
   window.showMasteryCertificate = (opName) => {
-    const user = auth.currentUser;
-    const name = user.email.split("@")[0].toUpperCase();
+    const name = auth.currentUser.email.split("@")[0].toUpperCase();
     const date = new Date().toLocaleDateString();
     const certId = "MW3D-" + Math.random().toString(36).substr(2, 9).toUpperCase();
     document.getElementById("cert-student-name").innerText = name;
@@ -538,13 +476,11 @@
   async function updateLeaderboard() {
     const q1 = query(collection(db, "users"), orderBy("points", "desc"), limit(5));
     const snap = await getDocs(q1);
-    const body = document.getElementById("lb-body");
-    body.innerHTML = "";
+    const body = document.getElementById("lb-body"); body.innerHTML = "";
     let i = 1;
     snap.forEach((d) => {
       const data = d.data();
-      const name = ((data.email || "") + "").split("@")[0] || "Player";
-      body.innerHTML += `<tr><td class="col-rank">${i++}</td><td class="col-name">${escapeHtml(name)}</td><td class="col-pts">${data.points || 0}</td></tr>`;
+      body.innerHTML += `<tr><td class="col-rank">${i++}</td><td class="col-name">${escapeHtml(data.email.split("@")[0])}</td><td class="col-pts">${data.points || 0}</td></tr>`;
     });
   }
 
@@ -576,777 +512,6 @@
   window.logout = () => signOut(auth).then(() => location.reload());
   window.changePhoto = () => document.getElementById("file-input").click();
   window.setAuthState("signin");
-</script>        
-</body> 
-</html>
-
-
-                                 
-
-
-
-
-
-
-
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Math World 3D: Ultimate Quest</title>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <style>
-        :root { 
-            --primary: #00d2ff; 
-            --secondary: #00ff88; 
-            --accent: #ffd700; 
-            --bg: #1a1a2e;
-            --card-bg: #16213e;
-            --text: #ffffff; 
-        }
-
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background: var(--bg); 
-            margin: 0; color: var(--text); 
-            display: flex; flex-direction: column; align-items: center; 
-            min-height: 100vh; overflow-x: hidden;
-        }
-
-        /* 3D Perspective Layout */
-        .main-wrapper { perspective: 1000px; width: 95%; max-width: 500px; margin-top: 10px; box-sizing: border-box; }
-        .container { 
-            background: rgba(255,255,255,0.05); padding: 25px; border-radius: 30px; 
-            border: 1px solid rgba(255,255,255,0.1); transform: rotateX(3deg);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); transition: transform 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-        .container:hover { transform: rotateX(0deg); }
-
-        /* Gauges */
-        .dashboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; width: 100%; }
-        .gauge-box { text-align: center; }
-        .gauge {
-            height: 45px; border: 4px solid #333; border-bottom: none;
-            border-radius: 100px 100px 0 0; display: flex; align-items: flex-end;
-            justify-content: center; background: rgba(0,0,0,0.2); position: relative;
-        }
-        .gauge-val { font-size: 0.9rem; font-weight: bold; margin-bottom: 2px; }
-        .gauge-label { font-size: 0.55rem; text-transform: uppercase; margin-top: 5px; color: var(--primary); }
-
-        /* Math UI */
-        .math-area { font-size: clamp(2rem, 8vw, 3.5rem); font-weight: 900; text-align: right; margin: 15px 0; }
-        .digit-input { 
-            width: 40px; height: 55px; font-size: 1.8rem; text-align: center; 
-            border-radius: 10px; border: 2px solid var(--primary);
-            background: rgba(0,0,0,0.5); color: white; margin: 0 2px;
-            box-shadow: inset 0 0 10px rgba(0,210,255,0.2);
-        }
-
-        /* Leaderboard */
-        .leaderboard-card { 
-            background: rgba(0,0,0,0.3); border-radius: 20px; padding: 15px; 
-            margin-top: 20px; border: 1px solid var(--primary); width: 100%; 
-            box-sizing: border-box; overflow: hidden;
-        }
-        .lb-container { width: 100%; overflow-x: auto; }
-        .lb-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; table-layout: fixed; }
-        .lb-table th { color: var(--primary); border-bottom: 1px solid #444; padding: 5px; text-align: left; }
-        .lb-table td { padding: 8px 5px; border-bottom: 1px solid #222; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .col-rank { width: 15%; } .col-name { width: 55%; } .col-pts { width: 30%; }
-
-        /* Auth Overlays & TAB FIXES */
-        #auth-overlay, #admin-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .modal-card { 
-            background: var(--card-bg); padding: 25px; border-radius: 25px; 
-            border: 2px solid var(--primary); width: 85%; max-width: 380px; 
-            text-align: center; position: relative; z-index: 2100;
-        }
-        
-        input { 
-            width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid var(--primary); 
-            background: #0f3460; color: white; box-sizing: border-box; text-align: center; font-size: 1rem;
-        }
-
-        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-link { 
-            background: none; color: var(--primary); border: none; text-decoration: underline; 
-            cursor: pointer; font-size: 0.85rem; padding: 12px; display: inline-block;
-            position: relative; z-index: 2500; /* Highest priority for clicks */
-        }
-
-        .hidden { display: none !important; }
-        
-        #photo-preview, #admin-photo-preview { 
-            width: 70px; height: 70px; border-radius: 50%; border: 2px dashed var(--primary); 
-            margin: 0 auto 10px; background-size: cover; background-position: center; 
-            display: flex; align-items: center; justify-content: center; font-size: 0.5rem; 
-        }
-
-        .designer-box { margin-top: 20px; padding: 15px; display: flex; align-items: center; justify-content: center; gap: 15px; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; }
-        .designer-photo { width: 50px; height: 50px; border-radius: 10px; border: 2px solid var(--primary); object-fit: cover; }
-        /* Certificate Overlay */
-#cert-overlay { 
-    position: fixed; inset: 0; background: rgba(0,0,0,0.95); 
-    z-index: 3000; display: flex; align-items: center; justify-content: center; 
-    padding: 20px;
-}
-
-.cert-container {
-    background: white; width: 100%; max-width: 800px; aspect-ratio: 1.414 / 1; /* A4 Landscape */
-    padding: 40px; border: 15px solid #00d2ff; position: relative; color: #1a1a2e;
-    box-sizing: border-box; background-image: radial-gradient(#f0f0f0 1px, transparent 1px);
-    background-size: 20px 20px; text-align: center;
-}
-
-.cert-border-math {
-    position: absolute; inset: 5px; border: 2px dashed #00ff88; pointer-events: none;
-}
-
-.cert-title { font-family: 'Times New Roman', serif; font-size: 2.5rem; color: #16213e; margin: 0; }
-.cert-name { font-size: 2rem; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; min-width: 300px; margin: 20px 0; color: #00d2ff; }
-.cert-op { font-weight: bold; text-transform: uppercase; color: #16213e; font-size: 1.4rem; }
-.cert-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; font-size: 0.7rem; text-align: left; }
-
-@media print {
-    body * { visibility: hidden; }
-    #cert-overlay, #cert-overlay * { visibility: visible; }
-    #cert-overlay { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: white; }
-    .btn-cert { display: none; }
-}
-        
-    </style>
-</head>
-<body>
-
-    <div id="auth-overlay">
-        <div class="modal-card">
-            <h2 id="auth-title" style="color:var(--primary); margin:0 0 15px 0; pointer-events:none;">QUEST LOGIN</h2>
-            
-            <div id="signup-photo-area" class="hidden">
-                <div id="photo-preview">No Photo</div>
-                <button type="button" class="btn-link" style="color:var(--secondary);" onclick="document.getElementById('file-input').click()">+ ADD PHOTO</button>
-                <input type="file" id="file-input" class="hidden" accept="image/*" onchange="window.handleImageSelect(event, 'photo-preview')">
-            </div>
-
-            <div id="auth-inputs">
-                <input type="email" id="user-email" placeholder="Email Address">
-                <input type="password" id="user-pass" placeholder="Password">
-            </div>
-
-            <button type="button" class="btn btn-primary" id="btn-auth-action">SIGN IN</button>
-
-            <div id="auth-toggles" style="margin-top:20px;">
-                <button type="button" class="btn-link" onclick="window.setAuthState('signup')">Sign Up</button>
-                <span style="color:#444">|</span>
-                <button type="button" class="btn-link" onclick="window.setAuthState('forgot')">Forgot Password?</button>
-            </div>
-
-            <button id="btn-back-to-login" class="btn-link hidden" style="margin-top:20px; width:100%;" onclick="window.setAuthState('signin')">← Back to Login</button>
-        </div>
-    </div>
-
-    <div id="admin-overlay" class="hidden">
-        <div class="modal-card">
-            <h3 style="color:var(--accent)">ADMIN TOOLS</h3>
-            <input type="text" id="admin-search" placeholder="User Email">
-            <button class="btn btn-primary" onclick="window.adminSearch()">FIND USER</button>
-            <div id="admin-result" class="hidden" style="margin-top:15px; border-top:1px solid #444; padding-top:15px;">
-                <div id="admin-photo-preview">User Photo</div>
-                <button class="btn-link" onclick="document.getElementById('admin-file-input').click()">CHANGE PHOTO</button>
-                <input type="file" id="admin-file-input" class="hidden" accept="image/*" onchange="window.handleImageSelect(event, 'admin-photo-preview')">
-                <input type="email" id="adm-res-email" placeholder="Email">
-                <div style="display:flex; gap:5px;">
-                    <input type="number" id="adm-res-pts" placeholder="Points">
-                    <input type="number" id="adm-res-step" placeholder="Step">
-                </div>
-                <button class="btn btn-primary" onclick="window.adminUpdate()">UPDATE PROFILE</button>
-                <button class="btn" style="background:#ff4757; color:white;" onclick="window.adminDelete()">DELETE USER</button>
-            </div>
-            <button class="btn-link" onclick="document.getElementById('admin-overlay').classList.add('hidden')">Close</button>
-        </div>
-    </div>
-
-    <div id="cert-overlay" class="hidden">
-    <div class="cert-container" id="printable-cert">
-        <div class="cert-border-math"></div>
-        <p style="font-size: 1rem; margin-bottom: 0;">🏆 CERTIFICATE OF MASTERY</p>
-        <h1 class="cert-title">Math World 3D</h1>
-        <p style="margin: 15px 0 5px;">This is to certify that</p>
-        <div class="cert-name" id="cert-student-name">Explorer</div>
-        <p>has successfully demonstrated outstanding mastery in the</p>
-        <p class="cert-op">Mathematical Operation of <span id="cert-op-name">ADDITION</span></p>
-        <p style="font-size: 0.8rem; padding: 0 40px;">Through consistent effort, practice, and strong numerical understanding, the learner has shown accuracy and confidence in solving these problems.</p>
-        
-        <div class="cert-footer">
-            <div>
-                <p><strong>Issuing Authority:</strong> Admin</p>
-                <p><strong>Certificate ID:</strong> <span id="cert-id"></span></p>
-                <p><strong>Issue Date:</strong> <span id="cert-date"></span></p>
-            </div>
-            <div style="text-align: right;">
-                <p style="font-size: 0.6rem;">Digitally Signed By:<br>Admin Math Learning Portal</p>
-                <img id="cert-qr" src="" style="width: 60px; height: 60px; margin-top: 5px;">
-            </div>
-        </div>
-        <button class="btn btn-primary btn-cert" onclick="window.print()" style="margin-top: 20px; width: auto; padding: 10px 30px;">PRINT CERTIFICATE</button>
-        <button class="btn-link btn-cert" onclick="document.getElementById('cert-overlay').classList.add('hidden')">Close</button>
-    </div>
-    </div>
-
-    <header style="width: 95%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <img id="user-photo" src="https://via.placeholder.com/50" style="width:40px; height:40px; border-radius:50%; border:2px solid var(--primary); cursor:pointer;" onclick="window.changePhoto()">
-            <div>
-                <div id="player-name" style="font-weight:bold; font-size:0.8rem;">Explorer</div>
-                <div id="level-tag" style="font-size:0.6rem; color:var(--secondary);">LEVEL 1</div>
-            </div>
-        </div>
-        <div>
-            <button id="admin-btn" class="hidden" onclick="document.getElementById('admin-overlay').classList.remove('hidden')" style="background:var(--accent); color:black; border:none; padding:5px 8px; border-radius:5px; font-size:0.6rem; font-weight:bold; cursor:pointer;">ADMIN</button>
-            <button onclick="window.logout()" style="background:#ff4757; color:white; border:none; padding:5px 8px; border-radius:5px; font-size:0.6rem; cursor:pointer;">LOGOUT</button>
-        </div>
-    </header>
-
-    <div class="main-wrapper">
-        <div class="dashboard">
-            <div class="gauge-box"><div class="gauge" style="border-top-color: var(--primary);"><span class="gauge-val" id="q-timer">80</span></div><div class="gauge-label">Quest</div></div>
-            <div class="gauge-box"><div class="gauge" style="border-top-color: var(--secondary);"><span class="gauge-val" id="total-time">0</span></div><div class="gauge-label">Total</div></div>
-            <div class="gauge-box"><div class="gauge" style="border-top-color: var(--accent);"><span class="gauge-val" id="points">0</span></div><div class="gauge-label">Points</div></div>
-            <div class="gauge-box"><div class="gauge" style="border-top-color: #ff4757;"><span class="gauge-val" id="correct-count">0</span></div><div class="gauge-label">Correct</div></div>
-        </div>
-
-        <div class="container">
-            <div class="math-area">
-                <div id="n1">0</div>
-                <div style="display:flex; justify-content: space-between;"><span style="color:var(--secondary)" id="op">+</span><span id="n2">0</span></div>
-                <hr style="border:1px solid #333">
-                <div id="ans-box" style="display:flex; justify-content: flex-end;"></div>
-            </div>
-            <div id="feedback" style="text-align:center; height: 20px; font-weight:bold; color:var(--accent); font-size: 0.8rem;"></div>
-            <button class="btn btn-primary" id="submit-btn">SUBMIT ANSWER</button>
-            <button class="btn btn-next hidden" id="next-btn">NEXT QUEST ➔</button>
-        </div>
-
-        <div class="leaderboard-card">
-            <h4 style="margin:0 0 10px 0; color:var(--primary); font-size:0.8rem;">WORLD LEADERBOARD</h4>
-            <div class="lb-container">
-                <table class="lb-table">
-                    <thead><tr><th class="col-rank">#</th><th class="col-name">Player</th><th class="col-pts">Points</th></tr></thead>
-                    <tbody id="lb-body"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div class="designer-box">
-        <img src="IMG_20221004_191436.jpg" alt="Mohammad Ashraf Rather" class="designer-photo">
-        <div style="text-align: left;">
-            <p style="font-weight: bold; color: var(--primary); margin: 0; font-size: 0.8rem;">Mohammad Ashraf Rather</p>
-            <p style="font-size: 0.6rem; color: #888; margin: 0;">Architect & Designer</p>
-        </div>
-    </div>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import {
-    getAuth,
-    signInWithEmailAndPassword,
-    createUserWithEmailAndPassword,
-    sendPasswordResetEmail,
-    onAuthStateChanged,
-    signOut
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import {
-    getFirestore,
-    doc,
-    setDoc,
-    getDoc,
-    updateDoc,
-    collection,
-    query,
-    orderBy,
-    limit,
-    getDocs,
-    where,
-    deleteDoc
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyC6FbPb36F69k7cw_tLbGQoVQxs6shzfAo",
-    authDomain: "math-world-3d.firebaseapp.com",
-    projectId: "math-world-3d",
-    storageBucket: "math-world-3d.firebasestorage.app",
-    messagingSenderId: "526717782686",
-    appId: "1:526717782686:web:21dddbcb293323eda8098f"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  const ADMIN_EMAIL = "ratherashraf786@gmail.com";
-
-  let userData = { currentStep: 0, correctTotal: 0, totalSeconds: 0, points: 0, photoURL: "" };
-  let currentAns = "";
-  let authState = "signin";
-  let base64Photo = "";
-  let adminBase64 = "";
-  let qInterval = null;
-  let tInterval = null;
-
-  // ---------- AUTH STATE UI ----------
-  window.setAuthState = (state) => {
-    authState = state;
-
-    const titleEl = document.getElementById("auth-title");
-    const photoEl = document.getElementById("signup-photo-area");
-    const passEl = document.getElementById("user-pass");
-    const btnEl = document.getElementById("btn-auth-action");
-    const togglesEl = document.getElementById("auth-toggles");
-    const backEl = document.getElementById("btn-back-to-login");
-
-    photoEl.classList.add("hidden");
-    passEl.classList.remove("hidden");
-    togglesEl.classList.add("hidden");
-    backEl.classList.add("hidden");
-
-    if (state === "signin") {
-      titleEl.innerText = "QUEST LOGIN";
-      btnEl.innerText = "SIGN IN";
-      togglesEl.classList.remove("hidden");
-    } else if (state === "signup") {
-      titleEl.innerText = "NEW EXPLORER";
-      photoEl.classList.remove("hidden");
-      btnEl.innerText = "CREATE ACCOUNT";
-      backEl.classList.remove("hidden");
-    } else if (state === "forgot") {
-      titleEl.innerText = "RECOVER KEY";
-      passEl.classList.add("hidden");
-      btnEl.innerText = "SEND RESET LINK";
-      backEl.classList.remove("hidden");
-    }
-  };
-
-  window.handleImageSelect = (e, previewId) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const res = ev.target.result;
-      if (previewId === "photo-preview") base64Photo = res;
-      else adminBase64 = res;
-
-      const prev = document.getElementById(previewId);
-      prev.style.backgroundImage = `url(${res})`;
-      prev.innerText = "";
-    };
-    reader.readAsDataURL(file);
-  };
-
-  document.getElementById("btn-auth-action").onclick = async () => {
-    const email = document.getElementById("user-email").value.trim();
-    const pass = document.getElementById("user-pass").value;
-
-    if (!email) return alert("Email required");
-    if ((authState === "signin" || authState === "signup") && !pass) return alert("Password required");
-
-    try {
-      if (authState === "signin") {
-        await signInWithEmailAndPassword(auth, email, pass);
-      } else if (authState === "signup") {
-        const res = await createUserWithEmailAndPassword(auth, email, pass);
-        await setDoc(doc(db, "users", res.user.uid), { ...userData, email, photoURL: base64Photo });
-      } else if (authState === "forgot") {
-        await sendPasswordResetEmail(auth, email);
-        alert("Reset link sent!");
-        window.setAuthState("signin");
-      }
-    } catch (e) {
-      alert(e.message);
-    }
-  };
-
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      document.getElementById("auth-overlay").classList.add("hidden");
-      document.getElementById("player-name").innerText = user.email.split("@")[0];
-      if (user.email === ADMIN_EMAIL) document.getElementById("admin-btn").classList.remove("hidden");
-
-      const snap = await getDoc(doc(db, "users", user.uid));
-      if (snap.exists()) userData = snap.data();
-
-      updateUI();
-      generateQuestion();
-      startTotalTimer();
-      updateLeaderboard();
-    } else {
-      document.getElementById("auth-overlay").classList.remove("hidden");
-    }
-  });
-
-  // ---------- ADMIN ----------
-  window.adminSearch = async () => {
-    const email = document.getElementById("admin-search").value.trim();
-    if (!email) return alert("Enter an email");
-
-    const q1 = query(collection(db, "users"), where("email", "==", email));
-    const snap = await getDocs(q1);
-
-    if (snap.empty) return alert("Not found");
-
-    const d = snap.docs[0];
-    window.targetUid = d.id;
-
-    const data = d.data();
-    document.getElementById("admin-result").classList.remove("hidden");
-    document.getElementById("adm-res-email").value = data.email || "";
-    document.getElementById("adm-res-pts").value = data.points || 0;
-    document.getElementById("adm-res-step").value = data.currentStep || 0;
-
-    adminBase64 = data.photoURL || "";
-    const prev = document.getElementById("admin-photo-preview");
-    prev.style.backgroundImage = adminBase64 ? `url(${adminBase64})` : "";
-    prev.innerText = adminBase64 ? "" : "No Photo";
-  };
-
-  window.adminUpdate = async () => {
-    if (!window.targetUid) return alert("Search a user first");
-
-    await updateDoc(doc(db, "users", window.targetUid), {
-      email: document.getElementById("adm-res-email").value.trim(),
-      points: parseInt(document.getElementById("adm-res-pts").value || "0", 10),
-      currentStep: parseInt(document.getElementById("adm-res-step").value || "0", 10),
-      photoURL: adminBase64
-    });
-
-    alert("Updated");
-    updateLeaderboard();
-  };
-
-  window.adminDelete = async () => {
-    if (!window.targetUid) return alert("Search a user first");
-    if (!confirm("Delete?")) return;
-
-    await deleteDoc(doc(db, "users", window.targetUid));
-    alert("Deleted");
-    updateLeaderboard();
-  };
-
-    // ---------- GAME ----------
-  function generateQuestion() {
-    document.getElementById("submit-btn").classList.remove("hidden");
-    document.getElementById("next-btn").classList.add("hidden");
-    document.getElementById("feedback").innerText = "";
-
-    const step = userData.currentStep || 0;
-    const level = Math.floor(step / 30) + 1;
-
-    let n1, n2, op = "+", ans;
-
-    switch(level) {
-      case 1: // Addition 3-digit
-        n1 = rand(100, 999);
-        n2 = rand(100, 999);
-        op = "+";
-        ans = n1 + n2;
-        break;
-      case 2: // Addition 4-digit
-        n1 = rand(1000, 9999);
-        n2 = rand(1000, 9999);
-        op = "+";
-        ans = n1 + n2;
-        break;
-      case 3: // Subtraction 3-digit
-        n1 = rand(100, 999);
-        n2 = rand(100, n1); // Ensure no negative results
-        op = "-";
-        ans = n1 - n2;
-        break;
-      case 4: // Subtraction 4-digit
-        n1 = rand(1000, 9999);
-        n2 = rand(1000, n1);
-        op = "-";
-        ans = n1 - n2;
-        break;
-      case 5: // Multiplication Tables up to 5
-        n1 = rand(1, 10);
-        n2 = rand(1, 5);
-        op = "×";
-        ans = n1 * n2;
-        break;
-      case 6: // Multiplication Tables 5 to 10
-        n1 = rand(1, 10);
-        n2 = rand(5, 10);
-        op = "×";
-        ans = n1 * n2;
-        break;
-      case 7: // Multiplication Tables 10 to 15
-        n1 = rand(1, 10);
-        n2 = rand(10, 15);
-        op = "×";
-        ans = n1 * n2;
-        break;
-      case 8: // Multiplication Tables 15 to 20
-        n1 = rand(1, 10);
-        n2 = rand(15, 20);
-        op = "×";
-        ans = n1 * n2;
-        break;
-      case 9: // 3-digit x 2-digit
-        n1 = rand(100, 999);
-        n2 = rand(10, 99);
-        op = "×";
-        ans = n1 * n2;
-        break;
-      case 10: // 4-digit x 2-digit
-        n1 = rand(1000, 9999);
-        n2 = rand(10, 99);
-        op = "×";
-        ans = n1 * n2;
-        break;
-      case 11: // Division 3-by-1
-        n2 = rand(2, 9);
-        ans = rand(10, 100); 
-        n1 = ans * n2; // Guarantees whole number division
-        op = "÷";
-        break;
-      case 12: // Division 4-by-1
-        n2 = rand(2, 9);
-        ans = rand(100, 1000);
-        n1 = ans * n2;
-        op = "÷";
-        break;
-      case 13: // Easy Fractions (Identifying simple sums)
-        n2 = rand(2, 5); // Denominator
-        let num1 = rand(1, 3);
-        let num2 = rand(1, 3);
-        n1 = `${num1}/${n2} + ${num2}/${n2}`;
-        n2 = ""; // Hide n2 label for fractions
-        op = "=";
-        ans = num1 + num2; // User enters the resulting numerator
-        break;
-      case 14: // Harder Fractions
-        n2 = rand(6, 12);
-        let hNum1 = rand(1, 10);
-        let hNum2 = rand(1, 10);
-        n1 = `${hNum1}/${n2} + ${hNum2}/${n2}`;
-        n2 = "";
-        op = "=";
-        ans = hNum1 + hNum2;
-        break;
-      default: // Level 15+ (Random Hard Mix)
-        n1 = rand(100, 500);
-        n2 = rand(10, 20);
-        op = "×";
-        ans = n1 * n2;
-    }
-
-    currentAns = String(ans);
-
-    document.getElementById("n1").innerText = n1;
-    document.getElementById("n2").innerText = n2;
-    document.getElementById("op").innerText = op;
-    document.getElementById("level-tag").innerText = `LEVEL ${level} (${step % 30}/30)`;
-
-    setupInputs(currentAns.length);
-    startQuestTimer();
-  }
-
-  // IMPORTANT: Ones-place first (rightmost), then move left
-  function setupInputs(len) {
-    const box = document.getElementById("ans-box");
-    box.innerHTML = "";
-
-    for (let i = 0; i < len; i++) {
-      const inp = document.createElement("input");
-      inp.type = "number";
-      inp.className = "digit-input";
-      inp.inputMode = "numeric";
-
-      inp.oninput = function () {
-        // keep only last digit
-        if (this.value.length > 1) this.value = this.value.slice(-1);
-
-        // after entering a digit: move LEFT (toward higher place value)
-        if (this.value.length === 1 && this.previousElementSibling) {
-          this.previousElementSibling.focus();
-        }
-      };
-
-      inp.onkeydown = function (ev) {
-        // if empty and backspace: move RIGHT (toward ones place)
-        if (ev.key === "Backspace" && this.value === "" && this.nextElementSibling) {
-          this.nextElementSibling.focus();
-        }
-      };
-
-      box.appendChild(inp);
-    }
-
-    // start at ones place (rightmost input)
-    box.lastElementChild?.focus();
-  }
-
-  document.getElementById("submit-btn").onclick = () => {
-    // IMPORTANT: digits are displayed left->right (highest->lowest)
-    // so we can read them normally in DOM order
-    let userAns = "";
-    document.querySelectorAll(".digit-input").forEach((i) => (userAns += i.value));
-
-    if (userAns === currentAns) {
-      clearInterval(qInterval);
-
-      userData.points = (userData.points || 0) + 10;
-      userData.correctTotal = (userData.correctTotal || 0) + 1;
-
-      document.getElementById("feedback").innerText = "COINS +10!";
-      try { confetti(); } catch {}
-
-      document.getElementById("submit-btn").classList.add("hidden");
-      document.getElementById("next-btn").classList.remove("hidden");
-      updateUI();
-    } else {
-      document.getElementById("feedback").innerText = "WRONG";
-    }
-  };
-
-  document.getElementById("next-btn").onclick = async () => {
-    userData.currentStep = (userData.currentStep || 0) + 1;
-
-    await updateDoc(doc(db, "users", auth.currentUser.uid), {
-      points: userData.points || 0,
-      currentStep: userData.currentStep || 0,
-      correctTotal: userData.correctTotal || 0,
-      totalSeconds: userData.totalSeconds || 0,
-      photoURL: userData.photoURL || ""
-    });
-
-    updateLeaderboard();
-    generateQuestion();
-  };
-
-  async function updateLeaderboard() {
-    const q1 = query(collection(db, "users"), orderBy("points", "desc"), limit(5));
-    const snap = await getDocs(q1);
-
-    const body = document.getElementById("lb-body");
-    body.innerHTML = "";
-
-    let i = 1;
-    snap.forEach((d) => {
-      const data = d.data();
-      const name = ((data.email || "") + "").split("@")[0] || "Player";
-      const pts = data.points || 0;
-
-      body.innerHTML += `
-        <tr>
-          <td class="col-rank">${i++}</td>
-          <td class="col-name">${escapeHtml(name)}</td>
-          <td class="col-pts">${pts}</td>
-        </tr>
-      `;
-    });
-  }
-
-  function startQuestTimer() {
-    let qv = 80;
-    clearInterval(qInterval);
-
-    document.getElementById("q-timer").innerText = qv;
-
-    qInterval = setInterval(() => {
-      qv--;
-      document.getElementById("q-timer").innerText = qv;
-
-      if (qv <= 0) {
-        clearInterval(qInterval);
-        document.getElementById("submit-btn").click();
-      }
-    }, 1000);
-  }
-
-  function startTotalTimer() {
-    clearInterval(tInterval);
-
-    tInterval = setInterval(() => {
-      userData.totalSeconds = (userData.totalSeconds || 0) + 1;
-      document.getElementById("total-time").innerText = userData.totalSeconds;
-    }, 1000);
-  }
-
-  function updateUI() {
-    document.getElementById("points").innerText = userData.points || 0;
-    document.getElementById("correct-count").innerText = userData.correctTotal || 0;
-    document.getElementById("user-photo").src = userData.photoURL || "https://via.placeholder.com/50";
-  }
-
-  function rand(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
-
-  function escapeHtml(str) {
-    return String(str).replace(/[&<>"']/g, (m) => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;"
-    }[m]));
-  }
-
-  window.logout = () => signOut(auth).then(() => location.reload());
-  window.changePhoto = () => document.getElementById("file-input").click();
-
-  window.setAuthState("signin");
-    // Function to show the certificate
-window.showMasteryCertificate = (opName) => {
-    const user = auth.currentUser;
-    const name = user.email.split("@")[0].toUpperCase();
-    const date = new Date().toLocaleDateString();
-    const certId = "MW3D-" + Math.random().toString(36).substr(2, 9).toUpperCase();
-
-    document.getElementById("cert-student-name").innerText = name;
-    document.getElementById("cert-op-name").innerText = opName;
-    document.getElementById("cert-date").innerText = date;
-    document.getElementById("cert-id").innerText = certId;
-    
-    // Generate a simple QR code via API
-    document.getElementById("cert-qr").src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Verified-${certId}`;
-    
-    document.getElementById("cert-overlay").classList.remove("hidden");
-};
-
-// Update next-btn.onclick to trigger certificate
-document.getElementById("next-btn").onclick = async () => {
-    const oldStep = userData.currentStep || 0;
-    const newStep = oldStep + 1;
-    
-    // Check if they just finished step 30 of a specific level
-    if (newStep % 30 === 0) {
-        const levelFinished = Math.floor(oldStep / 30) + 1;
-        let opName = "ADDITION";
-        
-        if (levelFinished === 1 || levelFinished === 2) opName = "ADDITION";
-        else if (levelFinished === 3 || levelFinished === 4) opName = "SUBTRACTION";
-        else if (levelFinished >= 5 && levelFinished <= 8) opName = "MATHEMATICAL TABLES";
-        else if (levelFinished === 9 || levelFinished === 10) opName = "MULTIPLICATION";
-        else if (levelFinished === 11 || levelFinished === 12) opName = "DIVISION";
-        else if (levelFinished === 13 || levelFinished === 14) opName = "FRACTIONS";
-
-        window.showMasteryCertificate(opName);
-    }
-
-    userData.currentStep = newStep;
-    // ... existing updateDoc logic remains the same ...
-};
-    
 </script>        
 </body> 
 </html>
