@@ -89,20 +89,16 @@
     <div id="auth-overlay">
         <div class="modal-card">
             <h2 id="auth-title" style="color:var(--primary); margin:0 0 15px 0;">QUEST LOGIN</h2>
-            
             <div id="signup-photo-area" class="hidden">
                 <div id="photo-preview">No Photo</div>
                 <button class="btn-link" style="color:var(--secondary);" onclick="document.getElementById('file-input').click()">+ ADD PHOTO FROM GALLERY</button>
                 <input type="file" id="file-input" class="hidden" accept="image/*" onchange="window.handleImageSelect(event)">
             </div>
-
             <div id="auth-inputs">
                 <input type="email" id="user-email" placeholder="Email Address">
                 <input type="password" id="user-pass" placeholder="Password">
             </div>
-
             <button class="btn btn-primary" id="btn-auth-action">SIGN IN</button>
-            
             <div id="auth-toggles">
                 <button class="btn-link" onclick="window.setAuthState('signup')">Sign Up</button> | 
                 <button class="btn-link" onclick="window.setAuthState('forgot')">Forgot Password?</button>
@@ -245,41 +241,34 @@
         } else { document.getElementById('auth-overlay').classList.remove('hidden'); }
     });
 
-    // --- Admin Logic ---
-    let targetUid = "";
     window.adminSearch = async () => {
         const email = document.getElementById('admin-search').value;
         const q = query(collection(db, "users"), where("email", "==", email));
         const snap = await getDocs(q);
         if(!snap.empty) {
-            const d = snap.docs[0]; targetUid = d.id;
+            const d = snap.docs[0]; const targetUid = d.id;
             document.getElementById('admin-result').classList.remove('hidden');
             document.getElementById('adm-res-uid').innerText = targetUid;
             document.getElementById('adm-res-pts').value = d.data().points;
             document.getElementById('adm-res-step').value = d.data().currentStep;
+            window.targetUid = targetUid;
         } else alert("Not found");
     };
     window.adminUpdate = async () => {
-        await updateDoc(doc(db, "users", targetUid), { points: parseInt(document.getElementById('adm-res-pts').value), currentStep: parseInt(document.getElementById('adm-res-step').value) });
+        await updateDoc(doc(db, "users", window.targetUid), { points: parseInt(document.getElementById('adm-res-pts').value), currentStep: parseInt(document.getElementById('adm-res-step').value) });
         alert("Updated"); updateLeaderboard();
     };
-    window.adminDelete = async () => { if(confirm("Delete user?")) { await deleteDoc(doc(db, "users", targetUid)); alert("Deleted"); } };
+    window.adminDelete = async () => { if(confirm("Delete user?")) { await deleteDoc(doc(db, "users", window.targetUid)); alert("Deleted"); updateLeaderboard(); } };
 
-    // --- Math Engine (Updated to 3-digit) ---
     function generateQuestion() {
-        // Reset Button Visibility for new Quest
         document.getElementById('submit-btn').classList.remove('hidden');
         document.getElementById('next-btn').classList.add('hidden');
         document.getElementById('feedback').innerText = "";
-
         const level = Math.floor(userData.currentStep / 30) + 1;
         let n1, n2, op = "+", ans;
-        
-        // Start with 3-digit addition (100 to 999)
         if (level <= 5) { n1 = rand(100, 999); n2 = rand(100, 999); ans = n1 + n2; }
         else if (level <= 10) { n1 = rand(1000, 9999); n2 = rand(1000, 9999); ans = n1 + n2; }
         else { n1 = rand(10, 50); n2 = rand(2, 12); op = "×"; ans = n1 * n2; }
-        
         currentAns = ans.toString();
         document.getElementById('n1').innerText = n1; 
         document.getElementById('n2').innerText = n2; 
@@ -301,8 +290,11 @@
     document.getElementById('submit-btn').onclick = () => {
         let userAns = ""; document.querySelectorAll('.digit-input').forEach(i => userAns += i.value);
         if (userAns === currentAns) {
-            clearInterval(qInterval); userData.points += 10; userData.correctTotal++;
-            document.getElementById('feedback').innerText = "✅ CORRECT!"; confetti();
+            clearInterval(qInterval);
+            // ADD POINTS LOCALLY FIRST
+            userData.points += 10; 
+            userData.correctTotal++;
+            document.getElementById('feedback').innerText = "✅ +10 COINS!"; confetti();
             document.getElementById('submit-btn').classList.add('hidden'); 
             document.getElementById('next-btn').classList.remove('hidden'); 
             updateUI();
@@ -311,15 +303,27 @@
 
     document.getElementById('next-btn').onclick = async () => {
         userData.currentStep++; 
-        await updateDoc(doc(db, "users", auth.currentUser.uid), userData);
-        generateQuestion(); // This will trigger the Submit button reset
+        // SYNC POINTS TO FIREBASE
+        await updateDoc(doc(db, "users", auth.currentUser.uid), {
+            points: userData.points,
+            currentStep: userData.currentStep,
+            correctTotal: userData.correctTotal
+        });
+        // REFRESH LEADERBOARD AFTER SYNC
+        updateLeaderboard();
+        generateQuestion();
     };
 
     async function updateLeaderboard() {
         const q = query(collection(db, "users"), orderBy("points", "desc"), limit(5));
         const snap = await getDocs(q);
-        const body = document.getElementById('lb-body'); body.innerHTML = "";
-        let i = 1; snap.forEach(d => { body.innerHTML += `<tr><td>${i++}</td><td>${d.data().email.split('@')[0]}</td><td>${d.data().points}</td></tr>`; });
+        const body = document.getElementById('lb-body'); 
+        body.innerHTML = "";
+        let i = 1; 
+        snap.forEach(d => { 
+            const data = d.data();
+            body.innerHTML += `<tr><td>${i++}</td><td>${data.email.split('@')[0]}</td><td>💰 ${data.points || 0}</td></tr>`; 
+        });
     }
 
     function startQuestTimer() { let qv = 80; clearInterval(qInterval); qInterval = setInterval(() => { qv--; document.getElementById('q-timer').innerText = qv; if(qv<=0) { clearInterval(qInterval); document.getElementById('submit-btn').click(); } }, 1000); }
@@ -333,4 +337,3 @@
 </body>
 </html>
                 
-        
