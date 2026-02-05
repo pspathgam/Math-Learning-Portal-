@@ -338,36 +338,68 @@
   });
 
   // --- ADMIN ---
+    // --- ADMIN TOOLS FIXED ---
   window.adminSearch = async () => {
     const email = document.getElementById("admin-search").value.trim();
+    if (!email) return alert("Enter an email");
+
     const q1 = query(collection(db, "users"), where("email", "==", email));
     const snap = await getDocs(q1);
-    if (snap.empty) return alert("Not found");
-    const d = snap.docs[0]; window.targetUid = d.id;
+
+    if (snap.empty) return alert("User not found");
+
+    const d = snap.docs[0];
+    // This stores the ID so the update function knows who to target
+    window.targetUid = d.id;
+
     const data = d.data();
     document.getElementById("admin-result").classList.remove("hidden");
     document.getElementById("adm-res-email").value = data.email || "";
+    document.getElementById("adm-res-pts").value = data.points || 0;
     document.getElementById("adm-res-step").value = data.currentStep || 0;
+
     adminBase64 = data.photoURL || "";
     const prev = document.getElementById("admin-photo-preview");
-    prev.style.backgroundImage = adminBase64 ? `url(${adminBase64})` : ""; prev.innerText = adminBase64 ? "" : "No Photo";
+    prev.style.backgroundImage = adminBase64 ? `url(${adminBase64})` : "";
+    prev.innerText = adminBase64 ? "" : "No Photo";
   };
 
   window.adminUpdate = async () => {
-    if (!window.targetUid) return;
-    await updateDoc(doc(db, "users", window.targetUid), {
-      email: document.getElementById("adm-res-email").value.trim(),
-      points: parseInt(document.getElementById("adm-res-pts").value || "0", 10),
-      currentStep: parseInt(document.getElementById("adm-res-step").value || "0", 10),
-      photoURL: adminBase64
-    });
-    alert("Updated"); updateLeaderboard();
+    if (!window.targetUid) return alert("Please search for a user first!");
+
+    const newEmail = document.getElementById("adm-res-email").value.trim();
+    const newPts = parseInt(document.getElementById("adm-res-pts").value || "0", 10);
+    const newStep = parseInt(document.getElementById("adm-res-step").value || "0", 10);
+
+    try {
+      const userRef = doc(db, "users", window.targetUid);
+      await updateDoc(userRef, {
+        email: newEmail,
+        points: newPts,
+        currentStep: newStep,
+        photoURL: adminBase64 // Uses the global adminBase64 updated by handleImageSelect
+      });
+
+      alert("User Profile Updated Successfully!");
+      updateLeaderboard(); // Refresh the leaderboard to show changes
+    } catch (e) {
+      console.error("Update Error:", e);
+      alert("Failed to update: " + e.message);
+    }
   };
 
   window.adminDelete = async () => {
-    if (!window.targetUid || !confirm("Delete?")) return;
-    await deleteDoc(doc(db, "users", window.targetUid));
-    alert("Deleted"); updateLeaderboard();
+    if (!window.targetUid) return alert("Search a user first");
+    if (!confirm("Are you sure you want to permanently delete this user?")) return;
+
+    try {
+      await deleteDoc(doc(db, "users", window.targetUid));
+      alert("User Deleted");
+      document.getElementById("admin-result").classList.add("hidden");
+      updateLeaderboard();
+    } catch (e) {
+      alert("Delete failed: " + e.message);
+    }
   };
 
   // --- GAME LOGIC ---
