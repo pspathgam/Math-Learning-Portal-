@@ -53,7 +53,7 @@
             box-shadow: inset 0 0 10px rgba(0,210,255,0.2);
         }
 
-        /* Leaderboard */
+        /* Leaderboard Fixes */
         .leaderboard-card { 
             background: rgba(0,0,0,0.3); border-radius: 20px; padding: 15px; 
             margin-top: 20px; border: 1px solid var(--primary); width: 100%; 
@@ -65,19 +65,18 @@
         .lb-table td { padding: 8px 5px; border-bottom: 1px solid #222; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .col-rank { width: 15%; } .col-name { width: 55%; } .col-pts { width: 30%; }
 
-        /* Modals & Auth Tabs */
+        /* Modals & TABS FIXED */
         #auth-overlay, #admin-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .modal-card { background: var(--card-bg); padding: 25px; border-radius: 25px; border: 2px solid var(--primary); width: 90%; max-width: 400px; text-align: center; max-height: 90vh; overflow-y: auto; }
+        .modal-card { background: var(--card-bg); padding: 25px; border-radius: 25px; border: 2px solid var(--primary); width: 90%; max-width: 400px; text-align: center; max-height: 90vh; overflow-y: auto; position: relative; }
         
-        input[type="email"], input[type="password"], input[type="text"], input[type="number"] { 
+        input { 
             width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid var(--primary); background: #0f3460; color: white; box-sizing: border-box; text-align: center;
         }
 
         .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-next { background: var(--secondary); color: #000; }
-        .btn-link { background: none; color: var(--primary); border: none; text-decoration: underline; cursor: pointer; font-size: 0.8rem; padding: 5px; }
-        .btn-link:active { color: var(--secondary); }
+        .btn-link { background: none; color: var(--primary); border: none; text-decoration: underline; cursor: pointer; font-size: 0.8rem; padding: 10px; position: relative; z-index: 1100; pointer-events: auto; }
 
         .hidden { display: none !important; }
         
@@ -99,11 +98,261 @@
             
             <div id="signup-photo-area" class="hidden">
                 <div id="photo-preview">No Photo</div>
-                <button class="btn-link" style="color:var(--secondary);" onclick="document.getElementById('file-input').click()">+ ADD PHOTO</button>
+                <button type="button" class="btn-link" style="color:var(--secondary);" onclick="document.getElementById('file-input').click()">+ ADD PHOTO</button>
                 <input type="file" id="file-input" class="hidden" accept="image/*" onchange="window.handleImageSelect(event, 'photo-preview')">
             </div>
 
             <div id="auth-inputs">
+                <input type="email" id="user-email" placeholder="Email Address">
+                <input type="password" id="user-pass" placeholder="Password">
+            </div>
+
+            <button class="btn btn-primary" id="btn-auth-action">SIGN IN</button>
+
+            <div id="auth-toggles" style="margin-top:20px;">
+                <button type="button" class="btn-link" onclick="window.setAuthState('signup')">Sign Up</button>
+                <span style="color:#444">|</span>
+                <button type="button" class="btn-link" onclick="window.setAuthState('forgot')">Forgot Password?</button>
+            </div>
+
+            <button id="btn-back-to-login" class="btn-link hidden" style="margin-top:20px; display:block; width:100%;" onclick="window.setAuthState('signin')">← Back to Login</button>
+        </div>
+    </div>
+
+    <div id="admin-overlay" class="hidden">
+        <div class="modal-card">
+            <h3 style="color:var(--accent)">ADMIN TOOLS</h3>
+            <input type="text" id="admin-search" placeholder="User Email">
+            <button class="btn btn-primary" onclick="window.adminSearch()">FIND USER</button>
+            <div id="admin-result" class="hidden" style="margin-top:15px; border-top:1px solid #444; padding-top:15px;">
+                <div id="admin-photo-preview">User Photo</div>
+                <button class="btn-link" onclick="document.getElementById('admin-file-input').click()">CHANGE PHOTO</button>
+                <input type="file" id="admin-file-input" class="hidden" accept="image/*" onchange="window.handleImageSelect(event, 'admin-photo-preview')">
+                <input type="email" id="adm-res-email" placeholder="Email">
+                <div style="display:flex; gap:5px;">
+                    <input type="number" id="adm-res-pts" placeholder="Points">
+                    <input type="number" id="adm-res-step" placeholder="Step">
+                </div>
+                <button class="btn btn-primary" onclick="window.adminUpdate()">UPDATE PROFILE</button>
+                <button class="btn" style="background:#ff4757; color:white;" onclick="window.adminDelete()">DELETE USER</button>
+            </div>
+            <button class="btn-link" onclick="document.getElementById('admin-overlay').classList.add('hidden')">Close</button>
+        </div>
+    </div>
+
+    <header style="width: 95%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <img id="user-photo" src="https://via.placeholder.com/50" style="width:40px; height:40px; border-radius:50%; border:2px solid var(--primary); cursor:pointer;" onclick="window.changePhoto()">
+            <div>
+                <div id="player-name" style="font-weight:bold; font-size:0.8rem;">Explorer</div>
+                <div id="level-tag" style="font-size:0.6rem; color:var(--secondary);">LEVEL 1</div>
+            </div>
+        </div>
+        <div>
+            <button id="admin-btn" class="hidden" onclick="document.getElementById('admin-overlay').classList.remove('hidden')" style="background:var(--accent); color:black; border:none; padding:5px 8px; border-radius:5px; font-size:0.6rem; font-weight:bold; cursor:pointer;">ADMIN</button>
+            <button onclick="window.logout()" style="background:#ff4757; color:white; border:none; padding:5px 8px; border-radius:5px; font-size:0.6rem; cursor:pointer;">LOGOUT</button>
+        </div>
+    </header>
+
+    <div class="main-wrapper">
+        <div class="dashboard">
+            <div class="gauge-box"><div class="gauge" style="border-top-color: var(--primary);"><span class="gauge-val" id="q-timer">80</span></div><div class="gauge-label">Quest</div></div>
+            <div class="gauge-box"><div class="gauge" style="border-top-color: var(--secondary);"><span class="gauge-val" id="total-time">0</span></div><div class="gauge-label">Total</div></div>
+            <div class="gauge-box"><div class="gauge" style="border-top-color: var(--accent);"><span class="gauge-val" id="points">0</span></div><div class="gauge-label">Points</div></div>
+            <div class="gauge-box"><div class="gauge" style="border-top-color: #ff4757;"><span class="gauge-val" id="correct-count">0</span></div><div class="gauge-label">Correct</div></div>
+        </div>
+
+        <div class="container">
+            <div class="math-area">
+                <div id="n1">0</div>
+                <div style="display:flex; justify-content: space-between;"><span style="color:var(--secondary)" id="op">+</span><span id="n2">0</span></div>
+                <hr style="border:1px solid #333">
+                <div id="ans-box" style="display:flex; justify-content: flex-end;"></div>
+            </div>
+            <div id="feedback" style="text-align:center; height: 20px; font-weight:bold; color:var(--accent); font-size: 0.8rem;"></div>
+            <button class="btn btn-primary" id="submit-btn">SUBMIT ANSWER</button>
+            <button class="btn btn-next hidden" id="next-btn">NEXT QUEST ➔</button>
+        </div>
+
+        <div class="leaderboard-card">
+            <h4 style="margin:0 0 10px 0; color:var(--primary); font-size:0.8rem;">WORLD LEADERBOARD</h4>
+            <div class="lb-container">
+                <table class="lb-table">
+                    <thead><tr><th class="col-rank">#</th><th class="col-name">Player</th><th class="col-pts">Points</th></tr></thead>
+                    <tbody id="lb-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="designer-box">
+        <img src="IMG_20221004_191436.jpg" alt="Mohammad Ashraf Rather" class="designer-photo">
+        <div style="text-align: left;">
+            <p style="font-weight: bold; color: var(--primary); margin: 0; font-size: 0.8rem;">Mohammad Ashraf Rather</p>
+            <p style="font-size: 0.6rem; color: #888; margin: 0;">Architect & Designer</p>
+        </div>
+    </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC6FbPb36F69k7cw_tLbGQoVQxs6shzfAo",
+      authDomain: "math-world-3d.firebaseapp.com",
+      projectId: "math-world-3d",
+      storageBucket: "math-world-3d.firebasestorage.app",
+      messagingSenderId: "526717782686",
+      appId: "1:526717782686:web:21dddbcb293323eda8098f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const ADMIN_EMAIL = "ratherashraf786@gmail.com";
+    let userData = { currentStep: 0, correctTotal: 0, totalSeconds: 0, points: 0, photoURL: "" };
+    let currentAns = "", authState = 'signin', base64Photo = "", adminBase64 = "", qInterval, tInterval;
+
+    // MANDATORY FIX FOR RESPONSIVE TABS
+    window.setAuthState = (state) => {
+        authState = state;
+        const ui = {
+            title: document.getElementById('auth-title'),
+            photo: document.getElementById('signup-photo-area'),
+            pass: document.getElementById('user-pass'),
+            btn: document.getElementById('btn-auth-action'),
+            toggles: document.getElementById('auth-toggles'),
+            back: document.getElementById('btn-back-to-login')
+        };
+
+        if (state === 'signin') {
+            ui.title.innerText = "QUEST LOGIN";
+            ui.photo.classList.add('hidden');
+            ui.pass.classList.remove('hidden');
+            ui.btn.innerText = "SIGN IN";
+            ui.toggles.classList.remove('hidden');
+            ui.back.classList.add('hidden');
+        } else if (state === 'signup') {
+            ui.title.innerText = "NEW EXPLORER";
+            ui.photo.classList.remove('hidden');
+            ui.pass.classList.remove('hidden');
+            ui.btn.innerText = "CREATE ACCOUNT";
+            ui.toggles.classList.add('hidden');
+            ui.back.classList.remove('hidden');
+        } else if (state === 'forgot') {
+            ui.title.innerText = "RECOVER KEY";
+            ui.photo.classList.add('hidden');
+            ui.pass.classList.add('hidden');
+            ui.btn.innerText = "SEND RESET LINK";
+            ui.toggles.classList.add('hidden');
+            ui.back.classList.remove('hidden');
+        }
+    };
+
+    window.handleImageSelect = (e, previewId) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const res = ev.target.result;
+                if(previewId === 'photo-preview') base64Photo = res;
+                else adminBase64 = res;
+                document.getElementById(previewId).style.backgroundImage = `url(${res})`;
+                document.getElementById(previewId).innerText = "";
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    document.getElementById('btn-auth-action').onclick = async () => {
+        const email = document.getElementById('user-email').value;
+        const pass = document.getElementById('user-pass').value;
+        if(!email) return alert("Email required");
+        try {
+            if (authState === 'signin') await signInWithEmailAndPassword(auth, email, pass);
+            else if (authState === 'signup') {
+                const res = await createUserWithEmailAndPassword(auth, email, pass);
+                await setDoc(doc(db, "users", res.user.uid), { ...userData, email, photoURL: base64Photo });
+            } else { await sendPasswordResetEmail(auth, email); alert("Reset link sent!"); window.setAuthState('signin'); }
+        } catch (e) { alert(e.message); }
+    };
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            document.getElementById('auth-overlay').classList.add('hidden');
+            document.getElementById('player-name').innerText = user.email.split('@')[0];
+            if(user.email === ADMIN_EMAIL) document.getElementById('admin-btn').classList.remove('hidden');
+            const snap = await getDoc(doc(db, "users", user.uid));
+            if (snap.exists()) userData = snap.data();
+            updateUI(); generateQuestion(); startTotalTimer(); updateLeaderboard();
+        } else { document.getElementById('auth-overlay').classList.remove('hidden'); }
+    });
+
+    window.adminSearch = async () => {
+        const email = document.getElementById('admin-search').value;
+        const q = query(collection(db, "users"), where("email", "==", email));
+        const snap = await getDocs(q);
+        if(!snap.empty) {
+            const d = snap.docs[0]; window.targetUid = d.id;
+            const data = d.data();
+            document.getElementById('admin-result').classList.remove('hidden');
+            document.getElementById('adm-res-uid').innerText = d.id;
+            document.getElementById('adm-res-email').value = data.email || "";
+            document.getElementById('adm-res-pts').value = data.points || 0;
+            document.getElementById('adm-res-step').value = data.currentStep || 0;
+            adminBase64 = data.photoURL || "";
+            document.getElementById('admin-photo-preview').style.backgroundImage = `url(${adminBase64})`;
+            document.getElementById('admin-photo-preview').innerText = adminBase64 ? "" : "No Photo";
+        } else alert("Not found");
+    };
+
+    window.adminUpdate = async () => {
+        await updateDoc(doc(db, "users", window.targetUid), { 
+            email: document.getElementById('adm-res-email').value,
+            points: parseInt(document.getElementById('adm-res-pts').value), 
+            currentStep: parseInt(document.getElementById('adm-res-step').value),
+            photoURL: adminBase64
+        });
+        alert("Updated"); updateLeaderboard();
+    };
+
+    window.adminDelete = async () => { if(confirm("Delete?")) { await deleteDoc(doc(db, "users", window.targetUid)); alert("Deleted"); updateLeaderboard(); } };
+
+    function generateQuestion() {
+        document.getElementById('submit-btn').classList.remove('hidden');
+        document.getElementById('next-btn').classList.add('hidden');
+        document.getElementById('feedback').innerText = "";
+        const level = Math.floor(userData.currentStep / 30) + 1;
+        let n1, n2, op = "+", ans;
+        if (level <= 5) { n1 = rand(100, 999); n2 = rand(100, 999); ans = n1 + n2; }
+        else if (level <= 10) { n1 = rand(1000, 9999); n2 = rand(1000, 9999); ans = n1 + n2; }
+        else { n1 = rand(10, 50); n2 = rand(2, 12); op = "×"; ans = n1 * n2; }
+        currentAns = ans.toString();
+        document.getElementById('n1').innerText = n1; 
+        document.getElementById('n2').innerText = n2; 
+        document.getElementById('op').innerText = op;
+        document.getElementById('level-tag').innerText = `LEVEL ${level} (${userData.currentStep % 30}/30)`;
+        setupInputs(currentAns.length); startQuestTimer();
+    }
+
+    function setupInputs(len) {
+        const box = document.getElementById('ans-box'); box.innerHTML = "";
+        for(let i=0; i<len; i++) {
+            const inp = document.createElement('input'); inp.type = "number"; inp.className = "digit-input";
+            inp.oninput = function() { if(this.value.length > 0) { this.value = this.value.slice(-1); if(this.previousElementSibling) this.previousElementSibling.focus(); } };
+            box.appendChild(inp);
+        }
+        box.lastElementChild.focus();
+    }
+
+    document.getElementById('submit-btn').onclick = () => {
+        let userAns = ""; document.querySelectorAll('.digit-input').forEach(i => userAns += i.value);
+        if (userAns === currentAns) {
+            clearInterval(qInterval);
+            userData.points += 10; userData.correctTotal++;
+            document.getElementById('feedback').innerText = "✅ +10 COINS!"; confe            <div id="auth-inputs">
                 <input type="email" id="user-email" placeholder="Email Address">
                 <input type="password" id="user-pass" placeholder="Password">
             </div>
