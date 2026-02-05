@@ -388,7 +388,7 @@
     updateLeaderboard();
   };
 
-  // ---------- GAME ----------
+    // ---------- GAME ----------
   function generateQuestion() {
     document.getElementById("submit-btn").classList.remove("hidden");
     document.getElementById("next-btn").classList.add("hidden");
@@ -399,19 +399,102 @@
 
     let n1, n2, op = "+", ans;
 
-    if (level <= 5) {
-      n1 = rand(100, 999);
-      n2 = rand(100, 999);
-      ans = n1 + n2;
-    } else if (level <= 10) {
-      n1 = rand(1000, 9999);
-      n2 = rand(1000, 9999);
-      ans = n1 + n2;
-    } else {
-      n1 = rand(10, 50);
-      n2 = rand(2, 12);
-      op = "×";
-      ans = n1 * n2;
+    switch(level) {
+      case 1: // Addition 3-digit
+        n1 = rand(100, 999);
+        n2 = rand(100, 999);
+        op = "+";
+        ans = n1 + n2;
+        break;
+      case 2: // Addition 4-digit
+        n1 = rand(1000, 9999);
+        n2 = rand(1000, 9999);
+        op = "+";
+        ans = n1 + n2;
+        break;
+      case 3: // Subtraction 3-digit
+        n1 = rand(100, 999);
+        n2 = rand(100, n1); // Ensure no negative results
+        op = "-";
+        ans = n1 - n2;
+        break;
+      case 4: // Subtraction 4-digit
+        n1 = rand(1000, 9999);
+        n2 = rand(1000, n1);
+        op = "-";
+        ans = n1 - n2;
+        break;
+      case 5: // Multiplication Tables up to 5
+        n1 = rand(1, 10);
+        n2 = rand(1, 5);
+        op = "×";
+        ans = n1 * n2;
+        break;
+      case 6: // Multiplication Tables 5 to 10
+        n1 = rand(1, 10);
+        n2 = rand(5, 10);
+        op = "×";
+        ans = n1 * n2;
+        break;
+      case 7: // Multiplication Tables 10 to 15
+        n1 = rand(1, 10);
+        n2 = rand(10, 15);
+        op = "×";
+        ans = n1 * n2;
+        break;
+      case 8: // Multiplication Tables 15 to 20
+        n1 = rand(1, 10);
+        n2 = rand(15, 20);
+        op = "×";
+        ans = n1 * n2;
+        break;
+      case 9: // 3-digit x 2-digit
+        n1 = rand(100, 999);
+        n2 = rand(10, 99);
+        op = "×";
+        ans = n1 * n2;
+        break;
+      case 10: // 4-digit x 2-digit
+        n1 = rand(1000, 9999);
+        n2 = rand(10, 99);
+        op = "×";
+        ans = n1 * n2;
+        break;
+      case 11: // Division 3-by-1
+        n2 = rand(2, 9);
+        ans = rand(10, 100); 
+        n1 = ans * n2; // Guarantees whole number division
+        op = "÷";
+        break;
+      case 12: // Division 4-by-1
+        n2 = rand(2, 9);
+        ans = rand(100, 1000);
+        n1 = ans * n2;
+        op = "÷";
+        break;
+      case 13: // Easy Fractions (Identifying simple sums)
+        n2 = rand(2, 5); // Denominator
+        let num1 = rand(1, 3);
+        let num2 = rand(1, 3);
+        n1 = `${num1}/${n2} + ${num2}/${n2}`;
+        n2 = ""; // Hide n2 label for fractions
+        op = "=";
+        ans = num1 + num2; // User enters the resulting numerator
+        break;
+      case 14: // Harder Fractions
+        n2 = rand(6, 12);
+        let hNum1 = rand(1, 10);
+        let hNum2 = rand(1, 10);
+        n1 = `${hNum1}/${n2} + ${hNum2}/${n2}`;
+        n2 = "";
+        op = "=";
+        ans = hNum1 + hNum2;
+        break;
+      default: // Level 15+ (Random Hard Mix)
+        n1 = rand(100, 500);
+        n2 = rand(10, 20);
+        op = "×";
+        ans = n1 * n2;
     }
 
     currentAns = String(ans);
