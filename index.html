@@ -176,15 +176,31 @@
 
 .cert-footer strong { color: #b38728; }
 
+/* Add these styles to your <style> section to handle the download/print layout */
 @media print {
     body * { visibility: hidden; }
     #cert-overlay, #cert-overlay * { visibility: visible; }
-    #cert-overlay { position: absolute; inset: 0; background: white; padding: 0; }
+    #cert-overlay { 
+        position: absolute; 
+        left: 0; top: 0; 
+        width: 100%; height: 100%; 
+        background: white; 
+        display: flex !important; 
+    }
     .cert-container { 
-        box-shadow: none; border: 15pt solid #b38728; 
+        border: 15pt solid #b38728; 
+        box-shadow: none; 
         -webkit-print-color-adjust: exact; 
     }
-    .btn-cert { display: none; }
+    .cert-actions { display: none !important; } /* Hide buttons on the actual PDF */
+}
+
+.cert-actions {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
     </style>
 </head>
@@ -616,6 +632,27 @@
   function escapeHtml(str) { return String(str).replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[m])); }
   window.logout = () => signOut(auth).then(() => location.reload());
   window.changePhoto = () => document.getElementById("file-input").click();
+     Add this function to your <script> section
+window.downloadCertificate = () => {
+    // This triggers the browser's print dialog. 
+    // The student should select "Save as PDF" as the destination.
+    window.print();
+};
+
+// Update your existing showMasteryCertificate function to fill in the date and ID
+window.showMasteryCertificate = (opName) => {
+    const name = auth.currentUser.email.split("@")[0].toUpperCase();
+    document.getElementById("cert-student-name").innerText = name;
+    document.getElementById("cert-op-name").innerText = opName;
+    document.getElementById("cert-date").innerText = new Date().toLocaleDateString();
+    document.getElementById("cert-id").innerText = "MW3D-" + Math.random().toString(36).substr(2, 9).toUpperCase();
+    
+    // Generate a QR code for authenticity
+    const qrData = encodeURIComponent(`Student: ${name} | Subject: ${opName}`);
+    document.getElementById("cert-qr").src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${qrData}`;
+    
+    document.getElementById("cert-overlay").classList.remove("hidden");
+};
   window.setAuthState("signin");
 </script>        
 </body> 
