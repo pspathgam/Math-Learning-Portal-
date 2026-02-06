@@ -233,42 +233,7 @@
         </div>
     </div>
 
-    <div id="cert-overlay" class="hidden">
-        <div class="cert-container" id="printable-cert">
-            <div class="cert-border-math"></div>
-            <p style="font-size: 1rem; margin-bottom: 0;">🏆 CERTIFICATE OF MASTERY</p>
-            <h1 class="cert-title">Math World 3D</h1>
-            <p style="margin: 15px 0 5px;">This is to certify that</p>
-            <div class="cert-name" id="cert-student-name">Explorer</div>
-            <p>has successfully demonstrated outstanding mastery in the</p>
-            <p class="cert-op">Mathematical Operation of <span id="cert-op-name">ADDITION</span></p>
-            <p style="font-size: 0.8rem; padding: 0 40px;">Through consistent effort, practice, and strong numerical understanding, the learner has shown accuracy and confidence in solving these problems.</p>
-            <div class="cert-footer">
-                <div>
-                    <p><strong>Issuing Authority:</strong> Admin</p>
-                    <p><strong>Certificate ID:</strong> <span id="cert-id"></span></p>
-                    <p><strong>Issue Date:</strong> <span id="cert-date"></span></p>
-                </div>
-                <div style="text-align: right;">
-                    <p style="font-size: 0.6rem;">Digitally Signed By:<br>Admin Math Learning Portal</p>
-                    <img id="cert-qr" src="" style="width: 60px; height: 60px; margin-top: 5px;">
-                </div>
-            </div>
-            <button class="btn btn-primary btn-cert" onclick="window.print()" style="margin-top: 20px; width: auto; padding: 10px 30px;">PRINT CERTIFICATE</button>
-            <button class="btn-link btn-cert" onclick="document.getElementById('cert-overlay').classList.add('hidden')">Close</button>
-        </div>
-    </div>
-
-    <header style="width: 95%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <img id="user-photo" src="https://via.placeholder.com/50" style="width:40px; height:40px; border-radius:50%; border:2px solid var(--primary); cursor:pointer;" onclick="window.changePhoto()">
-            <div>
-                <div id="player-name" style="font-weight:bold; font-size:0.8rem;">Explorer</div>
-                <div id="level-tag" style="font-size:0.6rem; color:var(--secondary);">LEVEL 1</div>
-                <button class="btn-link" style="padding:0; font-size:10px; color:var(--accent)" onclick="window.downloadMyCertificates()">DOWNLOAD CERTIFICATES</button>
-            </div>
-        </div>
-        <div>
+    
             <button id="admin-btn" class="hidden" onclick="document.getElementById('admin-overlay').classList.remove('hidden')" style="background:var(--accent); color:black; border:none; padding:5px 8px; border-radius:5px; font-size:0.6rem; font-weight:bold;">ADMIN</button>
             <button onclick="window.logout()" style="background:#ff4757; color:white; border:none; padding:5px 8px; border-radius:5px; font-size:0.6rem;">LOGOUT</button>
         </div>
@@ -285,7 +250,39 @@
         <div class="container">
             <div class="math-area" id="math-display">
                 <div id="n1">0</div>
-                <div style="display:flex; justify-content: space-between;"><span style="color:var(--secondary)" id="op">+</span><span id="n2">0</span></div>
+                <div style="display:flex; justify-content: space-between;"><span style="color:var(--secondary)" id="op">+</span><div id="cert-overlay" class="hidden">
+    <div class="cert-container" id="printable-cert">
+        <div class="cert-border-math"></div>
+        <p style="font-size: 1rem; margin-bottom: 0;">🏆 CERTIFICATE OF MASTERY</p>
+        <h1 class="cert-title">Math World 3D</h1>
+        <p style="margin: 15px 0 5px;">This is to certify that</p>
+        <div class="cert-name" id="cert-student-name">EXPLORER</div>
+        <p>has successfully demonstrated outstanding mastery in the</p>
+        <p class="cert-op">Mathematical Operation of <span id="cert-op-name">MULTIPLICATION</span></p>
+        <p style="font-size: 0.8rem; padding: 0 40px; line-height: 1.4;">
+            Through consistent effort, practice, and strong numerical understanding, 
+            the learner has shown accuracy and confidence in solving complex problems.
+        </p>
+        
+        <div class="cert-footer">
+            <div>
+                <p><strong>Issuing Authority:</strong> Admin Math Portal</p>
+                <p><strong>Certificate ID:</strong> <span id="cert-id"></span></p>
+                <p><strong>Issue Date:</strong> <span id="cert-date"></span></p>
+            </div>
+            <div style="text-align: right;">
+                <p style="font-size: 0.6rem;">Digitally Signed By:<br>Mohammad Ashraf Rather</p>
+                <img id="cert-qr" src="" style="width: 60px; height: 60px; margin-top: 5px;">
+            </div>
+        </div>
+
+        <div class="cert-actions">
+            <button class="btn btn-primary btn-cert" onclick="window.downloadCertificate()">DOWNLOAD AS PDF</button>
+            <button class="btn-link btn-cert" onclick="document.getElementById('cert-overlay').classList.add('hidden')">Return to Quest</button>
+        </div>
+    </div>
+ </div>
+                    <span id="n2">0</span></div>
                 <hr style="border:1px solid #333">
                 <div id="ans-box" style="display:flex; justify-content: flex-end;"></div>
             </div>
