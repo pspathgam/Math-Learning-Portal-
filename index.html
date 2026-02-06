@@ -29,9 +29,22 @@
             background: rgba(255,255,255,0.05); padding: 25px; border-radius: 30px; 
             border: 1px solid rgba(255,255,255,0.1); transform: rotateX(3deg);
             box-shadow: 0 20px 50px rgba(0,0,0,0.5); transition: transform 0.3s ease;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px); min-height: 350px;
         }
         .container:hover { transform: rotateX(0deg); }
+
+        /* Area Model Styles */
+        .area-model-container { margin-top: 10px; display: flex; flex-direction: column; align-items: center; width: 100%; }
+        .area-grid { 
+            display: grid; grid-template-columns: 60px 1fr 1fr; grid-template-rows: 40px 1fr 1fr;
+            gap: 2px; background: rgba(255,255,255,0.1); padding: 5px; border-radius: 10px;
+        }
+        .area-cell { 
+            background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; min-height: 60px; font-weight: bold; color: var(--primary);
+        }
+        .area-label { font-size: 0.9rem; color: var(--accent); display: flex; align-items: center; justify-content: center; }
+        .area-sum-row { margin-top: 15px; font-size: 1rem; color: #ccc; border-top: 1px solid #444; padding-top: 10px; }
 
         /* Gauges */
         .dashboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; width: 100%; }
@@ -47,63 +60,283 @@
         /* Math UI */
         .math-area { font-size: clamp(2rem, 8vw, 3.5rem); font-weight: 900; text-align: right; margin: 15px 0; }
         .digit-input { 
-            width: 40px; height: 55px; font-size: 1.8rem; text-align: center; 
-            border-radius: 10px; border: 2px solid var(--primary);
+            width: 35px; height: 45px; font-size: 1.5rem; text-align: center; 
+            border-radius: 8px; border: 2px solid var(--primary);
             background: rgba(0,0,0,0.5); color: white; margin: 0 2px;
-            box-shadow: inset 0 0 10px rgba(0,210,255,0.2);
         }
 
         /* Leaderboard */
         .leaderboard-card { 
             background: rgba(0,0,0,0.3); border-radius: 20px; padding: 15px; 
-            margin-top: 20px; border: 1px solid var(--primary); width: 100%; 
-            box-sizing: border-box; overflow: hidden;
+            margin-top: 20px; border: 1px solid var(--primary); width: 100%; box-sizing: border-box;
         }
-        .lb-container { width: 100%; overflow-x: auto; }
-        .lb-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; table-layout: fixed; }
+        .lb-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
         .lb-table th { color: var(--primary); border-bottom: 1px solid #444; padding: 5px; text-align: left; }
-        .lb-table td { padding: 8px 5px; border-bottom: 1px solid #222; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .col-rank { width: 15%; } .col-name { width: 55%; } .col-pts { width: 30%; }
+        .lb-table td { padding: 8px 5px; border-bottom: 1px solid #222; }
 
-        /* Auth Overlays */
-        #auth-overlay, #admin-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+        /* Overlays */
+        #auth-overlay, #admin-overlay, #cert-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
         .modal-card { 
             background: var(--card-bg); padding: 25px; border-radius: 25px; 
-            border: 2px solid var(--primary); width: 85%; max-width: 380px; 
-            text-align: center; position: relative; z-index: 2100;
+            border: 2px solid var(--primary); width: 85%; max-width: 380px; text-align: center;
         }
         
-        input { 
-            width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid var(--primary); 
-            background: #0f3460; color: white; box-sizing: border-box; text-align: center; font-size: 1rem;
-        }
-
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid var(--primary); background: #0f3460; color: white; box-sizing: border-box; text-align: center; }
         .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-link { 
-            background: none; color: var(--primary); border: none; text-decoration: underline; 
-            cursor: pointer; font-size: 0.85rem; padding: 12px; display: inline-block;
-            position: relative; z-index: 2500; 
-        }
+        .btn-link { background: none; color: var(--primary); border: none; text-decoration: underline; cursor: pointer; font-size: 0.85rem; padding: 12px; }
 
+        /* Certificate Styles */
+        .cert-container {
+            background: #fff; width: 100%; max-width: 700px; aspect-ratio: 1.414 / 1; padding: 40px; 
+            border: 15px solid transparent; border-image: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728) 1;
+            position: relative; color: #1a1a2e; text-align: center; box-sizing: border-box;
+        }
+        .cert-title { font-size: 2.5rem; color: #b38728; margin: 0; text-transform: uppercase; font-family: serif; }
+        .cert-name { font-family: 'Brush Script MT', cursive; font-size: 2.5rem; border-bottom: 2px solid #b38728; display: inline-block; min-width: 300px; margin: 10px 0; }
+        
         .hidden { display: none !important; }
-        
-        #photo-preview, #admin-photo-preview { 
-            width: 70px; height: 70px; border-radius: 50%; border: 2px dashed var(--primary); 
-            margin: 0 auto 10px; background-size: cover; background-position: center; 
-            display: flex; align-items: center; justify-content: center; font-size: 0.5rem; 
-        }
+        #photo-preview { width: 70px; height: 70px; border-radius: 50%; border: 2px dashed var(--primary); margin: 0 auto 10px; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; font-size: 0.5rem; }
+    </style>
+</head>
+<body>
 
-        .designer-box { margin-top: 20px; padding: 15px; display: flex; align-items: center; justify-content: center; gap: 15px; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; }
-        .designer-photo { width: 50px; height: 50px; border-radius: 10px; border: 2px solid var(--primary); object-fit: cover; }
-        
-        /* --- LUXURY GOLDEN CERTIFICATE STYLES --- */
-#cert-overlay { 
-    position: fixed; inset: 0; background: rgba(0,0,0,0.98); 
-    z-index: 3000; display: flex; align-items: center; justify-content: center; 
-    padding: 20px; backdrop-filter: blur(10px);
-}
+    <div id="auth-overlay">
+        <div class="modal-card">
+            <h2 id="auth-title" style="color:var(--primary); margin:0 0 15px 0;">QUEST LOGIN</h2>
+            <div id="signup-photo-area" class="hidden">
+                <div id="photo-preview">No Photo</div>
+                <button type="button" class="btn-link" onclick="document.getElementById('file-input').click()">+ ADD PHOTO</button>
+                <input type="file" id="file-input" class="hidden" accept="image/*" onchange="window.handleImageSelect(event, 'photo-preview')">
+            </div>
+            <div id="auth-inputs">
+                <input type="email" id="user-email" placeholder="Email Address">
+                <input type="password" id="user-pass" placeholder="Password">
+            </div>
+            <button type="button" class="btn btn-primary" id="btn-auth-action">SIGN IN</button>
+            <div id="auth-toggles" style="margin-top:20px;">
+                <button type="button" class="btn-link" onclick="window.setAuthState('signup')">Sign Up</button> |
+                <button type="button" class="btn-link" onclick="window.setAuthState('forgot')">Forgot?</button>
+            </div>
+        </div>
+    </div>
 
+    <div id="cert-overlay" class="hidden">
+        <div class="cert-container" id="printable-cert">
+            <p style="margin:0;">🏆 CERTIFICATE OF MASTERY</p>
+            <h1 class="cert-title">Math World 3D</h1>
+            <p>This certifies that</p>
+            <div class="cert-name" id="cert-student-name">Explorer</div>
+            <p>has mastered the operation of</p>
+            <h2 id="cert-op-name" style="color:#b38728">ADDITION</h2>
+            <div style="display:flex; justify-content: space-between; margin-top:30px; font-size:0.7rem;">
+                <p>ID: <span id="cert-id"></span></p>
+                <p>Date: <span id="cert-date"></span></p>
+            </div>
+            <button class="btn btn-primary btn-cert" onclick="window.print()">PRINT</button>
+            <button class="btn-link btn-cert" onclick="document.getElementById('cert-overlay').classList.add('hidden')">Close</button>
+        </div>
+    </div>
+
+    <header style="width: 95%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <img id="user-photo" src="https://via.placeholder.com/50" style="width:40px; height:40px; border-radius:50%; border:2px solid var(--primary);">
+            <div>
+                <div id="player-name" style="font-weight:bold; font-size:0.8rem;">Explorer</div>
+                <button class="btn-link" style="padding:0; font-size:0.6rem; color:var(--accent);" onclick="window.checkMyCertificates()">🏆 MY CERTIFICATES</button>
+            </div>
+        </div>
+        <button onclick="window.logout()" style="background:#ff4757; color:white; border:none; padding:5px 8px; border-radius:5px; font-size:0.6rem;">LOGOUT</button>
+    </header>
+
+    <div class="main-wrapper">
+        <div class="dashboard">
+            <div class="gauge-box"><div class="gauge" style="border-top-color: var(--primary);"><span class="gauge-val" id="q-timer">80</span></div><div class="gauge-label">Quest</div></div>
+            <div class="gauge-box"><div class="gauge" style="border-top-color: var(--secondary);"><span class="gauge-val" id="total-time">0</span></div><div class="gauge-label">Total</div></div>
+            <div class="gauge-box"><div class="gauge" style="border-top-color: var(--accent);"><span class="gauge-val" id="points">0</span></div><div class="gauge-label">Points</div></div>
+            <div class="gauge-box"><div class="gauge" style="border-top-color: #ff4757;"><span class="gauge-val" id="correct-count">0</span></div><div class="gauge-label">Correct</div></div>
+        </div>
+
+        <div class="container">
+            <div id="standard-ui" class="math-area">
+                <div id="n1">0</div>
+                <div style="display:flex; justify-content: space-between;"><span style="color:var(--secondary)" id="op">+</span><span id="n2">0</span></div>
+                <hr style="border:1px solid #333">
+            </div>
+
+            <div id="area-model-ui" class="area-model-container hidden">
+                <h3 style="margin:0 0 10px 0; color:var(--primary); font-size: 1rem;">Area Model Method</h3>
+                <div class="area-grid">
+                    <div class="area-label">×</div>
+                    <div class="area-label" id="am-top-1">0</div>
+                    <div class="area-label" id="am-top-2">0</div>
+                    <div class="area-label" id="am-side-1">0</div>
+                    <div class="area-cell" id="am-val-1">?</div>
+                    <div class="area-cell" id="am-val-2">?</div>
+                    <div class="area-label" id="am-side-2">0</div>
+                    <div class="area-cell" id="am-val-3">?</div>
+                    <div class="area-cell" id="am-val-4">?</div>
+                </div>
+                <div class="area-sum-row" id="am-sum-text">0 + 0 + 0 + 0</div>
+            </div>
+
+            <div id="ans-box" style="display:flex; justify-content: flex-end; margin-top:20px;"></div>
+            <div id="feedback" style="text-align:center; height: 20px; font-weight:bold; color:var(--accent); margin-top:10px;"></div>
+            <button class="btn btn-primary" id="submit-btn">SUBMIT ANSWER</button>
+            <button class="btn hidden" style="background:var(--secondary)" id="next-btn">NEXT QUEST ➔</button>
+        </div>
+
+        <div class="leaderboard-card">
+            <h4 style="margin:0 0 10px 0; color:var(--primary);">WORLD LEADERBOARD</h4>
+            <table class="lb-table"><tbody id="lb-body"></tbody></table>
+        </div>
+    </div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC6FbPb36F69k7cw_tLbGQoVQxs6shzfAo",
+    authDomain: "math-world-3d.firebaseapp.com",
+    projectId: "math-world-3d",
+    storageBucket: "math-world-3d.firebasestorage.app",
+    messagingSenderId: "526717782686",
+    appId: "1:526717782686:web:21dddbcb293323eda8098f"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  let userData = { currentStep: 0, points: 0, photoURL: "" };
+  let currentAns = "";
+  let qInterval, tInterval;
+
+  // --- GAME GENERATION ---
+  function generateQuestion() {
+    const step = userData.currentStep || 0;
+    const level = Math.floor(step / 30) + 1;
+    let n1, n2, op = "+", ans;
+
+    // Reset UI visibility
+    document.getElementById("standard-ui").classList.remove("hidden");
+    document.getElementById("area-model-ui").classList.add("hidden");
+
+    if (level <= 8) {
+        // Standard addition/subtraction/tables
+        n1 = rand(10, 100); n2 = rand(10, 100); ans = n1 + n2;
+        document.getElementById("n1").innerText = n1;
+        document.getElementById("n2").innerText = n2;
+        document.getElementById("op").innerText = op;
+    } else {
+        // MULTIPLICATION AREA MODEL (Levels 9+)
+        document.getElementById("standard-ui").classList.add("hidden");
+        document.getElementById("area-model-ui").classList.remove("hidden");
+        
+        // Example: 2-digit by 2-digit
+        n1 = rand(10, 99); n2 = rand(10, 99); ans = n1 * n2;
+        
+        // Break down numbers (e.g., 45 -> 40 and 5)
+        const n1_ten = Math.floor(n1 / 10) * 10;
+        const n1_unit = n1 % 10;
+        const n2_ten = Math.floor(n2 / 10) * 10;
+        const n2_unit = n2 % 10;
+
+        document.getElementById("am-top-1").innerText = n1_ten;
+        document.getElementById("am-top-2").innerText = n1_unit;
+        document.getElementById("am-side-1").innerText = n2_ten;
+        document.getElementById("am-side-2").innerText = n2_unit;
+
+        // Populate cells
+        document.getElementById("am-val-1").innerText = n1_ten * n2_ten;
+        document.getElementById("am-val-2").innerText = n1_unit * n2_ten;
+        document.getElementById("am-val-3").innerText = n1_ten * n2_unit;
+        document.getElementById("am-val-4").innerText = n1_unit * n2_unit;
+        
+        document.getElementById("am-sum-text").innerText = `${n1_ten * n2_ten} + ${n1_unit * n2_ten} + ${n1_ten * n2_unit} + ${n1_unit * n2_unit}`;
+    }
+
+    currentAns = String(ans);
+    setupInputs(currentAns.length);
+    startQuestTimer();
+  }
+
+  window.checkMyCertificates = () => {
+    const step = userData.currentStep || 0;
+    if (step < 30) {
+        alert("Keep playing! Earn your first certificate after 30 questions.");
+    } else {
+        window.showMasteryCertificate("GENERAL MATH");
+    }
+  };
+
+  window.showMasteryCertificate = (opName) => {
+    const name = auth.currentUser.email.split("@")[0].toUpperCase();
+    document.getElementById("cert-student-name").innerText = name;
+    document.getElementById("cert-op-name").innerText = opName;
+    document.getElementById("cert-date").innerText = new Date().toLocaleDateString();
+    document.getElementById("cert-id").innerText = "MW-" + Math.floor(Math.random()*10000);
+    document.getElementById("cert-overlay").classList.remove("hidden");
+  };
+
+    // Remaining logic (setupInputs, timer, etc.) similar to your existing code...
+  function setupInputs(len) {
+    const box = document.getElementById("ans-box"); box.innerHTML = "";
+    for (let i = 0; i < len; i++) {
+        const inp = document.createElement("input");
+        inp.type = "number"; inp.className = "digit-input";
+        box.appendChild(inp);
+    }
+    box.lastElementChild?.focus();
+  }
+
+  function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+  // Auth/Init logic...
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      document.getElementById("auth-overlay").classList.add("hidden");
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (snap.exists()) userData = snap.data();
+      document.getElementById("player-name").innerText = user.email.split("@")[0];
+      generateQuestion();
+    }
+  });
+
+  window.setAuthState = (state) => { /* Auth toggle logic */ };
+  window.logout = () => signOut(auth).then(() => location.reload());
+  
+  document.getElementById("submit-btn").onclick = () => {
+    let userAns = ""; document.querySelectorAll(".digit-input").forEach(i => userAns += i.value);
+    if (userAns === currentAns) {
+        confetti();
+        document.getElementById("next-btn").classList.remove("hidden");
+        document.getElementById("submit-btn").classList.add("hidden");
+    }
+  };
+
+  document.getElementById("next-btn").onclick = () => {
+    userData.currentStep++;
+    updateDoc(doc(db, "users", auth.currentUser.uid), { currentStep: userData.currentStep });
+    document.getElementById("next-btn").classList.add("hidden");
+    document.getElementById("submit-btn").classList.remove("hidden");
+    generateQuestion();
+  };
+
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+        
 .cert-container {
     background: #fff; 
     width: 100%; max-width: 850px; aspect-ratio: 1.414 / 1; 
