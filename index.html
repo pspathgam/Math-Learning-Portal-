@@ -48,7 +48,6 @@
         /* Math UI */
         .math-area { font-size: clamp(2rem, 8vw, 3.5rem); font-weight: 900; text-align: right; margin: 15px 0; }
         
-        /* FIXED: Increased Size of Answer Cells */
         .digit-input { 
             width: 45px; height: 60px; font-size: 2.2rem; text-align: center; 
             border-radius: 10px; border: 2px solid var(--primary);
@@ -118,15 +117,13 @@
 
         .cert-container {
             background: #fff; 
-            width: 100%; max-width: 800px; aspect-ratio: 1.414 / 1; 
+            width: 800px; height: 565px; /* Fixed size for high-quality export */
             padding: 40px; 
-            border: 15px solid transparent;
-            border-image: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c) 1;
+            border: 15px solid #b38728;
             position: relative; color: #1a1a2e;
             box-sizing: border-box; 
             box-shadow: 0 0 50px rgba(0,0,0,0.5);
             text-align: center;
-            overflow: hidden;
             display: flex; flex-direction: column; justify-content: center;
         }
 
@@ -143,17 +140,15 @@
         }
 
         .cert-title { 
-            font-family: 'Garamond', 'Georgia', serif; 
-            font-size: clamp(1.8rem, 5vw, 3rem); 
-            background: linear-gradient(to bottom, #8a6e2f 22%, #c6a15a 45%, #8a6e2f 50%, #dfb87c 63%, #8a6e2f 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-family: 'Georgia', serif; 
+            font-size: 3rem; 
+            color: #8a6e2f;
             margin: 5px 0; font-weight: 900; text-transform: uppercase;
         }
 
         .cert-name { 
             font-family: 'Brush Script MT', cursive, serif;
-            font-size: clamp(2rem, 6vw, 3.2rem); 
+            font-size: 3.2rem; 
             border-bottom: 2px solid #b38728; 
             display: inline-block; min-width: 60%; 
             margin: 10px 0; color: #16213e; 
@@ -161,21 +156,20 @@
 
         .cert-op { 
             font-weight: bold; text-transform: uppercase; 
-            color: #b38728; font-size: clamp(1rem, 3vw, 1.5rem); 
+            color: #b38728; font-size: 1.5rem; 
             letter-spacing: 2px; margin: 10px 0;
         }
 
-        /* FIXED: Re-adjusted Trophy Position */
         .cert-trophy {
-            position: absolute; bottom: 20px; right: 20px; 
-            font-size: 60px; filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.2));
-            opacity: 0.8; z-index: 5;
+            position: absolute; bottom: 30px; right: 40px; 
+            font-size: 80px; filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.2));
+            opacity: 0.9; z-index: 5;
         }
 
         .cert-footer { 
             display: flex; justify-content: space-between; 
             align-items: flex-end; margin-top: 30px; 
-            font-size: 0.7rem; text-align: left; 
+            font-size: 0.8rem; text-align: left; 
             color: #444; font-family: sans-serif;
             position: relative; z-index: 10;
         }
@@ -245,7 +239,7 @@
             <div class="cert-name" id="cert-student-name">EXPLORER</div>
             <p style="margin: 10px 0;">has successfully demonstrated outstanding mastery in</p>
             <p class="cert-op"><span id="cert-op-name">MULTIPLICATION</span></p>
-            <p style="font-size: 0.75rem; padding: 0 40px; line-height: 1.4; color: #555;">
+            <p style="font-size: 0.9rem; padding: 0 40px; line-height: 1.4; color: #555;">
                 Through consistent effort and strong numerical understanding, 
                 the learner has shown accuracy and confidence in solving complex mathematical problems.
             </p>
@@ -259,8 +253,8 @@
                     <p><strong>Issue Date:</strong> <span id="cert-date"></span></p>
                 </div>
                 <div style="text-align: right; flex: 1;">
-                    <p style="font-size: 0.55rem; line-height: 1.2; margin-bottom: 5px;">Digitally Signed By:<br><strong>Mohammad Ashraf Rather</strong></p>
-                    <img id="cert-qr" src="" style="width: 55px; height: 55px; border: 1px solid #eee; padding: 2px; background: white;">
+                    <p style="font-size: 0.65rem; line-height: 1.2; margin-bottom: 5px;">Digitally Signed By:<br><strong>Mohammad Ashraf Rather</strong></p>
+                    <img id="cert-qr" src="" style="width: 70px; height: 70px; border: 1px solid #eee; padding: 2px; background: white;">
                 </div>
             </div>
         </div>
@@ -520,22 +514,38 @@
     setupInputs(String(p1 + p2).length);
   }
 
+  // --- UPDATED: CURSOR MOVES RIGHT TO LEFT ---
   function setupInputs(len) {
-    const box = document.getElementById("ans-box"); box.innerHTML = "";
+    const box = document.getElementById("ans-box"); 
+    box.innerHTML = "";
     for (let i = 0; i < len; i++) {
       const inp = document.createElement("input");
       inp.type = "number"; inp.className = "digit-input"; inp.inputMode = "numeric";
+      
       inp.oninput = function() {
         if (this.value.length > 1) this.value = this.value.slice(-1);
-        if (this.value.length === 1 && this.nextElementSibling) this.nextElementSibling.focus();
+        // Move to the LEFT neighbor (tens/hundreds place)
+        if (this.value.length === 1 && this.previousElementSibling) {
+            this.previousElementSibling.focus();
+        }
       };
-      inp.onkeydown = function(ev) { if (ev.key === "Backspace" && this.value === "" && this.previousElementSibling) this.previousElementSibling.focus(); };
+
+      inp.onkeydown = function(ev) { 
+        // Move to the RIGHT neighbor (ones place) on backspace
+        if (ev.key === "Backspace" && this.value === "" && this.nextElementSibling) {
+            this.nextElementSibling.focus();
+        } 
+      };
       box.appendChild(inp);
     }
+    // Automatically focus the ONES place (last child)
+    if(box.lastChild) box.lastChild.focus();
   }
 
   document.getElementById("submit-btn").onclick = () => {
-    let userFinal = ""; document.querySelectorAll(".digit-input").forEach((i) => (userFinal += i.value));
+    let userFinal = ""; 
+    // Inputs are rendered Hundreds -> Tens -> Ones, so we read in that order
+    document.querySelectorAll(".digit-input").forEach((i) => (userFinal += i.value));
     
     if (multiplicationStepData.final) {
         const up1 = parseInt(document.getElementById('area-p1').value);
@@ -572,21 +582,22 @@
     updateLeaderboard(); generateQuestion();
   };
 
-  // FIXED: Reliable Image-based Download
+  // --- UPDATED: HIGH QUALITY DOWNLOAD ---
   window.downloadCertificate = () => {
     const cert = document.getElementById('printable-cert');
     html2canvas(cert, {
-        scale: 2,
+        scale: 3, // Increased scale for ultra-sharp content
         useCORS: true,
-        backgroundColor: "#ffffff"
+        backgroundColor: "#ffffff",
+        logging: false
     }).then(canvas => {
         const image = canvas.toDataURL("image/png");
         const link = document.createElement('a');
-        link.download = `Math-World-Mastery-${Date.now()}.png`;
+        link.download = `Math-World-Mastery-Certificate.png`;
         link.href = image;
         link.click();
     }).catch(err => {
-        alert("Please take a screenshot of your certificate!");
+        alert("Error generating certificate image.");
     });
   };
 
@@ -650,5 +661,4 @@
 </script>        
 </body> 
 </html>
-        
-        
+                                                                                           
