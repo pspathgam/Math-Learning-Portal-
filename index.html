@@ -583,9 +583,16 @@
     let i = 1;
     snap.forEach((d) => {
       const data = d.data();
-      const name = data.displayName || data.email.split("@")[0];
-      body.innerHTML += `<tr><td class="col-rank">${i++}</td><td class="col-name">${escapeHtml(name)}</td><td class="col-pts">${data.points || 0}</td></tr>`;
-    });
+      const rawName = data.displayName || data.email.split("@")[0];
+const name = toTitleCase(rawName);
+
+body.innerHTML += `
+  <tr>
+    <td class="col-rank">${i++}</td>
+    <td class="col-name">${escapeHtml(name)}</td>
+    <td class="col-pts">${data.points || 0}</td>
+  </tr>
+`;
   }
 
   function startQuestTimer() {
