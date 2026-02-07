@@ -47,11 +47,15 @@
 
         /* Math UI */
         .math-area { font-size: clamp(2rem, 8vw, 3.5rem); font-weight: 900; text-align: right; margin: 15px 0; }
+        
+        /* FIXED: Increased Size of Answer Cells */
         .digit-input { 
-            width: 40px; height: 55px; font-size: 1.8rem; text-align: center; 
+            width: 45px; height: 60px; font-size: 2.2rem; text-align: center; 
             border-radius: 10px; border: 2px solid var(--primary);
-            background: rgba(0,0,0,0.5); color: white; margin: 0 2px;
+            background: rgba(0,0,0,0.5); color: white; margin: 0 4px;
             box-shadow: inset 0 0 10px rgba(0,210,255,0.2);
+            display: inline-block; vertical-align: middle;
+            line-height: 60px;
         }
 
         /* AREA MODEL STYLES */
@@ -107,85 +111,84 @@
         
         /* --- LUXURY GOLDEN CERTIFICATE STYLES --- */
         #cert-overlay { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.98); 
-            z-index: 3000; display: flex; align-items: center; justify-content: center; 
-            padding: 20px; backdrop-filter: blur(10px);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
+            z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            padding: 20px; backdrop-filter: blur(10px); overflow-y: auto;
         }
 
         .cert-container {
             background: #fff; 
-            width: 100%; max-width: 850px; aspect-ratio: 1.414 / 1; 
-            padding: 50px; 
-            border: 20px solid transparent;
+            width: 100%; max-width: 800px; aspect-ratio: 1.414 / 1; 
+            padding: 40px; 
+            border: 15px solid transparent;
             border-image: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c) 1;
             position: relative; color: #1a1a2e;
             box-sizing: border-box; 
-            box-shadow: 0 0 50px rgba(0,0,0,0.8), inset 0 0 100px rgba(184, 134, 11, 0.05);
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
             text-align: center;
             overflow: hidden;
+            display: flex; flex-direction: column; justify-content: center;
         }
 
         .cert-container::before {
-            content: ""; position: absolute; inset: 0; opacity: 0.07;
+            content: ""; position: absolute; inset: 0; opacity: 0.05;
             background-image: repeating-linear-gradient(45deg, #b38728 0, #b38728 1px, transparent 0, transparent 50%);
             background-size: 10px 10px; pointer-events: none;
         }
 
         .cert-border-math {
-            position: absolute; inset: 10px; 
+            position: absolute; inset: 8px; 
             border: 2px solid #b38728; 
-            pointer-events: none; opacity: 0.5;
+            pointer-events: none; opacity: 0.4;
         }
 
         .cert-title { 
             font-family: 'Garamond', 'Georgia', serif; 
-            font-size: 3.2rem; 
+            font-size: clamp(1.8rem, 5vw, 3rem); 
             background: linear-gradient(to bottom, #8a6e2f 22%, #c6a15a 45%, #8a6e2f 50%, #dfb87c 63%, #8a6e2f 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin: 0; font-weight: 900; text-transform: uppercase;
-            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+            margin: 5px 0; font-weight: 900; text-transform: uppercase;
         }
 
         .cert-name { 
             font-family: 'Brush Script MT', cursive, serif;
-            font-size: 3rem; font-weight: normal; 
+            font-size: clamp(2rem, 6vw, 3.2rem); 
             border-bottom: 2px solid #b38728; 
-            display: inline-block; min-width: 400px; 
-            margin: 15px 0; color: #16213e; 
+            display: inline-block; min-width: 60%; 
+            margin: 10px 0; color: #16213e; 
         }
 
         .cert-op { 
             font-weight: bold; text-transform: uppercase; 
-            color: #b38728; font-size: 1.6rem; 
-            letter-spacing: 2px;
+            color: #b38728; font-size: clamp(1rem, 3vw, 1.5rem); 
+            letter-spacing: 2px; margin: 10px 0;
         }
 
-        .cert-container::after {
-            content: "🏆"; 
-            position: absolute; bottom: 40px; right: 50px; 
-            font-size: 80px; filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.2));
-            opacity: 0.9;
+        /* FIXED: Re-adjusted Trophy Position */
+        .cert-trophy {
+            position: absolute; bottom: 20px; right: 20px; 
+            font-size: 60px; filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.2));
+            opacity: 0.8; z-index: 5;
         }
 
         .cert-footer { 
             display: flex; justify-content: space-between; 
-            align-items: flex-end; margin-top: 50px; 
-            font-size: 0.75rem; text-align: left; 
+            align-items: flex-end; margin-top: 30px; 
+            font-size: 0.7rem; text-align: left; 
             color: #444; font-family: sans-serif;
+            position: relative; z-index: 10;
         }
 
         .cert-footer strong { color: #b38728; }
 
+        .cert-actions { margin-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; max-width: 300px; }
+
         @media print {
             body * { visibility: hidden; }
             #cert-overlay, #cert-overlay * { visibility: visible; }
-            #cert-overlay { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: white; display: flex !important; }
-            .cert-container { border: 15pt solid #b38728; box-shadow: none; -webkit-print-color-adjust: exact; }
             .cert-actions { display: none !important; }
         }
-
-        .cert-actions { margin-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
     </style>
 </head>
 <body>
@@ -223,6 +226,444 @@
                 <input type="file" id="admin-file-input" class="hidden" accept="image/*" onchange="window.handleImageSelect(event, 'admin-photo-preview')">
                 <input type="email" id="adm-res-email" placeholder="Email">
                 <div style="display:flex; gap:5px;">
+                    <input type="number" id="adm-res-pts" placeholder="Points">
+                    <input type="number" id="adm-res-step" placeholder="Step">
+                </div>
+                <button class="btn btn-primary" onclick="window.adminUpdate()">UPDATE PROFILE</button>
+                <button class="btn" style="background:#ff4757; color:white;" onclick="window.adminDelete()">DELETE USER</button>
+            </div>
+            <button class="btn-link" onclick="document.getElementById('admin-overlay').classList.add('hidden')">Close</button>
+        </div>
+    </div>
+
+    <div id="cert-overlay" class="hidden">
+        <div class="cert-container" id="printable-cert">
+            <div class="cert-border-math"></div>
+            <p style="font-size: 0.9rem; margin: 0; color: #b38728; font-weight: bold; letter-spacing: 1px;">CERTIFICATE OF MASTERY</p>
+            <h1 class="cert-title">Math World 3D</h1>
+            <p style="margin: 10px 0 5px; font-style: italic;">This is to certify that</p>
+            <div class="cert-name" id="cert-student-name">EXPLORER</div>
+            <p style="margin: 10px 0;">has successfully demonstrated outstanding mastery in</p>
+            <p class="cert-op"><span id="cert-op-name">MULTIPLICATION</span></p>
+            <p style="font-size: 0.75rem; padding: 0 40px; line-height: 1.4; color: #555;">
+                Through consistent effort and strong numerical understanding, 
+                the learner has shown accuracy and confidence in solving complex mathematical problems.
+            </p>
+            
+            <div class="cert-trophy">🏆</div>
+
+            <div class="cert-footer">
+                <div style="flex: 1;">
+                    <p><strong>Issuing Authority:</strong> Admin Math Portal</p>
+                    <p><strong>Certificate ID:</strong> <span id="cert-id"></span></p>
+                    <p><strong>Issue Date:</strong> <span id="cert-date"></span></p>
+                </div>
+                <div style="text-align: right; flex: 1;">
+                    <p style="font-size: 0.55rem; line-height: 1.2; margin-bottom: 5px;">Digitally Signed By:<br><strong>Mohammad Ashraf Rather</strong></p>
+                    <img id="cert-qr" src="" style="width: 55px; height: 55px; border: 1px solid #eee; padding: 2px; background: white;">
+                </div>
+            </div>
+        </div>
+        <div class="cert-actions">
+            <button class="btn btn-primary" onclick="window.downloadCertificate()">DOWNLOAD CERTIFICATE</button>
+            <button class="btn-link" onclick="document.getElementById('cert-overlay').classList.add('hidden')" style="color: white;">Return to Quest</button>
+        </div>
+    </div>
+
+    <header style="width: 95%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <img id="user-photo" src="https://via.placeholder.com/50" style="width:40px; height:40px; border-radius:50%; border:2px solid var(--primary); cursor:pointer;" onclick="window.changePhoto()">
+            <div>
+                <div id="player-name" style="font-weight:bold; font-size:0.8rem;">Explorer</div>
+                <div id="level-tag" style="font-size:0.6rem; color:var(--secondary);">LEVEL 1</div>
+                <button class="btn-link" style="padding:0; font-size:10px; color:var(--accent)" onclick="window.downloadMyCertificates()">DOWNLOAD CERTIFICATES</button>
+            </div>
+        </div>
+        <div>
+            <button id="admin-btn" class="hidden" onclick="document.getElementById('admin-overlay').classList.remove('hidden')" style="background:var(--accent); color:black; border:none; padding:5px 8px; border-radius:5px; font-size:0.6rem; font-weight:bold;">ADMIN</button>
+            <button onclick="window.logout()" style="background:#ff4757; color:white; border:none; padding:5px 8px; border-radius:5px; font-size:0.6rem;">LOGOUT</button>
+        </div>
+    </header>
+
+    <div class="main-wrapper">
+        <div class="dashboard">
+            <div class="gauge-box"><div class="gauge" style="border-top-color: var(--primary);"><span class="gauge-val" id="q-timer">80</span></div><div class="gauge-label">Quest</div></div>
+            <div class="gauge-box"><div class="gauge" style="border-top-color: var(--secondary);"><span class="gauge-val" id="total-time">0</span></div><div class="gauge-label">Total</div></div>
+            <div class="gauge-box"><div class="gauge" style="border-top-color: var(--accent);"><span class="gauge-val" id="points">0</span></div><div class="gauge-label">Points</div></div>
+            <div class="gauge-box"><div class="gauge" style="border-top-color: #ff4757;"><span class="gauge-val" id="correct-count">0</span></div><div class="gauge-label">Correct</div></div>
+        </div>
+
+        <div class="container">
+            <div class="math-area" id="math-display">
+                <div id="n1">0</div>
+                <div style="display:flex; justify-content: space-between;"><span style="color:var(--secondary)" id="op">+</span><span id="n2">0</span></div>
+                <hr style="border:1px solid #333">
+                <div id="ans-box" style="display:flex; justify-content: flex-end;"></div>
+            </div>
+            <div id="feedback" style="text-align:center; height: 20px; font-weight:bold; color:var(--accent); font-size: 0.8rem;"></div>
+            <button class="btn btn-primary" id="submit-btn">SUBMIT ANSWER</button>
+            <button class="btn btn-next hidden" id="next-btn">NEXT QUEST ➔</button>
+        </div>
+
+        <div class="leaderboard-card">
+            <h4 style="margin:0 0 10px 0; color:var(--primary); font-size:0.8rem;">WORLD LEADERBOARD</h4>
+            <div class="lb-container">
+                <table class="lb-table">
+                    <thead><tr><th class="col-rank">#</th><th class="col-name">Player</th><th class="col-pts">Points</th></tr></thead>
+                    <tbody id="lb-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="designer-box">
+        <img src="IMG_20221004_191436.jpg" alt="Mohammad Ashraf Rather" class="designer-photo">
+        <div style="text-align: left;">
+            <p style="font-weight: bold; color: var(--primary); margin: 0; font-size: 0.8rem;">Mohammad Ashraf Rather</p>
+            <p style="font-size: 0.6rem; color: #888; margin: 0;">Architect & Designer</p>
+        </div>
+    </div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC6FbPb36F69k7cw_tLbGQoVQxs6shzfAo",
+    authDomain: "math-world-3d.firebaseapp.com",
+    projectId: "math-world-3d",
+    storageBucket: "math-world-3d.firebasestorage.app",
+    messagingSenderId: "526717782686",
+    appId: "1:526717782686:web:21dddbcb293323eda8098f"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const ADMIN_EMAIL = "ratherashraf786@gmail.com";
+
+  let userData = { currentStep: 0, correctTotal: 0, totalSeconds: 0, points: 0, photoURL: "" };
+  let currentAns = "";
+  let multiplicationStepData = {};
+  let authState = "signin";
+  let base64Photo = "";
+  let adminBase64 = "";
+  let qInterval = null;
+  let tInterval = null;
+
+  window.setAuthState = (state) => {
+    authState = state;
+    const titleEl = document.getElementById("auth-title");
+    const photoEl = document.getElementById("signup-photo-area");
+    const passEl = document.getElementById("user-pass");
+    const btnEl = document.getElementById("btn-auth-action");
+    const togglesEl = document.getElementById("auth-toggles");
+    const backEl = document.getElementById("btn-back-to-login");
+    photoEl.classList.add("hidden");
+    passEl.classList.remove("hidden");
+    togglesEl.classList.add("hidden");
+    backEl.classList.add("hidden");
+    if (state === "signin") { titleEl.innerText = "QUEST LOGIN"; btnEl.innerText = "SIGN IN"; togglesEl.classList.remove("hidden"); }
+    else if (state === "signup") { titleEl.innerText = "NEW EXPLORER"; photoEl.classList.remove("hidden"); btnEl.innerText = "CREATE ACCOUNT"; backEl.classList.remove("hidden"); }
+    else if (state === "forgot") { titleEl.innerText = "RECOVER KEY"; passEl.classList.add("hidden"); btnEl.innerText = "SEND RESET LINK"; backEl.classList.remove("hidden"); }
+  };
+
+  window.handleImageSelect = (e, previewId) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const res = ev.target.result;
+      if (previewId === "photo-preview") base64Photo = res; else adminBase64 = res;
+      const prev = document.getElementById(previewId);
+      prev.style.backgroundImage = `url(${res})`;
+      prev.innerText = "";
+    };
+    reader.readAsDataURL(file);
+  };
+
+  document.getElementById("btn-auth-action").onclick = async () => {
+    const email = document.getElementById("user-email").value.trim();
+    const pass = document.getElementById("user-pass").value;
+    if (!email) return alert("Email required");
+    try {
+      if (authState === "signin") await signInWithEmailAndPassword(auth, email, pass);
+      else if (authState === "signup") {
+        const res = await createUserWithEmailAndPassword(auth, email, pass);
+        await setDoc(doc(db, "users", res.user.uid), { ...userData, email, photoURL: base64Photo });
+      } else if (authState === "forgot") {
+        await sendPasswordResetEmail(auth, email); alert("Reset link sent!"); window.setAuthState("signin");
+      }
+    } catch (e) { alert(e.message); }
+  };
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      document.getElementById("auth-overlay").classList.add("hidden");
+      document.getElementById("player-name").innerText = user.email.split("@")[0];
+      if (user.email === ADMIN_EMAIL) document.getElementById("admin-btn").classList.remove("hidden");
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (snap.exists()) userData = snap.data();
+      updateUI(); generateQuestion(); startTotalTimer(); updateLeaderboard();
+    } else { document.getElementById("auth-overlay").classList.remove("hidden"); }
+  });
+
+  window.adminSearch = async () => {
+    const email = document.getElementById("admin-search").value.trim();
+    const q1 = query(collection(db, "users"), where("email", "==", email));
+    const snap = await getDocs(q1);
+    if (snap.empty) return alert("User not found");
+    const d = snap.docs[0];
+    window.targetUid = d.id;
+    const data = d.data();
+    document.getElementById("admin-result").classList.remove("hidden");
+    document.getElementById("adm-res-email").value = data.email || "";
+    document.getElementById("adm-res-pts").value = data.points || 0;
+    document.getElementById("adm-res-step").value = data.currentStep || 0;
+    adminBase64 = data.photoURL || "";
+    const prev = document.getElementById("admin-photo-preview");
+    prev.style.backgroundImage = adminBase64 ? `url(${adminBase64})` : "";
+  };
+
+  window.adminUpdate = async () => {
+    if (!window.targetUid) return;
+    try {
+      await updateDoc(doc(db, "users", window.targetUid), {
+        email: document.getElementById("adm-res-email").value.trim(),
+        points: parseInt(document.getElementById("adm-res-pts").value || "0"),
+        currentStep: parseInt(document.getElementById("adm-res-step").value || "0"),
+        photoURL: adminBase64
+      });
+      alert("Updated!"); updateLeaderboard();
+    } catch (e) { alert(e.message); }
+  };
+
+  window.adminDelete = async () => {
+    if (!window.targetUid || !confirm("Delete user?")) return;
+    try {
+      await deleteDoc(doc(db, "users", window.targetUid));
+      alert("Deleted"); document.getElementById("admin-result").classList.add("hidden"); updateLeaderboard();
+    } catch (e) { alert(e.message); }
+  };
+
+  // --- GAME LOGIC ---
+  function generateQuestion() {
+    document.getElementById("submit-btn").classList.remove("hidden");
+    document.getElementById("next-btn").classList.add("hidden");
+    document.getElementById("feedback").innerText = "";
+    const step = userData.currentStep || 0;
+    const level = Math.floor(step / 30) + 1;
+    let n1, n2, op = "+", ans;
+
+    if (level === 1) { n1 = rand(10, 99); n2 = rand(10, 99); ans = n1 + n2; }
+    else if (level === 2) { n1 = rand(100, 999); n2 = rand(100, 999); ans = n1 + n2; }
+    else if (level === 3) { n1 = rand(100, 999); n2 = rand(10, 99); op = "-"; ans = n1 - n2; }
+    else if (level === 4) { n1 = rand(1000, 9999); n2 = rand(100, 999); op = "-"; ans = n1 - n2; }
+    else if (level >= 5 && level <= 10) { 
+        if (level === 5) { n1 = rand(10, 20); n2 = rand(2, 5); }
+        else if (level === 6) { n1 = rand(20, 50); n2 = rand(2, 9); }
+        else if (level === 7) { n1 = rand(50, 99); n2 = rand(2, 9); }
+        else { n1 = rand(100, 200); n2 = rand(2, 5); }
+        op = "×"; ans = n1 * n2;
+        renderAreaModel(n1, n2);
+    }
+    else if (level === 11) { n2 = rand(2, 9); ans = rand(10, 50); n1 = ans * n2; op = "÷"; }
+    else { n1 = rand(10, 20); n2 = rand(5, 10); op = "×"; ans = n1 * n2; renderAreaModel(n1, n2); }
+
+    currentAns = String(ans);
+    if (op !== "×") {
+        document.getElementById("math-display").innerHTML = `
+            <div id="n1">${n1}</div>
+            <div style="display:flex; justify-content: space-between;"><span style="color:var(--secondary)" id="op">${op}</span><span id="n2">${n2}</span></div>
+            <hr style="border:1px solid #333">
+            <div id="ans-box" style="display:flex; justify-content: flex-end;"></div>
+        `;
+        setupInputs(currentAns.length);
+    }
+    document.getElementById("level-tag").innerText = `LEVEL ${level} (${step % 30}/30)`;
+    startQuestTimer();
+  }
+
+  function renderAreaModel(n1, n2) {
+    const n1_base = Math.floor(n1 / 10) * 10;
+    const n1_rem = n1 % 10;
+    const p1 = n1_base * n2;
+    const p2 = n1_rem * n2;
+    
+    multiplicationStepData = { p1, p2, final: p1 + p2 };
+
+    document.getElementById("math-display").innerHTML = `
+        <div style="text-align:center; font-size:1rem; color:var(--primary); margin-bottom:10px;">AREA MODEL METHOD</div>
+        <div style="font-size:1.5rem; text-align:center; margin-bottom:10px;">${n1} × ${n2}</div>
+        <table class="area-table">
+            <tr>
+                <td class="area-label"></td>
+                <td class="area-label">${n1_base}</td>
+                <td class="area-label">${n1_rem}</td>
+            </tr>
+            <tr>
+                <td class="area-label">${n2}</td>
+                <td><input type="number" id="area-p1" class="area-input" placeholder="?"></td>
+                <td><input type="number" id="area-p2" class="area-input" placeholder="?"></td>
+            </tr>
+        </table>
+        <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-top:15px; font-size:1.2rem;">
+            <span id="show-p1">?</span> + <span id="show-p2">?</span> = 
+            <div id="ans-box" style="display:inline-flex;"></div>
+        </div>
+    `;
+
+    document.getElementById('area-p1').addEventListener('input', (e) => { document.getElementById('show-p1').innerText = e.target.value || '?'; });
+    document.getElementById('area-p2').addEventListener('input', (e) => { document.getElementById('show-p2').innerText = e.target.value || '?'; });
+    
+    setupInputs(String(p1 + p2).length);
+  }
+
+  function setupInputs(len) {
+    const box = document.getElementById("ans-box"); box.innerHTML = "";
+    for (let i = 0; i < len; i++) {
+      const inp = document.createElement("input");
+      inp.type = "number"; inp.className = "digit-input"; inp.inputMode = "numeric";
+      inp.oninput = function() {
+        if (this.value.length > 1) this.value = this.value.slice(-1);
+        if (this.value.length === 1 && this.nextElementSibling) this.nextElementSibling.focus();
+      };
+      inp.onkeydown = function(ev) { if (ev.key === "Backspace" && this.value === "" && this.previousElementSibling) this.previousElementSibling.focus(); };
+      box.appendChild(inp);
+    }
+  }
+
+  document.getElementById("submit-btn").onclick = () => {
+    let userFinal = ""; document.querySelectorAll(".digit-input").forEach((i) => (userFinal += i.value));
+    
+    if (multiplicationStepData.final) {
+        const up1 = parseInt(document.getElementById('area-p1').value);
+        const up2 = parseInt(document.getElementById('area-p2').value);
+        if (up1 !== multiplicationStepData.p1 || up2 !== multiplicationStepData.p2) {
+            document.getElementById("feedback").innerText = "CHECK YOUR BOXES";
+            return;
+        }
+    }
+
+    if (userFinal === currentAns) {
+      clearInterval(qInterval);
+      userData.points = (userData.points || 0) + 10;
+      userData.correctTotal = (userData.correctTotal || 0) + 1;
+      document.getElementById("feedback").innerText = "COINS +10!";
+      try { confetti(); } catch {}
+      document.getElementById("submit-btn").classList.add("hidden");
+      document.getElementById("next-btn").classList.remove("hidden");
+      updateUI();
+    } else { document.getElementById("feedback").innerText = "WRONG TOTAL"; }
+  };
+
+  document.getElementById("next-btn").onclick = async () => {
+    const oldStep = userData.currentStep || 0;
+    const newStep = oldStep + 1;
+    if (newStep % 30 === 0) {
+        const lvF = Math.floor(oldStep / 30) + 1;
+        let opN = (lvF <= 2) ? "ADDITION" : (lvF <= 4) ? "SUBTRACTION" : (lvF <= 10) ? "MULTIPLICATION" : "DIVISION";
+        window.showMasteryCertificate(opN);
+    }
+    userData.currentStep = newStep;
+    multiplicationStepData = {};
+    await updateDoc(doc(db, "users", auth.currentUser.uid), userData);
+    updateLeaderboard(); generateQuestion();
+  };
+
+  // FIXED: Reliable Image-based Download
+  window.downloadCertificate = () => {
+    const cert = document.getElementById('printable-cert');
+    html2canvas(cert, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff"
+    }).then(canvas => {
+        const image = canvas.toDataURL("image/png");
+        const link = document.createElement('a');
+        link.download = `Math-World-Mastery-${Date.now()}.png`;
+        link.href = image;
+        link.click();
+    }).catch(err => {
+        alert("Please take a screenshot of your certificate!");
+    });
+  };
+
+  window.showMasteryCertificate = (opName) => {
+    const name = auth.currentUser.email.split("@")[0].toUpperCase();
+    document.getElementById("cert-student-name").innerText = name;
+    document.getElementById("cert-op-name").innerText = opName;
+    document.getElementById("cert-date").innerText = new Date().toLocaleDateString();
+    document.getElementById("cert-id").innerText = "MW3D-" + Math.random().toString(36).substr(2, 9).toUpperCase();
+    const qrData = encodeURIComponent(`Student: ${name} | Mastery: ${opName}`);
+    document.getElementById("cert-qr").src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${qrData}`;
+    document.getElementById("cert-overlay").classList.remove("hidden");
+  };
+
+  window.downloadMyCertificates = () => {
+    const step = userData.currentStep || 0;
+    const level = Math.floor(step / 30);
+    if (level < 1) return alert("Complete 30 questions first!");
+    window.showMasteryCertificate("COMPLETION");
+  };
+
+  async function updateLeaderboard() {
+    const q1 = query(collection(db, "users"), orderBy("points", "desc"), limit(5));
+    const snap = await getDocs(q1);
+    const body = document.getElementById("lb-body"); body.innerHTML = "";
+    let i = 1;
+    snap.forEach((d) => {
+      const data = d.data();
+      body.innerHTML += `<tr><td class="col-rank">${i++}</td><td class="col-name">${escapeHtml(data.email.split("@")[0])}</td><td class="col-pts">${data.points || 0}</td></tr>`;
+    });
+  }
+
+  function startQuestTimer() {
+    let qv = 80; clearInterval(qInterval);
+    document.getElementById("q-timer").innerText = qv;
+    qInterval = setInterval(() => {
+      qv--; document.getElementById("q-timer").innerText = qv;
+      if (qv <= 0) { clearInterval(qInterval); document.getElementById("submit-btn").click(); }
+    }, 1000);
+  }
+
+  function startTotalTimer() {
+    clearInterval(tInterval);
+    tInterval = setInterval(() => {
+      userData.totalSeconds = (userData.totalSeconds || 0) + 1;
+      document.getElementById("total-time").innerText = userData.totalSeconds;
+    }, 1000);
+  }
+
+  function updateUI() {
+    document.getElementById("points").innerText = userData.points || 0;
+    document.getElementById("correct-count").innerText = userData.correctTotal || 0;
+    document.getElementById("user-photo").src = userData.photoURL || "https://via.placeholder.com/50";
+  }
+
+  function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+  function escapeHtml(str) { return String(str).replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[m])); }
+  window.logout = () => signOut(auth).then(() => location.reload());
+  window.changePhoto = () => document.getElementById("file-input").click();
+  window.setAuthState("signin");
+</script>        
+</body> 
+</html>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+                        <div style="display:flex; gap:5px;">
                     <input type="number" id="adm-res-pts" placeholder="Points">
                     <input type="number" id="adm-res-step" placeholder="Step">
                 </div>
