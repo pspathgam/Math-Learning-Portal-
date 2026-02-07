@@ -287,7 +287,6 @@
             <p style="font-size: 0.6rem; color: #888; margin: 0;">Architect & Designer</p>
         </div>
     </div>
-
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -315,6 +314,14 @@
   let adminBase64 = "";
   let qInterval = null;
   let tInterval = null;
+
+  // Helper function for Request: Title Case Names
+  function toTitleCase(str) {
+    if (!str) return "";
+    return str.toLowerCase().split(' ').map(word => {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
+  }
 
   window.setAuthState = (state) => {
     authState = state;
@@ -369,7 +376,8 @@
       document.getElementById("auth-overlay").classList.add("hidden");
       const snap = await getDoc(doc(db, "users", user.uid));
       if (snap.exists()) userData = snap.data();
-      document.getElementById("player-name").innerText = userData.displayName || user.email.split("@")[0];
+      // Apply Title Case to the UI name
+      document.getElementById("player-name").innerText = toTitleCase(userData.displayName || user.email.split("@")[0]);
       if (user.email === ADMIN_EMAIL) document.getElementById("admin-btn").classList.remove("hidden");
       updateUI(); generateQuestion(); startTotalTimer(); updateLeaderboard();
     } else { document.getElementById("auth-overlay").classList.remove("hidden"); }
@@ -443,7 +451,6 @@
     startQuestTimer();
   }
 
-  // Request 3: multiplication steps blank
   function renderColumnMultiplication(n1, n2) {
     const unitDigit = n2 % 10;
     const tensValue = Math.floor(n2 / 10) * 10;
@@ -472,14 +479,13 @@
     setupInputs("ans-box", String(multiplicationStepData.final).length, "digit-input");
   }
 
-  // Request 2: Cursor moves from ones place to tens place
   function setupInputs(containerId, len, className = "digit-input") {
     const box = document.getElementById(containerId); 
     box.innerHTML = "";
     for (let i = 0; i < len; i++) {
       const inp = document.createElement("input");
       inp.type = "number"; inp.className = className; inp.inputMode = "numeric";
-      inp.dataset.pos = i; // 0 is ones, 1 is tens...
+      inp.dataset.pos = i;
       inp.oninput = function() {
         if (this.value.length > 1) this.value = this.value.slice(-1);
         if (this.value.length === 1 && this.nextElementSibling) this.nextElementSibling.focus();
@@ -496,7 +502,6 @@
     const getVal = (id) => {
         let val = "";
         const inputs = Array.from(document.getElementById(id).querySelectorAll('input'));
-        // Inputs are appended in order ones, tens, hundreds... but displayed via flex-reverse
         inputs.forEach(i => val = i.value + val);
         return val;
     };
@@ -533,7 +538,6 @@
     updateLeaderboard(); generateQuestion();
   };
 
-  // Request 4: Link achieved certificates
   window.showCertificateHistory = () => {
     const list = document.getElementById("history-list");
     list.innerHTML = "";
@@ -557,12 +561,15 @@
   };
 
   window.showMasteryCertificate = (opName) => {
-    const name = (userData.displayName || auth.currentUser.email.split("@")[0]).toUpperCase();
-    document.getElementById("cert-student-name").innerText = name;
+    // Request: Name on Certificate formatted to Title Case
+    const rawName = (userData.displayName || auth.currentUser.email.split("@")[0]);
+    const formattedName = toTitleCase(rawName);
+    
+    document.getElementById("cert-student-name").innerText = formattedName;
     document.getElementById("cert-op-name").innerText = opName;
     document.getElementById("cert-date").innerText = new Date().toLocaleDateString();
     document.getElementById("cert-id").innerText = "MW3D-" + Math.random().toString(36).substr(2, 9).toUpperCase();
-    document.getElementById("cert-qr").src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(name + opName)}`;
+    document.getElementById("cert-qr").src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(formattedName + opName)}`;
     document.getElementById("cert-overlay").classList.remove("hidden");
   };
 
@@ -584,15 +591,16 @@
     snap.forEach((d) => {
       const data = d.data();
       const rawName = data.displayName || data.email.split("@")[0];
-const name = toTitleCase(rawName);
+      const name = toTitleCase(rawName); // Applying formatting to leaderboard too
 
-body.innerHTML += `
-  <tr>
-    <td class="col-rank">${i++}</td>
-    <td class="col-name">${escapeHtml(name)}</td>
-    <td class="col-pts">${data.points || 0}</td>
-  </tr>
-`;
+      body.innerHTML += `
+        <tr>
+          <td class="col-rank">${i++}</td>
+          <td class="col-name">${escapeHtml(name)}</td>
+          <td class="col-pts">${data.points || 0}</td>
+        </tr>
+      `;
+    });
   }
 
   function startQuestTimer() {
@@ -623,7 +631,7 @@ body.innerHTML += `
   window.logout = () => signOut(auth).then(() => location.reload());
   window.changePhoto = () => document.getElementById("file-input").click();
   window.setAuthState("signin");
-</script>        
+</script>
 </body> 
 </html>
 
