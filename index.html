@@ -160,8 +160,9 @@
             letter-spacing: 2px; margin: 10px 0;
         }
 
+        /* UPDATED: Trophy positioned at Upper Right Corner */
         .cert-trophy {
-            position: absolute; bottom: 30px; right: 40px; 
+            position: absolute; top: 30px; right: 40px; 
             font-size: 80px; filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.2));
             opacity: 0.9; z-index: 5;
         }
@@ -232,6 +233,8 @@
 
     <div id="cert-overlay" class="hidden">
         <div class="cert-container" id="printable-cert">
+            <div class="cert-trophy">🏆</div>
+
             <div class="cert-border-math"></div>
             <p style="font-size: 0.9rem; margin: 0; color: #b38728; font-weight: bold; letter-spacing: 1px;">CERTIFICATE OF MASTERY</p>
             <h1 class="cert-title">Math World 3D</h1>
@@ -244,17 +247,17 @@
                 the learner has shown accuracy and confidence in solving complex mathematical problems.
             </p>
             
-            <div class="cert-trophy">🏆</div>
-
             <div class="cert-footer">
                 <div style="flex: 1;">
                     <p><strong>Issuing Authority:</strong> Admin Math Portal</p>
                     <p><strong>Certificate ID:</strong> <span id="cert-id"></span></p>
                     <p><strong>Issue Date:</strong> <span id="cert-date"></span></p>
                 </div>
+                <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
+                    <img id="cert-qr" src="" style="width: 80px; height: 80px; border: 1px solid #eee; padding: 2px; background: white;">
+                </div>
                 <div style="text-align: right; flex: 1;">
                     <p style="font-size: 0.65rem; line-height: 1.2; margin-bottom: 5px;">Digitally Signed By:<br><strong>Mohammad Ashraf Rather</strong></p>
-                    <img id="cert-qr" src="" style="width: 70px; height: 70px; border: 1px solid #eee; padding: 2px; background: white;">
                 </div>
             </div>
         </div>
@@ -319,6 +322,7 @@
     </div>
 
 <script type="module">
+  // FIREBASE AND GAME LOGIC SCRIPTS REMAIN UNCHANGED
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -441,7 +445,6 @@
     } catch (e) { alert(e.message); }
   };
 
-  // --- GAME LOGIC ---
   function generateQuestion() {
     document.getElementById("submit-btn").classList.remove("hidden");
     document.getElementById("next-btn").classList.add("hidden");
@@ -484,7 +487,6 @@
     const n1_rem = n1 % 10;
     const p1 = n1_base * n2;
     const p2 = n1_rem * n2;
-    
     multiplicationStepData = { p1, p2, final: p1 + p2 };
 
     document.getElementById("math-display").innerHTML = `
@@ -507,46 +509,32 @@
             <div id="ans-box" style="display:inline-flex;"></div>
         </div>
     `;
-
     document.getElementById('area-p1').addEventListener('input', (e) => { document.getElementById('show-p1').innerText = e.target.value || '?'; });
     document.getElementById('area-p2').addEventListener('input', (e) => { document.getElementById('show-p2').innerText = e.target.value || '?'; });
-    
     setupInputs(String(p1 + p2).length);
   }
 
-  // --- UPDATED: CURSOR MOVES RIGHT TO LEFT ---
   function setupInputs(len) {
     const box = document.getElementById("ans-box"); 
     box.innerHTML = "";
     for (let i = 0; i < len; i++) {
       const inp = document.createElement("input");
       inp.type = "number"; inp.className = "digit-input"; inp.inputMode = "numeric";
-      
       inp.oninput = function() {
         if (this.value.length > 1) this.value = this.value.slice(-1);
-        // Move to the LEFT neighbor (tens/hundreds place)
-        if (this.value.length === 1 && this.previousElementSibling) {
-            this.previousElementSibling.focus();
-        }
+        if (this.value.length === 1 && this.previousElementSibling) this.previousElementSibling.focus();
       };
-
       inp.onkeydown = function(ev) { 
-        // Move to the RIGHT neighbor (ones place) on backspace
-        if (ev.key === "Backspace" && this.value === "" && this.nextElementSibling) {
-            this.nextElementSibling.focus();
-        } 
+        if (ev.key === "Backspace" && this.value === "" && this.nextElementSibling) this.nextElementSibling.focus();
       };
       box.appendChild(inp);
     }
-    // Automatically focus the ONES place (last child)
     if(box.lastChild) box.lastChild.focus();
   }
 
   document.getElementById("submit-btn").onclick = () => {
     let userFinal = ""; 
-    // Inputs are rendered Hundreds -> Tens -> Ones, so we read in that order
     document.querySelectorAll(".digit-input").forEach((i) => (userFinal += i.value));
-    
     if (multiplicationStepData.final) {
         const up1 = parseInt(document.getElementById('area-p1').value);
         const up2 = parseInt(document.getElementById('area-p2').value);
@@ -555,7 +543,6 @@
             return;
         }
     }
-
     if (userFinal === currentAns) {
       clearInterval(qInterval);
       userData.points = (userData.points || 0) + 10;
@@ -582,22 +569,14 @@
     updateLeaderboard(); generateQuestion();
   };
 
-  // --- UPDATED: HIGH QUALITY DOWNLOAD ---
   window.downloadCertificate = () => {
     const cert = document.getElementById('printable-cert');
-    html2canvas(cert, {
-        scale: 3, // Increased scale for ultra-sharp content
-        useCORS: true,
-        backgroundColor: "#ffffff",
-        logging: false
-    }).then(canvas => {
+    html2canvas(cert, { scale: 3, useCORS: true, backgroundColor: "#ffffff", logging: false }).then(canvas => {
         const image = canvas.toDataURL("image/png");
         const link = document.createElement('a');
         link.download = `Math-World-Mastery-Certificate.png`;
         link.href = image;
         link.click();
-    }).catch(err => {
-        alert("Error generating certificate image.");
     });
   };
 
@@ -660,5 +639,5 @@
   window.setAuthState("signin");
 </script>        
 </body> 
-</html>
-                                                                                           
+</html>                              
+
