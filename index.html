@@ -288,6 +288,7 @@
         </div>
     </div>
 <script type="module">
+<script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -315,12 +316,10 @@
   let qInterval = null;
   let tInterval = null;
 
-  // Helper function for Request: Title Case Names
+  // Helper: Convert "JOHN DOE" or "john doe" to "John Doe"
   function toTitleCase(str) {
     if (!str) return "";
-    return str.toLowerCase().split(' ').map(word => {
-      return word.charAt(0).toUpperCase() + word.slice(1);
-    }).join(' ');
+    return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   }
 
   window.setAuthState = (state) => {
@@ -376,7 +375,6 @@
       document.getElementById("auth-overlay").classList.add("hidden");
       const snap = await getDoc(doc(db, "users", user.uid));
       if (snap.exists()) userData = snap.data();
-      // Apply Title Case to the UI name
       document.getElementById("player-name").innerText = toTitleCase(userData.displayName || user.email.split("@")[0]);
       if (user.email === ADMIN_EMAIL) document.getElementById("admin-btn").classList.remove("hidden");
       updateUI(); generateQuestion(); startTotalTimer(); updateLeaderboard();
@@ -507,7 +505,6 @@
     };
 
     let userFinal = getVal("ans-box");
-    
     if (multiplicationStepData.final) {
         if (getVal("p1-box") != multiplicationStepData.p1 || getVal("p2-box") != multiplicationStepData.p2) {
             document.getElementById("feedback").innerText = "CHECK STEPS"; return;
@@ -561,15 +558,19 @@
   };
 
   window.showMasteryCertificate = (opName) => {
-    // Request: Name on Certificate formatted to Title Case
-    const rawName = (userData.displayName || auth.currentUser.email.split("@")[0]);
-    const formattedName = toTitleCase(rawName);
+    // UPDATED: Convert to Title Case and increase Font Size
+    const rawName = userData.displayName || auth.currentUser.email.split("@")[0];
+    const name = toTitleCase(rawName);
     
-    document.getElementById("cert-student-name").innerText = formattedName;
+    const nameEl = document.getElementById("cert-student-name");
+    nameEl.innerText = name;
+    // Visually increase font size by 10% relative to current style
+    nameEl.style.fontSize = "3.85rem"; 
+
     document.getElementById("cert-op-name").innerText = opName;
     document.getElementById("cert-date").innerText = new Date().toLocaleDateString();
     document.getElementById("cert-id").innerText = "MW3D-" + Math.random().toString(36).substr(2, 9).toUpperCase();
-    document.getElementById("cert-qr").src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(formattedName + opName)}`;
+    document.getElementById("cert-qr").src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(name + " " + opName)}`;
     document.getElementById("cert-overlay").classList.remove("hidden");
   };
 
@@ -586,13 +587,13 @@
   async function updateLeaderboard() {
     const q1 = query(collection(db, "users"), orderBy("points", "desc"), limit(5));
     const snap = await getDocs(q1);
-    const body = document.getElementById("lb-body"); body.innerHTML = "";
+    const body = document.getElementById("lb-body"); 
+    body.innerHTML = "";
     let i = 1;
     snap.forEach((d) => {
       const data = d.data();
       const rawName = data.displayName || data.email.split("@")[0];
-      const name = toTitleCase(rawName); // Applying formatting to leaderboard too
-
+      const name = toTitleCase(rawName);
       body.innerHTML += `
         <tr>
           <td class="col-rank">${i++}</td>
@@ -616,7 +617,8 @@
     clearInterval(tInterval);
     tInterval = setInterval(() => {
       userData.totalSeconds = (userData.totalSeconds || 0) + 1;
-      document.getElementById("total-time").innerText = userData.totalSeconds;
+      const totalTimeEl = document.getElementById("total-time");
+      if(totalTimeEl) totalTimeEl.innerText = userData.totalSeconds;
     }, 1000);
   }
 
@@ -632,6 +634,5 @@
   window.changePhoto = () => document.getElementById("file-input").click();
   window.setAuthState("signin");
 </script>
-</body> 
+ </body>
 </html>
-
