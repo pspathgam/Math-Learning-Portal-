@@ -43,23 +43,29 @@
         .gauge-val { font-size: 0.9rem; font-weight: bold; margin-bottom: 2px; }
         .gauge-label { font-size: 0.55rem; text-transform: uppercase; margin-top: 5px; color: var(--primary); }
 
-        .math-area { font-size: clamp(2rem, 8vw, 3.5rem); font-weight: 900; text-align: right; margin: 15px 0; }
+        /* Math UI */
+        .math-area { font-size: 1.5rem; font-weight: 700; text-align: center; margin: 15px 0; }
         
         .digit-input { 
-            width: 40px; height: 50px; font-size: 1.8rem; text-align: center; 
-            border-radius: 8px; border: 2px solid var(--primary);
-            background: rgba(0,0,0,0.5); color: white; margin: 0 2px;
-            display: inline-block; vertical-align: middle; line-height: 50px;
+            width: 35px; height: 45px; font-size: 1.5rem; text-align: center; 
+            border-radius: 8px; border: 1px solid var(--primary);
+            background: rgba(0,0,0,0.5); color: white; margin: 2px;
+            display: inline-block;
         }
 
+        /* AREA MODEL STYLES */
         .area-table { width: 100%; border-collapse: separate; border-spacing: 5px; margin-top: 10px; }
-        .area-table td { border: 2px solid var(--primary); padding: 8px; border-radius: 8px; background: rgba(0,0,0,0.3); min-width: 40px; }
-        .area-label { border: none !important; background: none !important; color: var(--accent); font-size: 1rem; text-align: center; }
-        .area-input { width: 100%; background: transparent; border: none; color: white; text-align: center; font-size: 1rem; font-family: inherit; }
+        .area-table td { border: 2px solid var(--primary); padding: 10px; border-radius: 8px; background: rgba(0,0,0,0.3); min-height: 40px; }
+        .area-label { border: none !important; background: none !important; color: var(--accent); font-size: 1.1rem; text-align: center; }
+        .area-input { width: 100%; background: transparent; border: none; color: white; text-align: center; font-size: 1.1rem; }
+
+        /* COLUMN METHOD STYLES */
+        .column-method { display: inline-block; text-align: right; font-family: 'Courier New', monospace; font-size: 2rem; line-height: 1.2; }
+        .column-line { border-top: 3px solid white; margin-top: 5px; margin-bottom: 5px; }
 
         .leaderboard-card { 
             background: rgba(0,0,0,0.3); border-radius: 20px; padding: 15px; 
-            margin-top: 20px; border: 1px solid var(--primary); width: 100%; box-sizing: border-box;
+            margin-top: 20px; border: 1px solid var(--primary); width: 100%; 
         }
         .lb-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
         .lb-table th { color: var(--primary); border-bottom: 1px solid #444; padding: 5px; text-align: left; }
@@ -71,201 +77,182 @@
         input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid var(--primary); background: #0f3460; color: white; box-sizing: border-box; text-align: center; }
         .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-link { background: none; color: var(--primary); border: none; text-decoration: underline; cursor: pointer; font-size: 0.85rem; padding: 12px; }
+        .btn-link { background: none; color: var(--primary); border: none; text-decoration: underline; cursor: pointer; font-size: 0.85rem; }
 
         .hidden { display: none !important; }
-
-        /* --- UPDATED CERTIFICATE STYLES --- */
-        #cert-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); overflow-y: auto; }
-        .cert-container {
-            background: #fff; width: 800px; height: 565px; padding: 40px; border: 15px solid #b38728;
-            position: relative; color: #1a1a2e; box-sizing: border-box; text-align: center;
-            display: flex; flex-direction: column; justify-content: center;
-        }
-        .cert-title { font-family: 'Georgia', serif; font-size: 2.5rem; color: #8a6e2f; margin: 5px 0; font-weight: 900; }
-        .cert-name { font-family: 'Brush Script MT', cursive; font-size: 3rem; border-bottom: 2px solid #b38728; display: inline-block; min-width: 60%; margin: 10px 0; }
         
-        /* Trophy Positions: Upper Right and Left Corners */
-        .cert-trophy-ur { position: absolute; top: 20px; right: 20px; font-size: 60px; }
-        .cert-trophy-ul { position: absolute; top: 20px; left: 20px; font-size: 60px; }
-
-        .cert-footer { 
-            display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: flex-end; 
-            margin-top: 30px; font-size: 0.7rem; color: #444; width: 100%;
+        .designer-box { margin-top: 20px; padding: 15px; display: flex; align-items: center; justify-content: center; gap: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .designer-photo { width: 50px; height: 50px; border-radius: 10px; border: 2px solid var(--primary); object-fit: cover; }
+        
+        /* CERTIFICATE STYLES */
+        #cert-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); }
+        .cert-container {
+            background: #fff; width: 800px; height: 565px; padding: 40px; border: 15px solid #b38728; position: relative; color: #1a1a2e; box-sizing: border-box; text-align: center; display: flex; flex-direction: column; justify-content: center;
         }
-        /* QR in Middle of Footer */
-        .qr-center { display: flex; justify-content: center; align-items: center; }
-        .cert-qr-img { width: 70px; height: 70px; border: 1px solid #eee; background: white; }
+        .cert-container::before { content: ""; position: absolute; inset: 0; opacity: 0.05; background-image: repeating-linear-gradient(45deg, #b38728 0, #b38728 1px, transparent 0, transparent 50%); background-size: 10px 10px; }
+        
+        /* Mirror Trophies */
+        .cert-trophy-left { position: absolute; top: 30px; left: 40px; font-size: 70px; opacity: 0.9; }
+        .cert-trophy-right { position: absolute; top: 30px; right: 40px; font-size: 70px; opacity: 0.9; }
+
+        .cert-title { font-family: 'Georgia', serif; font-size: 3rem; color: #8a6e2f; margin: 5px 0; font-weight: 900; text-transform: uppercase; }
+        .cert-name { font-family: 'Brush Script MT', cursive, serif; font-size: 3.2rem; border-bottom: 2px solid #b38728; display: inline-block; min-width: 60%; margin: 10px 0; color: #16213e; }
+        .cert-op { font-weight: bold; text-transform: uppercase; color: #b38728; font-size: 1.5rem; letter-spacing: 2px; margin: 10px 0; }
+
+        .cert-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; font-size: 0.75rem; position: relative; }
+        .qr-middle { position: absolute; left: 50%; transform: translateX(-50%); }
     </style>
 </head>
 <body>
 
     <div id="auth-overlay">
         <div class="modal-card">
-            <h2 id="auth-title" style="color:var(--primary);">QUEST LOGIN</h2>
+            <h2 id="auth-title" style="color:var(--primary); margin:0 0 15px 0;">QUEST LOGIN</h2>
             <div id="auth-inputs">
                 <input type="email" id="user-email" placeholder="Email Address">
                 <input type="password" id="user-pass" placeholder="Password">
             </div>
-            <button class="btn btn-primary" id="btn-auth-action">SIGN IN</button>
-            <div id="auth-toggles"><button class="btn-link" onclick="window.setAuthState('signup')">Sign Up</button></div>
+            <button type="button" class="btn btn-primary" id="btn-auth-action">SIGN IN</button>
+            <div id="auth-toggles" style="margin-top:20px;">
+                <button type="button" class="btn-link" onclick="window.setAuthState('signup')">Sign Up</button>
+            </div>
         </div>
     </div>
 
     <div id="cert-overlay" class="hidden">
         <div class="cert-container" id="printable-cert">
-            <div class="cert-trophy-ul">🏆</div>
-            <div class="cert-trophy-ur">🏆</div>
-            <p style="color: #b38728; font-weight: bold;">CERTIFICATE OF MASTERY</p>
+            <div class="cert-trophy-left">🏆</div>
+            <div class="cert-trophy-right">🏆</div>
+
+            <p style="font-size: 0.9rem; margin: 0; color: #b38728; font-weight: bold; letter-spacing: 1px;">CERTIFICATE OF MASTERY</p>
             <h1 class="cert-title">Math World 3D</h1>
+            <p style="margin: 10px 0 5px; font-style: italic;">This is to certify that</p>
             <div class="cert-name" id="cert-student-name">EXPLORER</div>
-            <p id="cert-op-name" style="font-weight:bold; color:#b38728;">MULTIPLICATION MASTERY</p>
+            <p style="margin: 10px 0;">has successfully demonstrated outstanding mastery in</p>
+            <p class="cert-op"><span id="cert-op-name">MULTIPLICATION</span></p>
             
             <div class="cert-footer">
                 <div style="text-align: left;">
-                    <p><strong>ID:</strong> <span id="cert-id"></span></p>
-                    <p><strong>Date:</strong> <span id="cert-date"></span></p>
+                    <p><strong>Certificate ID:</strong> <span id="cert-id"></span></p>
+                    <p><strong>Issue Date:</strong> <span id="cert-date"></span></p>
                 </div>
-                <div class="qr-center">
-                    <img id="cert-qr" class="cert-qr-img" src="">
+                <div class="qr-middle">
+                    <img id="cert-qr" src="" style="width: 70px; height: 70px; background: white; border: 1px solid #ccc;">
                 </div>
                 <div style="text-align: right;">
                     <p>Digitally Signed By:<br><strong>Mohammad Ashraf Rather</strong></p>
                 </div>
             </div>
         </div>
-        <button class="btn btn-primary" style="width:200px;" onclick="window.downloadCertificate()">DOWNLOAD</button>
-        <button class="btn-link" onclick="document.getElementById('cert-overlay').classList.add('hidden')" style="color:white;">Close</button>
+        <div style="margin-top: 20px;">
+            <button class="btn btn-primary" onclick="window.downloadCertificate()">DOWNLOAD</button>
+            <button class="btn-link" onclick="document.getElementById('cert-overlay').classList.add('hidden')" style="color:white">Back</button>
+        </div>
     </div>
 
-    <header style="width: 95%; max-width: 500px; display: flex; justify-content: space-between; padding: 10px 0;">
-        <div id="player-name">Explorer</div>
-        <button onclick="window.logout()" style="background:#ff4757; color:white; border:none; border-radius:5px; padding:5px 10px;">LOGOUT</button>
+    <header style="width: 95%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div id="player-name" style="font-weight:bold; font-size:0.9rem;">Explorer</div>
+            <div id="level-tag" style="font-size:0.7rem; color:var(--secondary);">LEVEL 1</div>
+        </div>
+        <button onclick="window.logout()" style="background:#ff4757; color:white; border:none; padding:5px 10px; border-radius:5px;">LOGOUT</button>
     </header>
 
     <div class="main-wrapper">
         <div class="dashboard">
             <div class="gauge-box"><div class="gauge"><span class="gauge-val" id="q-timer">80</span></div><div class="gauge-label">Quest</div></div>
             <div class="gauge-box"><div class="gauge"><span class="gauge-val" id="points">0</span></div><div class="gauge-label">Points</div></div>
+            <div class="gauge-box"><div class="gauge"><span class="gauge-val" id="correct-count">0</span></div><div class="gauge-label">Correct</div></div>
+            <div class="gauge-box"><div class="gauge"><span class="gauge-val" id="total-time">0</span></div><div class="gauge-label">Secs</div></div>
         </div>
 
         <div class="container">
-            <div class="math-area" id="math-display"></div>
-            <div id="feedback" style="text-align:center; color:var(--accent);"></div>
+            <div class="math-area" id="math-display">
+                </div>
+            <div id="feedback" style="text-align:center; height: 20px; color:var(--accent);"></div>
             <button class="btn btn-primary" id="submit-btn">SUBMIT ANSWER</button>
-            <button class="btn hidden" id="next-btn" style="background:var(--secondary)">NEXT QUEST ➔</button>
+            <button class="btn hidden" id="next-btn" style="background:var(--secondary); color:black">NEXT QUESTION ➔</button>
+        </div>
+    </div>
+
+    <div class="designer-box">
+        <div style="text-align: center;">
+            <p style="font-weight: bold; color: var(--primary); margin: 0;">Mohammad Ashraf Rather</p>
+            <p style="font-size: 0.7rem; color: #888; margin: 0;">Architect & Designer</p>
         </div>
     </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    // --- MOCK DATABASE & LOGIC FOR DEMO ---
+    let userData = { currentStep: 0, points: 0, correctTotal: 0 };
+    let currentAns = 0;
 
-    const firebaseConfig = { apiKey: "AIzaSyC6FbPb36F69k7cw_tLbGQoVQxs6shzfAo", authDomain: "math-world-3d.firebaseapp.com", projectId: "math-world-3d" };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    let userData = { currentStep: 0, points: 0 };
-    let currentAns = "";
-    let areaData = {};
-
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            document.getElementById("auth-overlay").classList.add("hidden");
-            const snap = await getDoc(doc(db, "users", user.uid));
-            if (snap.exists()) userData = snap.data();
-            generateQuestion();
-        } else {
-            document.getElementById("auth-overlay").classList.remove("hidden");
-        }
-    });
-
-    function generateQuestion() {
+    function generateNewQuestion() {
         const display = document.getElementById("math-display");
-        const step = userData.currentStep || 0;
-        let n1, n2;
+        const isAreaModel = Math.random() > 0.5;
+        
+        // Settings for 3-digit x 2-digit OR 3-digit x 4-digit
+        const n1 = Math.floor(Math.random() * 900) + 100; // 3-digit
+        const n2 = Math.random() > 0.5 ? (Math.floor(Math.random() * 90) + 10) : (Math.floor(Math.random() * 9000) + 1000); // 2 or 4 digit
+        currentAns = n1 * n2;
 
-        // Toggle between 3x2 and 3x4
-        if (step % 2 === 0) {
-            n1 = Math.floor(Math.random() * 900) + 100; // 3-digit
-            n2 = Math.floor(Math.random() * 90) + 10;   // 2-digit
+        if (isAreaModel) {
+            display.innerHTML = `
+                <div style="font-size:1rem; color:var(--primary)">AREA MODEL METHOD</div>
+                <div style="margin:10px 0">${n1} × ${n2}</div>
+                <table class="area-table">
+                    <tr><td class="area-label"></td><td class="area-label">${n1}</td></tr>
+                    <tr><td class="area-label">${n2}</td><td><input type="text" class="area-input" placeholder="Solve here..."></td></tr>
+                </table>
+                <div style="margin-top:15px">Final Answer: <input type="number" id="final-input" class="digit-input" style="width:120px"></div>
+            `;
         } else {
-            n1 = Math.floor(Math.random() * 900) + 100;   // 3-digit
-            n2 = Math.floor(Math.random() * 9000) + 1000; // 4-digit
-        }
-        
-        currentAns = (n1 * n2).toString();
-        renderAreaModel(n1, n2);
-    }
-
-    function renderAreaModel(n1, n2) {
-        const d1 = n1.toString().split('').map(Number);
-        const d2 = n2.toString().split('').map(Number);
-        
-        // Setup table headers (Expanded numbers: e.g., 300, 20, 5)
-        let headerRow = `<td class="area-label">×</td>`;
-        d1.forEach((d, i) => {
-            headerRow += `<td class="area-label">${d * Math.pow(10, d1.length - 1 - i)}</td>`;
-        });
-
-        let bodyRows = "";
-        d2.forEach((d, j) => {
-            let row = `<tr><td class="area-label">${d * Math.pow(10, d2.length - 1 - j)}</td>`;
-            d1.forEach(() => {
-                row += `<td><input type="number" class="area-input" placeholder=""></td>`;
-            });
-            row += `</tr>`;
-            bodyRows += row;
-        });
-
-        document.getElementById("math-display").innerHTML = `
-            <div style="font-size:1.2rem; text-align:center; color:var(--primary);">${n1} × ${n2}</div>
-            <table class="area-table"><tr>${headerRow}</tr>${bodyRows}</table>
-            <div style="margin-top:15px; text-align:center;" id="ans-box"></div>
-        `;
-
-        const ansBox = document.getElementById("ans-box");
-        for (let i = 0; i < currentAns.length; i++) {
-            ansBox.innerHTML += `<input type="number" class="digit-input" maxlength="1">`;
+            display.innerHTML = `
+                <div style="font-size:1rem; color:var(--secondary)">COLUMN METHOD</div>
+                <div class="column-method">
+                    <div>${n1}</div>
+                    <div>× ${n2}</div>
+                    <div class="column-line"></div>
+                    <div style="color:#555; font-size:1.2rem">(Intermediate Blank)</div>
+                    <div class="column-line"></div>
+                    <input type="number" id="final-input" class="digit-input" style="width:150px" placeholder="Result">
+                </div>
+            `;
         }
     }
 
-    document.getElementById("submit-btn").onclick = async () => {
-        let userAns = "";
-        document.querySelectorAll(".digit-input").forEach(i => userAns += i.value);
-        
-        if (userAns === currentAns) {
-            userData.points += 10;
-            userData.currentStep++;
-            await updateDoc(doc(db, "users", auth.currentUser.uid), userData);
-            document.getElementById("feedback").innerText = "CORRECT! +10 Points";
+    document.getElementById("submit-btn").onclick = () => {
+        const userVal = document.getElementById("final-input").value;
+        if (parseInt(userVal) === currentAns) {
+            document.getElementById("feedback").innerText = "CORRECT!";
+            document.getElementById("submit-btn").classList.add("hidden");
+            document.getElementById("next-btn").classList.remove("hidden");
             confetti();
-            if (userData.currentStep % 5 === 0) showCert();
-            generateQuestion();
         } else {
-            document.getElementById("feedback").innerText = "TRY AGAIN!";
+            document.getElementById("feedback").innerText = "TRY AGAIN";
         }
     };
 
-    function showCert() {
-        document.getElementById("cert-id").innerText = "MW-" + Math.floor(Math.random()*10000);
-        document.getElementById("cert-date").innerText = new Date().toLocaleDateString();
-        document.getElementById("cert-qr").src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=MathWorldMastery`;
-        document.getElementById("cert-overlay").classList.remove("hidden");
-    }
+    document.getElementById("next-btn").onclick = () => {
+        document.getElementById("next-btn").classList.add("hidden");
+        document.getElementById("submit-btn").classList.remove("hidden");
+        document.getElementById("feedback").innerText = "";
+        generateNewQuestion();
+    };
 
     window.downloadCertificate = () => {
-        html2canvas(document.getElementById('printable-cert')).then(canvas => {
+        const cert = document.getElementById('printable-cert');
+        html2canvas(cert).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'Mastery_Certificate.png';
+            link.download = 'certificate.png';
             link.href = canvas.toDataURL();
             link.click();
         });
     };
 
-    window.logout = () => signOut(auth).then(() => location.reload());
+    // Initialize
+    generateNewQuestion();
 </script>
 </body>
 </html>
+                
