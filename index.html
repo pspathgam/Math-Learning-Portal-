@@ -24,7 +24,6 @@
             min-height: 100vh; overflow-x: hidden;
         }
 
-        /* 3D Perspective Layout */
         .main-wrapper { perspective: 1000px; width: 95%; max-width: 500px; margin-top: 10px; box-sizing: border-box; }
         .container { 
             background: rgba(255,255,255,0.05); padding: 25px; border-radius: 30px; 
@@ -34,7 +33,6 @@
         }
         .container:hover { transform: rotateX(0deg); }
 
-        /* Gauges */
         .dashboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; width: 100%; }
         .gauge-box { text-align: center; }
         .gauge {
@@ -45,7 +43,6 @@
         .gauge-val { font-size: 0.9rem; font-weight: bold; margin-bottom: 2px; }
         .gauge-label { font-size: 0.55rem; text-transform: uppercase; margin-top: 5px; color: var(--primary); }
 
-        /* Math UI */
         .math-area { font-size: clamp(2rem, 8vw, 3.5rem); font-weight: 900; text-align: right; margin: 15px 0; }
         
         .digit-input { 
@@ -57,17 +54,18 @@
             line-height: 60px;
         }
 
-        /* COLUMN METHOD STYLES */
         .multi-step-container { font-family: 'Courier New', monospace; width: 100%; text-align: right; padding: 10px; box-sizing: border-box; }
         .multi-line { margin: 5px 0; display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
-        .step-input { 
-            background: rgba(0,0,0,0.4); border: 1px solid var(--primary); 
-            color: var(--secondary); font-size: 1.8rem; text-align: right; 
-            width: 140px; padding: 5px; border-radius: 5px; font-family: inherit;
+        
+        .step-input-group { display: flex; gap: 4px; justify-content: flex-end; }
+        .step-digit {
+            width: 30px; height: 40px; font-size: 1.5rem; text-align: center;
+            background: rgba(0,0,0,0.4); border: 1px solid var(--primary);
+            color: var(--secondary); border-radius: 4px;
         }
-        .step-hint { font-size: 0.9rem; color: #888; min-width: 100px; text-align: left; }
 
-        /* Leaderboard */
+        .step-hint { font-size: 0.8rem; color: #888; min-width: 80px; text-align: left; }
+
         .leaderboard-card { 
             background: rgba(0,0,0,0.3); border-radius: 20px; padding: 15px; 
             margin-top: 20px; border: 1px solid var(--primary); width: 100%; 
@@ -77,9 +75,7 @@
         .lb-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; table-layout: fixed; }
         .lb-table th { color: var(--primary); border-bottom: 1px solid #444; padding: 5px; text-align: left; }
         .lb-table td { padding: 8px 5px; border-bottom: 1px solid #222; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .col-rank { width: 15%; } .col-name { width: 55%; } .col-pts { width: 30%; }
 
-        /* Auth Overlays */
         #auth-overlay, #admin-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
         .modal-card { 
             background: var(--card-bg); padding: 25px; border-radius: 25px; 
@@ -97,7 +93,6 @@
         .btn-link { 
             background: none; color: var(--primary); border: none; text-decoration: underline; 
             cursor: pointer; font-size: 0.85rem; padding: 12px; display: inline-block;
-            position: relative; z-index: 2500; 
         }
 
         .hidden { display: none !important; }
@@ -108,10 +103,6 @@
             display: flex; align-items: center; justify-content: center; font-size: 0.5rem; 
         }
 
-        .designer-box { margin-top: 20px; padding: 15px; display: flex; align-items: center; justify-content: center; gap: 15px; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; }
-        .designer-photo { width: 50px; height: 50px; border-radius: 10px; border: 2px solid var(--primary); object-fit: cover; }
-        
-        /* --- LUXURY GOLDEN CERTIFICATE STYLES --- */
         #cert-overlay { 
             position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
             z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; 
@@ -119,74 +110,31 @@
         }
 
         .cert-container {
-            background: #fff; 
-            width: 800px; height: 565px; 
-            padding: 40px; 
-            border: 15px solid #b38728;
-            position: relative; color: #1a1a2e;
-            box-sizing: border-box; 
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            text-align: center;
+            background: #fff; width: 800px; height: 565px; padding: 40px; border: 15px solid #b38728;
+            position: relative; color: #1a1a2e; box-sizing: border-box; 
+            box-shadow: 0 0 50px rgba(0,0,0,0.5); text-align: center;
             display: flex; flex-direction: column; justify-content: center;
         }
 
-        .cert-container::before {
-            content: ""; position: absolute; inset: 0; opacity: 0.05;
-            background-image: repeating-linear-gradient(45deg, #b38728 0, #b38728 1px, transparent 0, transparent 50%);
-            background-size: 10px 10px; pointer-events: none;
-        }
-
-        .cert-border-math {
-            position: absolute; inset: 8px; 
-            border: 2px solid #b38728; 
-            pointer-events: none; opacity: 0.4;
-        }
-
-        .cert-title { 
-            font-family: 'Georgia', serif; 
-            font-size: 3rem; 
-            color: #8a6e2f;
-            margin: 5px 0; font-weight: 900; text-transform: uppercase;
-        }
-
-        .cert-name { 
-            font-family: 'Brush Script MT', cursive, serif;
-            font-size: 3.2rem; 
-            border-bottom: 2px solid #b38728; 
-            display: inline-block; min-width: 60%; 
-            margin: 10px 0; color: #16213e; 
-        }
-
-        .cert-op { 
-            font-weight: bold; text-transform: uppercase; 
-            color: #b38728; font-size: 1.5rem; 
-            letter-spacing: 2px; margin: 10px 0;
-        }
-
-        /* UPDATED: Trophy positioned at Upper LEFT Corner per user request */
+        /* 1. Trophy on both corners */
         .cert-trophy {
-            position: absolute; top: 30px; left: 40px; 
-            font-size: 80px; filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.2));
-            opacity: 0.9; z-index: 5;
+            position: absolute; top: 30px; font-size: 80px; 
+            filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.2)); opacity: 0.9; z-index: 5;
+        }
+        .trophy-left { left: 40px; }
+        .trophy-right { right: 40px; }
+
+        .cert-title { font-family: 'Georgia', serif; font-size: 3rem; color: #8a6e2f; margin: 5px 0; font-weight: 900; text-transform: uppercase; }
+
+        /* 5. Name Font changed to Herber */
+        .cert-name { 
+            font-family: 'Herber', 'Brush Script MT', cursive;
+            font-size: 3.5rem; border-bottom: 2px solid #b38728; 
+            display: inline-block; min-width: 60%; margin: 10px 0; color: #16213e; 
         }
 
-        .cert-footer { 
-            display: flex; justify-content: space-between; 
-            align-items: flex-end; margin-top: 30px; 
-            font-size: 0.8rem; text-align: left; 
-            color: #444; font-family: sans-serif;
-            position: relative; z-index: 10;
-        }
-
-        .cert-footer strong { color: #b38728; }
-
-        .cert-actions { margin-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; max-width: 300px; }
-
-        @media print {
-            body * { visibility: hidden; }
-            #cert-overlay, #cert-overlay * { visibility: visible; }
-            .cert-actions { display: none !important; }
-        }
+        .cert-op { font-weight: bold; text-transform: uppercase; color: #b38728; font-size: 1.5rem; letter-spacing: 2px; margin: 10px 0; }
+        .cert-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 30px; font-size: 0.8rem; color: #444; }
     </style>
 </head>
 <body>
@@ -196,7 +144,8 @@
             <h2 id="auth-title" style="color:var(--primary); margin:0 0 15px 0;">QUEST LOGIN</h2>
             <div id="signup-photo-area" class="hidden">
                 <div id="photo-preview">No Photo</div>
-                <button type="button" class="btn-link" style="color:var(--secondary);" onclick="document.getElementById('file-input').click()">+ ADD PHOTO</button>
+                <button type="button" class="btn-link" onclick="document.getElementById('file-input').click()">+ ADD PHOTO</button>
+                <input type="text" id="display-name" placeholder="Display Name">
                 <input type="file" id="file-input" class="hidden" accept="image/*" onchange="window.handleImageSelect(event, 'photo-preview')">
             </div>
             <div id="auth-inputs">
@@ -222,6 +171,7 @@
                 <div id="admin-photo-preview">User Photo</div>
                 <button class="btn-link" onclick="document.getElementById('admin-file-input').click()">CHANGE PHOTO</button>
                 <input type="file" id="admin-file-input" class="hidden" accept="image/*" onchange="window.handleImageSelect(event, 'admin-photo-preview')">
+                <input type="text" id="adm-res-name" placeholder="Display Name">
                 <input type="email" id="adm-res-email" placeholder="Email">
                 <div style="display:flex; gap:5px;">
                     <input type="number" id="adm-res-pts" placeholder="Points">
@@ -236,7 +186,8 @@
 
     <div id="cert-overlay" class="hidden">
         <div class="cert-container" id="printable-cert">
-            <div class="cert-trophy">🏆</div>
+            <div class="cert-trophy trophy-left">🏆</div>
+            <div class="cert-trophy trophy-right">🏆</div>
 
             <div class="cert-border-math"></div>
             <p style="font-size: 0.9rem; margin: 0; color: #b38728; font-weight: bold; letter-spacing: 1px;">CERTIFICATE OF MASTERY</p>
@@ -245,22 +196,17 @@
             <div class="cert-name" id="cert-student-name">EXPLORER</div>
             <p style="margin: 10px 0;">has successfully demonstrated outstanding mastery in</p>
             <p class="cert-op"><span id="cert-op-name">MULTIPLICATION</span></p>
-            <p style="font-size: 0.9rem; padding: 0 40px; line-height: 1.4; color: #555;">
-                Through consistent effort and strong numerical understanding, 
-                the learner has shown accuracy and confidence in solving complex mathematical problems.
-            </p>
             
             <div class="cert-footer">
-                <div style="flex: 1;">
-                    <p><strong>Issuing Authority:</strong> Admin Math Portal</p>
+                <div style="flex: 1; text-align: left;">
                     <p><strong>Certificate ID:</strong> <span id="cert-id"></span></p>
                     <p><strong>Issue Date:</strong> <span id="cert-date"></span></p>
                 </div>
-                <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
-                    <img id="cert-qr" src="" style="width: 80px; height: 80px; border: 1px solid #eee; padding: 2px; background: white;">
+                <div style="flex: 1; display: flex; justify-content: center;">
+                    <img id="cert-qr" src="" style="width: 70px; height: 70px; background: white;">
                 </div>
                 <div style="text-align: right; flex: 1;">
-                    <p style="font-size: 0.65rem; line-height: 1.2; margin-bottom: 5px;">Digitally Signed By:<br><strong>Mohammad Ashraf Rather</strong></p>
+                    <p style="font-size: 0.65rem;">Digitally Signed By:<br><strong>Mohammad Ashraf Rather</strong></p>
                 </div>
             </div>
         </div>
@@ -276,7 +222,7 @@
             <div>
                 <div id="player-name" style="font-weight:bold; font-size:0.8rem;">Explorer</div>
                 <div id="level-tag" style="font-size:0.6rem; color:var(--secondary);">LEVEL 1</div>
-                <button class="btn-link" style="padding:0; font-size:10px; color:var(--accent)" onclick="window.downloadMyCertificates()">DOWNLOAD CERTIFICATES</button>
+                <div id="cert-history-links" style="display: flex; gap: 5px; margin-top: 2px;"></div>
             </div>
         </div>
         <div>
@@ -294,12 +240,7 @@
         </div>
 
         <div class="container">
-            <div class="math-area" id="math-display">
-                <div id="n1">0</div>
-                <div style="display:flex; justify-content: space-between;"><span style="color:var(--secondary)" id="op">+</span><span id="n2">0</span></div>
-                <hr style="border:1px solid #333">
-                <div id="ans-box" style="display:flex; justify-content: flex-end;"></div>
-            </div>
+            <div class="math-area" id="math-display"></div>
             <div id="feedback" style="text-align:center; height: 20px; font-weight:bold; color:var(--accent); font-size: 0.8rem;"></div>
             <button class="btn btn-primary" id="submit-btn">SUBMIT ANSWER</button>
             <button class="btn btn-next hidden" id="next-btn">NEXT QUEST ➔</button>
@@ -309,18 +250,10 @@
             <h4 style="margin:0 0 10px 0; color:var(--primary); font-size:0.8rem;">WORLD LEADERBOARD</h4>
             <div class="lb-container">
                 <table class="lb-table">
-                    <thead><tr><th class="col-rank">#</th><th class="col-name">Player</th><th class="col-pts">Points</th></tr></thead>
+                    <thead><tr><th>#</th><th>Player</th><th>Points</th></tr></thead>
                     <tbody id="lb-body"></tbody>
                 </table>
             </div>
-        </div>
-    </div>
-
-    <div class="designer-box">
-        <img src="IMG_20221004_191436.jpg" alt="Mohammad Ashraf Rather" class="designer-photo">
-        <div style="text-align: left;">
-            <p style="font-weight: bold; color: var(--primary); margin: 0; font-size: 0.8rem;">Mohammad Ashraf Rather</p>
-            <p style="font-size: 0.6rem; color: #888; margin: 0;">Architect & Designer</p>
         </div>
     </div>
 
@@ -341,303 +274,244 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-  const ADMIN_EMAIL = "ratherashraf786@gmail.com";
 
-  let userData = { currentStep: 0, correctTotal: 0, totalSeconds: 0, points: 0, photoURL: "" };
+  let userData = { currentStep: 0, correctTotal: 0, totalSeconds: 0, points: 0, photoURL: "", displayName: "" };
   let currentAns = "";
   let multiplicationStepData = {};
-  let authState = "signin";
-  let base64Photo = "";
-  let adminBase64 = "";
   let qInterval = null;
   let tInterval = null;
+  let base64Photo = "";
 
-  window.setAuthState = (state) => {
-    authState = state;
-    const titleEl = document.getElementById("auth-title");
-    const photoEl = document.getElementById("signup-photo-area");
-    const passEl = document.getElementById("user-pass");
-    const btnEl = document.getElementById("btn-auth-action");
-    const togglesEl = document.getElementById("auth-toggles");
-    const backEl = document.getElementById("btn-back-to-login");
-    photoEl.classList.add("hidden");
-    passEl.classList.remove("hidden");
-    togglesEl.classList.add("hidden");
-    backEl.classList.add("hidden");
-    if (state === "signin") { titleEl.innerText = "QUEST LOGIN"; btnEl.innerText = "SIGN IN"; togglesEl.classList.remove("hidden"); }
-    else if (state === "signup") { titleEl.innerText = "NEW EXPLORER"; photoEl.classList.remove("hidden"); btnEl.innerText = "CREATE ACCOUNT"; backEl.classList.remove("hidden"); }
-    else if (state === "forgot") { titleEl.innerText = "RECOVER KEY"; passEl.classList.add("hidden"); btnEl.innerText = "SEND RESET LINK"; backEl.classList.remove("hidden"); }
-  };
-
-  window.handleImageSelect = (e, previewId) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const res = ev.target.result;
-      if (previewId === "photo-preview") base64Photo = res; else adminBase64 = res;
-      const prev = document.getElementById(previewId);
-      prev.style.backgroundImage = `url(${res})`;
-      prev.innerText = "";
-    };
-    reader.readAsDataURL(file);
-  };
-
-  document.getElementById("btn-auth-action").onclick = async () => {
-    const email = document.getElementById("user-email").value.trim();
-    const pass = document.getElementById("user-pass").value;
-    if (!email) return alert("Email required");
-    try {
-      if (authState === "signin") await signInWithEmailAndPassword(auth, email, pass);
-      else if (authState === "signup") {
-        const res = await createUserWithEmailAndPassword(auth, email, pass);
-        await setDoc(doc(db, "users", res.user.uid), { ...userData, email, photoURL: base64Photo });
-      } else if (authState === "forgot") {
-        await sendPasswordResetEmail(auth, email); alert("Reset link sent!"); window.setAuthState("signin");
-      }
-    } catch (e) { alert(e.message); }
-  };
-
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      document.getElementById("auth-overlay").classList.add("hidden");
-      document.getElementById("player-name").innerText = user.email.split("@")[0];
-      if (user.email === ADMIN_EMAIL) document.getElementById("admin-btn").classList.remove("hidden");
-      const snap = await getDoc(doc(db, "users", user.uid));
-      if (snap.exists()) userData = snap.data();
-      updateUI(); generateQuestion(); startTotalTimer(); updateLeaderboard();
-    } else { document.getElementById("auth-overlay").classList.remove("hidden"); }
-  });
-
-  window.adminSearch = async () => {
-    const email = document.getElementById("admin-search").value.trim();
-    const q1 = query(collection(db, "users"), where("email", "==", email));
-    const snap = await getDocs(q1);
-    if (snap.empty) return alert("User not found");
-    const d = snap.docs[0];
-    window.targetUid = d.id;
-    const data = d.data();
-    document.getElementById("admin-result").classList.remove("hidden");
-    document.getElementById("adm-res-email").value = data.email || "";
-    document.getElementById("adm-res-pts").value = data.points || 0;
-    document.getElementById("adm-res-step").value = data.currentStep || 0;
-    adminBase64 = data.photoURL || "";
-    const prev = document.getElementById("admin-photo-preview");
-    prev.style.backgroundImage = adminBase64 ? `url(${adminBase64})` : "";
-  };
-
-  window.adminUpdate = async () => {
-    if (!window.targetUid) return;
-    try {
-      await updateDoc(doc(db, "users", window.targetUid), {
-        email: document.getElementById("adm-res-email").value.trim(),
-        points: parseInt(document.getElementById("adm-res-pts").value || "0"),
-        currentStep: parseInt(document.getElementById("adm-res-step").value || "0"),
-        photoURL: adminBase64
-      });
-      alert("Updated!"); updateLeaderboard();
-    } catch (e) { alert(e.message); }
-  };
-
-  window.adminDelete = async () => {
-    if (!window.targetUid || !confirm("Delete user?")) return;
-    try {
-      await deleteDoc(doc(db, "users", window.targetUid));
-      alert("Deleted"); document.getElementById("admin-result").classList.add("hidden"); updateLeaderboard();
-    } catch (e) { alert(e.message); }
-  };
+  // 2. CURSOR MOVES ONES TO TENS (RTL Logic)
+  function setupRTLInputs(containerId, expectedValue) {
+    const box = document.getElementById(containerId);
+    box.innerHTML = "";
+    const len = String(expectedValue).length;
+    
+    // Create inputs
+    for (let i = 0; i < len; i++) {
+        const inp = document.createElement("input");
+        inp.type = "number"; inp.className = "digit-input"; inp.inputMode = "numeric";
+        inp.dataset.index = i; // 0 is ones, 1 is tens...
+        
+        inp.oninput = function() {
+            if (this.value.length > 1) this.value = this.value.slice(-1);
+            if (this.value.length === 1) {
+                const next = box.querySelector(`[data-index="${parseInt(this.dataset.index) + 1}"]`);
+                if (next) next.focus();
+            }
+        };
+        inp.onkeydown = function(e) {
+            if (e.key === "Backspace" && this.value === "") {
+                const prev = box.querySelector(`[data-index="${parseInt(this.dataset.index) - 1}"]`);
+                if (prev) prev.focus();
+            }
+        };
+        // Prepend so the physical order is [Hundreds][Tens][Ones] but logical index 0 is at the end
+        box.insertBefore(inp, box.firstChild);
+    }
+    // Focus the Ones place (index 0)
+    box.querySelector(`[data-index="0"]`).focus();
+  }
 
   function generateQuestion() {
     document.getElementById("submit-btn").classList.remove("hidden");
     document.getElementById("next-btn").classList.add("hidden");
     document.getElementById("feedback").innerText = "";
+    
     const step = userData.currentStep || 0;
     const level = Math.floor(step / 30) + 1;
     let n1, n2, op = "+", ans;
 
-    if (level === 1) { n1 = rand(10, 99); n2 = rand(10, 99); ans = n1 + n2; }
-    else if (level === 2) { n1 = rand(100, 999); n2 = rand(100, 999); ans = n1 + n2; }
-    else if (level === 3) { n1 = rand(100, 999); n2 = rand(10, 99); op = "-"; ans = n1 - n2; }
-    else if (level === 4) { n1 = rand(1000, 9999); n2 = rand(100, 999); op = "-"; ans = n1 - n2; }
-    else if (level >= 5 && level <= 10) { 
+    if (level <= 2) { n1 = rand(10, 99); n2 = rand(10, 99); ans = n1 + n2; op="+"; }
+    else if (level <= 4) { n1 = rand(100, 999); n2 = rand(10, 99); op = "-"; ans = n1 - n2; }
+    else { 
         n1 = rand(20, 99); n2 = rand(11, 49); op = "×"; ans = n1 * n2;
-        renderColumnMultiplication(n1, n2);
+        renderMultiplication(n1, n2);
+        currentAns = String(ans);
+        return;
     }
-    else if (level === 11) { n2 = rand(2, 9); ans = rand(10, 50); n1 = ans * n2; op = "÷"; }
-    else { n1 = rand(20, 99); n2 = rand(11, 49); op = "×"; ans = n1 * n2; renderColumnMultiplication(n1, n2); }
 
     currentAns = String(ans);
-    if (op !== "×") {
-        document.getElementById("math-display").innerHTML = `
-            <div id="n1">${n1}</div>
-            <div style="display:flex; justify-content: space-between;"><span style="color:var(--secondary)" id="op">${op}</span><span id="n2">${n2}</span></div>
-            <hr style="border:1px solid #333">
-            <div id="ans-box" style="display:flex; justify-content: flex-end;"></div>
-        `;
-        setupInputs(currentAns.length);
-    }
-    document.getElementById("level-tag").innerText = `LEVEL ${level} (${step % 30}/30)`;
+    document.getElementById("math-display").innerHTML = `
+        <div id="n1">${n1}</div>
+        <div style="display:flex; justify-content: space-between;"><span style="color:var(--secondary)">${op}</span><span id="n2">${n2}</span></div>
+        <hr style="border:1px solid #333">
+        <div id="ans-box" style="display:flex; justify-content: flex-end;"></div>
+    `;
+    setupRTLInputs("ans-box", currentAns);
     startQuestTimer();
   }
 
-  // UPDATED METHOD: PARTIAL PRODUCTS (AS PER IMAGE)
-  function renderColumnMultiplication(n1, n2) {
+  // 3. MULTIPLICATION: EVERY STEP BLANK
+  function renderMultiplication(n1, n2) {
     const unitDigit = n2 % 10;
-    const tensValue = Math.floor(n2 / 10) * 10;
-    const partial1 = n1 * unitDigit;
-    const partial2 = n1 * tensValue;
-    const finalAns = partial1 + partial2;
-
-    multiplicationStepData = { p1: partial1, p2: partial2, final: finalAns };
+    const tensVal = Math.floor(n2 / 10) * 10;
+    multiplicationStepData = { p1: n1 * unitDigit, p2: n1 * tensVal, final: n1 * n2 };
 
     document.getElementById("math-display").innerHTML = `
         <div class="multi-step-container">
-            <div class="multi-line" style="font-size: 2.5rem;">${n1}</div>
-            <div class="multi-line" style="font-size: 2.5rem; border-bottom: 3px solid white; padding-bottom: 5px;">
-               <span style="color:var(--primary); margin-right: 20px;">×</span> ${n2}
-            </div>
+            <div class="multi-line">${n1}</div>
+            <div class="multi-line" style="border-bottom: 2px solid white;">× ${n2}</div>
             <div class="multi-line">
-                <input type="number" id="step-p1" class="step-input" placeholder="">
-                <span class="step-hint">(${n1} x ${unitDigit})</span>
+                <div id="step-p1-box" class="step-input-group"></div>
+                <span class="step-hint">(${n1}x${unitDigit})</span>
             </div>
-            <div class="multi-line" style="border-bottom: 3px solid white; padding-bottom: 5px;">
-                <span style="color:var(--secondary); font-size: 1.5rem; margin-right: 10px;">+</span>
-                <input type="number" id="step-p2" class="step-input" placeholder="">
-                <span class="step-hint">(${n1} x ${tensValue})</span>
+            <div class="multi-line" style="border-bottom: 2px solid white;">
+                <div id="step-p2-box" class="step-input-group"></div>
+                <span class="step-hint">(${n1}x${tensVal})</span>
             </div>
-            <div id="ans-box" class="multi-line" style="margin-top: 10px; justify-content: flex-end;"></div>
+            <div id="ans-box" class="multi-line" style="margin-top:10px;"></div>
         </div>
     `;
-    setupInputs(String(finalAns).length);
+    // Setup blank inputs for all steps
+    setupRTLInputs("step-p1-box", multiplicationStepData.p1);
+    setupRTLInputs("step-p2-box", multiplicationStepData.p2);
+    setupRTLInputs("ans-box", multiplicationStepData.final);
   }
 
-  function setupInputs(len) {
-    const box = document.getElementById("ans-box"); 
-    box.innerHTML = "";
-    for (let i = 0; i < len; i++) {
-      const inp = document.createElement("input");
-      inp.type = "number"; inp.className = "digit-input"; inp.inputMode = "numeric";
-      inp.oninput = function() {
-        if (this.value.length > 1) this.value = this.value.slice(-1);
-        if (this.value.length === 1 && this.previousElementSibling) this.previousElementSibling.focus();
-      };
-      inp.onkeydown = function(ev) { 
-        if (ev.key === "Backspace" && this.value === "" && this.nextElementSibling) this.nextElementSibling.focus();
-      };
-      box.appendChild(inp);
+  // 4. CERTIFICATE HISTORY
+  function updateCertLinks() {
+    const container = document.getElementById("cert-history-links");
+    container.innerHTML = "";
+    const achieved = Math.floor(userData.currentStep / 30);
+    const ops = ["ADDITION", "ADDITION II", "SUBTRACTION", "SUBTRACTION II", "MULTIPLICATION"];
+    for(let i=0; i < achieved; i++) {
+        const btn = document.createElement("button");
+        btn.innerText = "📜 " + (ops[i] || "LEVEL "+(i+1));
+        btn.className = "btn-link";
+        btn.style = "font-size: 8px; padding: 2px; color: var(--accent);";
+        btn.onclick = () => window.showMasteryCertificate(ops[i] || "MASTERY");
+        container.appendChild(btn);
     }
-    if(box.lastChild) box.lastChild.focus();
   }
+
+  window.setAuthState = (state) => {
+    const titleEl = document.getElementById("auth-title");
+    const nameEl = document.getElementById("signup-photo-area");
+    if(state === 'signup') {
+        nameEl.classList.remove("hidden");
+        titleEl.innerText = "NEW EXPLORER";
+    } else {
+        nameEl.classList.add("hidden");
+        titleEl.innerText = "QUEST LOGIN";
+    }
+  };
+
+  document.getElementById("btn-auth-action").onclick = async () => {
+    const email = document.getElementById("user-email").value.trim();
+    const pass = document.getElementById("user-pass").value;
+    const dName = document.getElementById("display-name").value || email.split("@")[0];
+    
+    try {
+        if(document.getElementById("auth-title").innerText === "NEW EXPLORER") {
+            const res = await createUserWithEmailAndPassword(auth, email, pass);
+            await setDoc(doc(db, "users", res.user.uid), { ...userData, email, displayName: dName, photoURL: base64Photo });
+        } else {
+            await signInWithEmailAndPassword(auth, email, pass);
+        }
+    } catch(e) { alert(e.message); }
+  };
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if (snap.exists()) userData = snap.data();
+        document.getElementById("auth-overlay").classList.add("hidden");
+        document.getElementById("player-name").innerText = userData.displayName || user.email.split("@")[0];
+        updateUI(); generateQuestion(); startTotalTimer(); updateLeaderboard(); updateCertLinks();
+    } else {
+        document.getElementById("auth-overlay").classList.remove("hidden");
+    }
+  });
 
   document.getElementById("submit-btn").onclick = () => {
-    let userFinal = ""; 
-    document.querySelectorAll(".digit-input").forEach((i) => (userFinal += i.value));
-    
-    // Validate partial steps for multiplication
-    if (multiplicationStepData.final) {
-        const up1 = parseInt(document.getElementById('step-p1').value);
-        const up2 = parseInt(document.getElementById('step-p2').value);
-        if (up1 !== multiplicationStepData.p1 || up2 !== multiplicationStepData.p2) {
-            document.getElementById("feedback").innerText = "CHECK PARTIAL PRODUCTS";
-            return;
-        }
-    }
+    let userFinal = "";
+    // Get digits in correct order (reverse of DOM for RTL)
+    const digits = Array.from(document.getElementById("ans-box").querySelectorAll("input")).reverse();
+    digits.forEach(i => userFinal += i.value);
 
     if (userFinal === currentAns) {
-      clearInterval(qInterval);
-      userData.points = (userData.points || 0) + 10;
-      userData.correctTotal = (userData.correctTotal || 0) + 1;
-      document.getElementById("feedback").innerText = "COINS +10!";
-      try { confetti(); } catch {}
-      document.getElementById("submit-btn").classList.add("hidden");
-      document.getElementById("next-btn").classList.remove("hidden");
-      updateUI();
-    } else { document.getElementById("feedback").innerText = "WRONG TOTAL"; }
+        clearInterval(qInterval);
+        userData.points += 10;
+        userData.correctTotal += 1;
+        document.getElementById("feedback").innerText = "CORRECT! +10";
+        confetti();
+        document.getElementById("submit-btn").classList.add("hidden");
+        document.getElementById("next-btn").classList.remove("hidden");
+    } else {
+        document.getElementById("feedback").innerText = "TRY AGAIN";
+    }
   };
 
   document.getElementById("next-btn").onclick = async () => {
-    const oldStep = userData.currentStep || 0;
-    const newStep = oldStep + 1;
-    if (newStep % 30 === 0) {
-        const lvF = Math.floor(oldStep / 30) + 1;
-        let opN = (lvF <= 2) ? "ADDITION" : (lvF <= 4) ? "SUBTRACTION" : (lvF <= 10) ? "MULTIPLICATION" : "DIVISION";
-        window.showMasteryCertificate(opN);
-    }
-    userData.currentStep = newStep;
-    multiplicationStepData = {};
+    userData.currentStep++;
+    if(userData.currentStep % 30 === 0) window.showMasteryCertificate("LEVEL UP");
     await updateDoc(doc(db, "users", auth.currentUser.uid), userData);
-    updateLeaderboard(); generateQuestion();
+    updateUI(); updateCertLinks(); generateQuestion();
+  };
+
+  window.showMasteryCertificate = (opName) => {
+    document.getElementById("cert-student-name").innerText = (userData.displayName || "EXPLORER").toUpperCase();
+    document.getElementById("cert-op-name").innerText = opName;
+    document.getElementById("cert-date").innerText = new Date().toLocaleDateString();
+    document.getElementById("cert-id").innerText = "MW3D-" + Math.random().toString(36).substr(2, 7).toUpperCase();
+    document.getElementById("cert-qr").src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=MathWorldCert-${userData.displayName}`;
+    document.getElementById("cert-overlay").classList.remove("hidden");
   };
 
   window.downloadCertificate = () => {
-    const cert = document.getElementById('printable-cert');
-    html2canvas(cert, { scale: 3, useCORS: true, backgroundColor: "#ffffff", logging: false }).then(canvas => {
-        const image = canvas.toDataURL("image/png");
+    html2canvas(document.getElementById('printable-cert'), {scale: 2}).then(canvas => {
         const link = document.createElement('a');
-        link.download = `Math-World-Mastery-Certificate.png`;
-        link.href = image;
+        link.download = 'Certificate.png';
+        link.href = canvas.toDataURL();
         link.click();
     });
   };
 
-  window.showMasteryCertificate = (opName) => {
-    const name = auth.currentUser.email.split("@")[0].toUpperCase();
-    document.getElementById("cert-student-name").innerText = name;
-    document.getElementById("cert-op-name").innerText = opName;
-    document.getElementById("cert-date").innerText = new Date().toLocaleDateString();
-    document.getElementById("cert-id").innerText = "MW3D-" + Math.random().toString(36).substr(2, 9).toUpperCase();
-    const qrData = encodeURIComponent(`Student: ${name} | Mastery: ${opName}`);
-    document.getElementById("cert-qr").src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${qrData}`;
-    document.getElementById("cert-overlay").classList.remove("hidden");
-  };
+  function updateUI() {
+    document.getElementById("points").innerText = userData.points;
+    document.getElementById("correct-count").innerText = userData.correctTotal;
+    document.getElementById("user-photo").src = userData.photoURL || "https://via.placeholder.com/50";
+  }
 
-  window.downloadMyCertificates = () => {
-    const step = userData.currentStep || 0;
-    const level = Math.floor(step / 30);
-    if (level < 1) return alert("Complete 30 questions first!");
-    window.showMasteryCertificate("COMPLETION");
-  };
+  function startQuestTimer() {
+    let qv = 80; clearInterval(qInterval);
+    qInterval = setInterval(() => {
+        qv--; document.getElementById("q-timer").innerText = qv;
+        if(qv <= 0) { clearInterval(qInterval); generateQuestion(); }
+    }, 1000);
+  }
+
+  function startTotalTimer() {
+    tInterval = setInterval(() => {
+        userData.totalSeconds++;
+        document.getElementById("total-time").innerText = userData.totalSeconds;
+    }, 1000);
+  }
 
   async function updateLeaderboard() {
     const q1 = query(collection(db, "users"), orderBy("points", "desc"), limit(5));
     const snap = await getDocs(q1);
     const body = document.getElementById("lb-body"); body.innerHTML = "";
     let i = 1;
-    snap.forEach((d) => {
-      const data = d.data();
-      body.innerHTML += `<tr><td class="col-rank">${i++}</td><td class="col-name">${escapeHtml(data.email.split("@")[0])}</td><td class="col-pts">${data.points || 0}</td></tr>`;
+    snap.forEach(d => {
+        const data = d.data();
+        body.innerHTML += `<tr><td>${i++}</td><td>${data.displayName || data.email.split("@")[0]}</td><td>${data.points}</td></tr>`;
     });
   }
 
-  function startQuestTimer() {
-    let qv = 80; clearInterval(qInterval);
-    document.getElementById("q-timer").innerText = qv;
-    qInterval = setInterval(() => {
-      qv--; document.getElementById("q-timer").innerText = qv;
-      if (qv <= 0) { clearInterval(qInterval); document.getElementById("submit-btn").click(); }
-    }, 1000);
-  }
-
-  function startTotalTimer() {
-    clearInterval(tInterval);
-    tInterval = setInterval(() => {
-      userData.totalSeconds = (userData.totalSeconds || 0) + 1;
-      document.getElementById("total-time").innerText = userData.totalSeconds;
-    }, 1000);
-  }
-
-  function updateUI() {
-    document.getElementById("points").innerText = userData.points || 0;
-    document.getElementById("correct-count").innerText = userData.correctTotal || 0;
-    document.getElementById("user-photo").src = userData.photoURL || "https://via.placeholder.com/50";
-  }
-
   function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-  function escapeHtml(str) { return String(str).replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[m])); }
+  window.handleImageSelect = (e, pid) => {
+    const reader = new FileReader();
+    reader.onload = (ev) => { 
+        base64Photo = ev.target.result;
+        document.getElementById(pid).style.backgroundImage = `url(${base64Photo})`;
+        document.getElementById(pid).innerText = "";
+    };
+    reader.readAsDataURL(e.target.files[0]);
+  };
   window.logout = () => signOut(auth).then(() => location.reload());
-  window.changePhoto = () => document.getElementById("file-input").click();
-  window.setAuthState("signin");
-</script>        
-</body> 
+</script>
+</body>
 </html>
-    
