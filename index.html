@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Math World 3D: Ultimate Quest</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root { 
             --primary: #00d2ff; 
@@ -625,6 +626,37 @@
   window.logout = () => signOut(auth).then(() => location.reload());
   window.changePhoto = () => document.getElementById("file-input").click();
   window.setAuthState("signin");
+    window.downloadCertificate = () => {
+    const cert = document.getElementById('printable-cert');
+    const actionButtons = document.querySelector('.cert-actions');
+    
+    // 1. Temporarily hide buttons so they don't show in the "photo"
+    actionButtons.style.display = 'none';
+
+    html2canvas(cert, {
+        scale: 2, // Higher quality
+        useCORS: true,
+        backgroundColor: "#ffffff"
+    }).then(canvas => {
+        // 2. Convert to image
+        const image = canvas.toDataURL("image/png");
+        
+        // 3. Create a "fake" link to trigger download
+        const link = document.createElement('a');
+        link.download = `Math-World-Mastery-${Date.now()}.png`;
+        link.href = image;
+        link.click();
+
+        // 4. Show buttons again
+        actionButtons.style.display = 'flex';
+    }).catch(err => {
+        console.error("Download failed", err);
+        // Fallback for some mobile browsers
+        alert("Please take a screenshot of your certificate!");
+        actionButtons.style.display = 'flex';
+    });
+};
+
 </script>        
 </body> 
 </html>
